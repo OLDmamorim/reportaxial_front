@@ -1097,9 +1097,12 @@ const StorePanel = () => {
   const [problems, setProblems] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    priority: 'normal'
+    problemType: '',
+    orderDate: '',
+    supplierOrder: '',
+    product: '',
+    eurocode: '',
+    observations: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -1142,7 +1145,14 @@ const StorePanel = () => {
 
       if (res.ok) {
         setSuccess('Problema reportado com sucesso!');
-        setFormData({ title: '', description: '', priority: 'normal' });
+        setFormData({ 
+          problemType: '',
+          orderDate: '',
+          supplierOrder: '',
+          product: '',
+          eurocode: '',
+          observations: ''
+        });
         setShowCreateForm(false);
         loadProblems();
         setTimeout(() => setSuccess(''), 3000);
@@ -1318,13 +1328,55 @@ const StorePanel = () => {
                   color: '#374151',
                   marginBottom: '8px'
                 }}>
-                  Título do Problema
+                  Problema a Reportar *
+                </label>
+                <select
+                  value={formData.problemType}
+                  onChange={(e) => setFormData({...formData, problemType: e.target.value})}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    background: 'white',
+                    cursor: 'pointer'
+                  }}
+                  required
+                >
+                  <option value="">Selecione...</option>
+                  <option value="material_nao_chegou">Material não chegou</option>
+                  <option value="material_danificado">Material danificado</option>
+                  <option value="material_errado">Material errado</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '8px'
+                }}>
+                  Data do Pedido *
                 </label>
                 <input
                   type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  placeholder="Ex: Vidro partido na porta"
+                  value={formData.orderDate}
+                  onChange={(e) => {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length >= 2) {
+                      value = value.slice(0, 2) + '/' + value.slice(2);
+                    }
+                    if (value.length >= 5) {
+                      value = value.slice(0, 5) + '/' + value.slice(5, 9);
+                    }
+                    setFormData({...formData, orderDate: value});
+                  }}
+                  placeholder="DD/MM/AAAA"
+                  maxLength="10"
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -1344,21 +1396,22 @@ const StorePanel = () => {
                   color: '#374151',
                   marginBottom: '8px'
                 }}>
-                  Descrição
+                  Encomenda Fornecedor *
                 </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  placeholder="Descreva o problema em detalhe..."
+                <input
+                  type="text"
+                  value={formData.supplierOrder}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    setFormData({...formData, supplierOrder: value});
+                  }}
+                  placeholder="Apenas números"
                   style={{
                     width: '100%',
                     padding: '12px',
                     border: '1px solid #E5E7EB',
                     borderRadius: '8px',
-                    fontSize: '14px',
-                    minHeight: '120px',
-                    resize: 'vertical',
-                    fontFamily: 'inherit'
+                    fontSize: '14px'
                   }}
                   required
                 />
@@ -1372,11 +1425,11 @@ const StorePanel = () => {
                   color: '#374151',
                   marginBottom: '8px'
                 }}>
-                  Prioridade
+                  Produto *
                 </label>
                 <select
-                  value={formData.priority}
-                  onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                  value={formData.product}
+                  onChange={(e) => setFormData({...formData, product: e.target.value})}
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -1386,12 +1439,67 @@ const StorePanel = () => {
                     background: 'white',
                     cursor: 'pointer'
                   }}
+                  required
                 >
-                  <option value="low">Baixa</option>
-                  <option value="normal">Normal</option>
-                  <option value="high">Alta</option>
-                  <option value="urgent">Urgente</option>
+                  <option value="">Selecione...</option>
+                  <option value="vidro">Vidro</option>
+                  <option value="friso">Friso</option>
+                  <option value="molas">Molas</option>
+                  <option value="outro">Outro</option>
                 </select>
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '8px'
+                }}>
+                  Eurocode
+                </label>
+                <input
+                  type="text"
+                  value={formData.eurocode}
+                  onChange={(e) => setFormData({...formData, eurocode: e.target.value})}
+                  placeholder="Referência (opcional)"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '8px'
+                }}>
+                  Observações *
+                </label>
+                <textarea
+                  value={formData.observations}
+                  onChange={(e) => setFormData({...formData, observations: e.target.value})}
+                  placeholder="Descreva o problema em detalhe..."
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    minHeight: '100px',
+                    resize: 'vertical',
+                    fontFamily: 'inherit'
+                  }}
+                  required
+                />
               </div>
 
               <button
