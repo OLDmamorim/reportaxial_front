@@ -84,172 +84,157 @@ const Login = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: 'linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '20px'
+      padding: '20px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
     }}>
       <div style={{
         background: 'white',
-        borderRadius: '16px',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-        padding: '0',
+        borderRadius: '24px',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+        padding: '48px 40px',
         width: '100%',
-        maxWidth: '460px',
-        overflow: 'hidden'
+        maxWidth: '400px'
       }}>
         <div style={{
-          background: 'white',
-          padding: '40px',
-          textAlign: 'center'
+          textAlign: 'center',
+          marginBottom: '40px'
         }}>
-          <img 
-            src="https://i.imgur.com/expressglass-logo.png" 
-            alt="ExpressGlass"
-            style={{
-              height: '60px',
-              marginBottom: '30px'
-            }}
-            onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'block';
-            }}
-          />
           <div style={{
-            display: 'none',
-            fontSize: '32px',
+            fontSize: '36px',
             fontWeight: 'bold',
-            marginBottom: '30px'
+            marginBottom: '32px',
+            letterSpacing: '-0.5px'
           }}>
             <span style={{color: '#E31837'}}>EXPRESS</span>
             <span style={{color: '#1B2B4D'}}>GLASS</span>
           </div>
           <h2 style={{
-            fontSize: '24px',
+            fontSize: '28px',
             fontWeight: '600',
-            color: '#1B2B4D',
-            marginBottom: '8px'
+            color: '#1F2937',
+            marginBottom: '8px',
+            margin: '0 0 8px 0'
           }}>Bem-vindo</h2>
           <p style={{
             color: '#6B7280',
-            fontSize: '14px'
+            fontSize: '15px',
+            margin: 0
           }}>Faça login na sua conta</p>
         </div>
 
-        <div style={{padding: '0 40px 40px'}}>
-          {error && (
-            <div style={{
-              background: '#FEE2E2',
-              border: '1px solid #FCA5A5',
-              color: '#991B1B',
-              padding: '12px',
-              borderRadius: '8px',
-              marginBottom: '20px',
-              fontSize: '14px'
-            }}>
-              {error}
-            </div>
-          )}
+        {error && (
+          <div style={{
+            background: '#FEE2E2',
+            border: '1px solid #FCA5A5',
+            color: '#991B1B',
+            padding: '12px',
+            borderRadius: '12px',
+            marginBottom: '24px',
+            fontSize: '14px'
+          }}>
+            {error}
+          </div>
+        )}
 
-          <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '8px'
-              }}>Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #E5E7EB',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  transition: 'border-color 0.2s',
-                  outline: 'none'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#667eea'}
-                onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
-                required
-              />
-            </div>
-
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '8px'
-              }}>Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #E5E7EB',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  transition: 'border-color 0.2s',
-                  outline: 'none'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#667eea'}
-                onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
+        <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
+          <div>
+            <label style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#1F2937',
+              marginBottom: '8px'
+            }}>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@portal.com"
               style={{
                 width: '100%',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                padding: '14px',
-                borderRadius: '8px',
+                padding: '14px 16px',
+                background: '#F3F4F6',
                 border: 'none',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'transform 0.2s',
-                marginTop: '10px'
+                borderRadius: '12px',
+                fontSize: '15px',
+                outline: 'none',
+                color: '#1F2937'
               }}
-              onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
-              onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
-            >
-              Entrar
-            </button>
-          </form>
-
-          <div style={{
-            marginTop: '24px',
-            textAlign: 'center',
-            fontSize: '14px',
-            color: '#6B7280'
-          }}>
-            Não tem conta?{' '}
-            <button
-              onClick={() => setShowRegister(true)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#667eea',
-                fontWeight: '600',
-                cursor: 'pointer',
-                textDecoration: 'none'
-              }}
-            >
-              Criar conta
-            </button>
+              required
+            />
           </div>
+
+          <div>
+            <label style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#1F2937',
+              marginBottom: '8px'
+            }}>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                background: '#F3F4F6',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '15px',
+                outline: 'none',
+                color: '#1F2937'
+              }}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            style={{
+              width: '100%',
+              background: '#7c3aed',
+              color: 'white',
+              padding: '16px',
+              borderRadius: '12px',
+              border: 'none',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              marginTop: '8px'
+            }}
+          >
+            Entrar
+          </button>
+        </form>
+
+        <div style={{
+          marginTop: '28px',
+          textAlign: 'center',
+          fontSize: '14px',
+          color: '#6B7280'
+        }}>
+          Não tem conta?{' '}
+          <button
+            onClick={() => setShowRegister(true)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#7c3aed',
+              fontWeight: '500',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              padding: 0
+            }}
+          >
+            Criar conta
+          </button>
         </div>
       </div>
     </div>
