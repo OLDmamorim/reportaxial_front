@@ -318,7 +318,7 @@ const AdminPanel = () => {
         </div>
       </header>
 
-      <div style={{maxWidth: '1400px', margin: '0 auto', padding: '24px'}}>
+      <div style={{padding: '24px'}}>
         <div style={{
           background: 'white',
           borderRadius: '12px',
@@ -782,7 +782,7 @@ const SupplierPanel = () => {
         overflow: 'hidden'
       }}>
         <div style={{
-          flex: selectedProblem ? '0 0 60%' : '1',
+          flex: selectedProblem ? '1' : '1',
           padding: '24px',
           overflowY: 'auto',
           transition: 'flex 0.3s'
@@ -792,7 +792,7 @@ const SupplierPanel = () => {
           ) : (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+              gridTemplateColumns: selectedProblem ? 'repeat(auto-fill, minmax(280px, 1fr))' : 'repeat(auto-fill, minmax(350px, 1fr))',
               gap: '20px'
             }}>
               <div>
@@ -1258,9 +1258,8 @@ const StorePanel = () => {
       <div style={{
         flex: 1,
         display: 'flex',
-        maxWidth: '1400px',
-        margin: '0 auto',
         width: '100%',
+        margin: '0 auto',
         padding: '24px',
         gap: '24px'
       }}>
