@@ -625,12 +625,469 @@ const CreateSupplierForm = ({ onSuccess }) => {
 };
 
 const SupplierPanel = () => {
-  const { logout } = React.useContext(AuthContext);
+  const { logout, token } = React.useContext(AuthContext);
+  const [problems, setProblems] = useState([]);
+  const [selectedProblem, setSelectedProblem] = useState(null);
+  const [responseText, setResponseText] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadProblems();
+  }, []);
+
+  const loadProblems = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/supplier/problems`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProblems(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  };
+
+  const loadProblemDetails = async (problemId) => {
+    try {
+      const res = await fetch(`${API_URL}/supplier/problems/${problemId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedProblem(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSubmitResponse = async (e) => {
+    e.preventDefault();
+    if (!responseText.trim() || !selectedProblem) return;
+
+    try {
+      const res = await fetch(`${API_URL}/supplier/problems/${selectedProblem.id}/responses`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ responseText })
+      });
+
+      if (res.ok) {
+        setResponseText('');
+        loadProblemDetails(selectedProblem.id);
+        loadProblems();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'pending': return '#FEF3C7';
+      case 'in_progress': return '#DBEAFE';
+      case 'resolved': return '#D1FAE5';
+      case 'closed': return '#F3F4F6';
+      default: return '#F3F4F6';
+    }
+  };
+
+  const getStatusTextColor = (status) => {
+    switch (status) {
+      case 'pending': return '#92400E';
+      case 'in_progress': return '#1E40AF';
+      case 'resolved': return '#065F46';
+      case 'closed': return '#6B7280';
+      default: return '#6B7280';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'pending': return 'Pendente';
+      case 'in_progress': return 'Em Progresso';
+      case 'resolved': return 'Resolvido';
+      case 'closed': return 'Fechado';
+      default: return status;
+    }
+  };
+
+  const pendingProblems = problems.filter(p => p.status === 'pending');
+  const inProgressProblems = problems.filter(p => p.status === 'in_progress');
+  const resolvedProblems = problems.filter(p => p.status === 'resolved' || p.status === 'closed');
+
   return (
-    <div style={{padding: '20px', fontFamily: 'Arial'}}>
-      <h1>Monitor de Pedidos - Fornecedor</h1>
-      <button onClick={logout} style={{padding: '10px 20px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}>Sair</button>
-      <p style={{marginTop: '20px'}}>Vista Fornecedor em desenvolvimento.</p>
+    <div style={{minHeight: '100vh', background: '#F9FAFB', display: 'flex', flexDirection: 'column'}}>
+      <header style={{
+        background: 'white',
+        borderBottom: '1px solid #E5E7EB',
+        padding: '16px 24px'
+      }}>
+        <div style={{
+          maxWidth: '1600px',
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div>
+            <h1 style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#1B2B4D',
+              margin: 0
+            }}>
+              <span style={{color: '#E31837'}}>EXPRESS</span>
+              <span style={{color: '#1B2B4D'}}>GLASS</span>
+            </h1>
+            <p style={{fontSize: '14px', color: '#6B7280', margin: '4px 0 0'}}>
+              Monitor de Pedidos
+            </p>
+          </div>
+          <button
+            onClick={logout}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 20px',
+              background: '#E31837',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500'
+            }}
+          >
+            <LogOut size={18} />
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        maxWidth: '1600px',
+        margin: '0 auto',
+        width: '100%',
+        overflow: 'hidden'
+      }}>
+        <div style={{
+          flex: selectedProblem ? '0 0 60%' : '1',
+          padding: '24px',
+          overflowY: 'auto',
+          transition: 'flex 0.3s'
+        }}>
+          {loading ? (
+            <p style={{color: '#6B7280', textAlign: 'center', marginTop: '40px'}}>A carregar pedidos...</p>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+              gap: '20px'
+            }}>
+              <div>
+                <h3 style={{
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#6B7280',
+                  marginBottom: '12px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Pendentes ({pendingProblems.length})
+                </h3>
+                <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+                  {pendingProblems.map(problem => (
+                    <ProblemCard 
+                      key={problem.id} 
+                      problem={problem} 
+                      onClick={() => loadProblemDetails(problem.id)}
+                      selected={selectedProblem?.id === problem.id}
+                      getStatusColor={getStatusColor}
+                      getStatusTextColor={getStatusTextColor}
+                      getStatusText={getStatusText}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 style={{
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#6B7280',
+                  marginBottom: '12px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Em Progresso ({inProgressProblems.length})
+                </h3>
+                <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+                  {inProgressProblems.map(problem => (
+                    <ProblemCard 
+                      key={problem.id} 
+                      problem={problem} 
+                      onClick={() => loadProblemDetails(problem.id)}
+                      selected={selectedProblem?.id === problem.id}
+                      getStatusColor={getStatusColor}
+                      getStatusTextColor={getStatusTextColor}
+                      getStatusText={getStatusText}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 style={{
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#6B7280',
+                  marginBottom: '12px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Resolvidos ({resolvedProblems.length})
+                </h3>
+                <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+                  {resolvedProblems.map(problem => (
+                    <ProblemCard 
+                      key={problem.id} 
+                      problem={problem} 
+                      onClick={() => loadProblemDetails(problem.id)}
+                      selected={selectedProblem?.id === problem.id}
+                      getStatusColor={getStatusColor}
+                      getStatusTextColor={getStatusTextColor}
+                      getStatusText={getStatusText}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {selectedProblem && (
+          <div style={{
+            flex: '0 0 40%',
+            background: 'white',
+            borderLeft: '1px solid #E5E7EB',
+            display: 'flex',
+            flexDirection: 'column',
+            maxHeight: 'calc(100vh - 73px)'
+          }}>
+            <div style={{
+              padding: '20px 24px',
+              borderBottom: '1px solid #E5E7EB',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <h2 style={{fontSize: '18px', fontWeight: '600', color: '#1F2937', margin: 0}}>
+                Detalhes do Pedido
+              </h2>
+              <button
+                onClick={() => setSelectedProblem(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  color: '#6B7280'
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{
+              flex: 1,
+              overflowY: 'auto',
+              padding: '24px'
+            }}>
+              <div style={{marginBottom: '24px'}}>
+                <h3 style={{fontSize: '16px', fontWeight: '600', color: '#1F2937', marginBottom: '8px'}}>
+                  {selectedProblem.store_name}
+                </h3>
+                <p style={{fontSize: '14px', color: '#6B7280', marginBottom: '4px'}}>
+                  Contacto: {selectedProblem.contact_person}
+                </p>
+                <p style={{fontSize: '14px', color: '#6B7280'}}>
+                  Tel: {selectedProblem.phone}
+                </p>
+              </div>
+
+              <div style={{
+                background: '#F9FAFB',
+                padding: '16px',
+                borderRadius: '8px',
+                marginBottom: '24px'
+              }}>
+                <h4 style={{fontSize: '14px', fontWeight: '600', color: '#1F2937', marginBottom: '8px'}}>
+                  {selectedProblem.title}
+                </h4>
+                <p style={{fontSize: '14px', color: '#6B7280', lineHeight: '1.5'}}>
+                  {selectedProblem.description}
+                </p>
+                <div style={{marginTop: '12px', display: 'flex', gap: '8px', alignItems: 'center'}}>
+                  <span style={{
+                    padding: '4px 12px',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    background: getStatusColor(selectedProblem.status),
+                    color: getStatusTextColor(selectedProblem.status)
+                  }}>
+                    {getStatusText(selectedProblem.status)}
+                  </span>
+                  <span style={{fontSize: '12px', color: '#9CA3AF'}}>
+                    {new Date(selectedProblem.created_at).toLocaleString('pt-PT')}
+                  </span>
+                </div>
+              </div>
+
+              <h4 style={{fontSize: '14px', fontWeight: '600', color: '#1F2937', marginBottom: '12px'}}>
+                Histórico de Respostas
+              </h4>
+
+              {selectedProblem.responses && selectedProblem.responses.length > 0 ? (
+                <div style={{display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px'}}>
+                  {selectedProblem.responses.map((response) => (
+                    <div key={response.id} style={{
+                      background: '#F0F9FF',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      borderLeft: '3px solid #3B82F6'
+                    }}>
+                      <p style={{fontSize: '13px', color: '#1F2937', marginBottom: '8px'}}>
+                        {response.response_text}
+                      </p>
+                      <p style={{fontSize: '11px', color: '#6B7280'}}>
+                        {response.supplier_name} • {new Date(response.created_at).toLocaleString('pt-PT')}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{fontSize: '14px', color: '#9CA3AF', marginBottom: '24px', fontStyle: 'italic'}}>
+                  Ainda sem respostas
+                </p>
+              )}
+            </div>
+
+            <div style={{
+              padding: '20px 24px',
+              borderTop: '1px solid #E5E7EB',
+              background: '#F9FAFB'
+            }}>
+              <form onSubmit={handleSubmitResponse}>
+                <textarea
+                  value={responseText}
+                  onChange={(e) => setResponseText(e.target.value)}
+                  placeholder="Escreva a sua resposta..."
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    resize: 'vertical',
+                    minHeight: '80px',
+                    marginBottom: '12px',
+                    fontFamily: 'inherit'
+                  }}
+                  required
+                />
+                <button
+                  type="submit"
+                  style={{
+                    width: '100%',
+                    background: '#7c3aed',
+                    color: 'white',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  <Send size={16} />
+                  Enviar Resposta
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ProblemCard = ({ problem, onClick, selected, getStatusColor, getStatusTextColor, getStatusText }) => {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        background: 'white',
+        padding: '16px',
+        borderRadius: '12px',
+        border: selected ? '2px solid #7c3aed' : '1px solid #E5E7EB',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        boxShadow: selected ? '0 4px 12px rgba(124, 58, 237, 0.15)' : '0 1px 3px rgba(0,0,0,0.1)'
+      }}
+    >
+      <h4 style={{
+        fontSize: '15px',
+        fontWeight: '600',
+        color: '#1F2937',
+        marginBottom: '8px'
+      }}>
+        {problem.store_name}
+      </h4>
+      <p style={{
+        fontSize: '13px',
+        color: '#6B7280',
+        marginBottom: '12px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical'
+      }}>
+        {problem.title}
+      </p>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <span style={{
+          padding: '4px 10px',
+          borderRadius: '12px',
+          fontSize: '11px',
+          fontWeight: '500',
+          background: getStatusColor(problem.status),
+          color: getStatusTextColor(problem.status)
+        }}>
+          {getStatusText(problem.status)}
+        </span>
+        {problem.response_count > 0 && (
+          <span style={{fontSize: '12px', color: '#9CA3AF'}}>
+            {problem.response_count} resposta{problem.response_count > 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
     </div>
   );
 };
