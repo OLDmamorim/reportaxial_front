@@ -276,8 +276,8 @@ const AdminPanel = () => {
         padding: '16px 24px'
       }}>
         <div style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
+          width: '100%',
+          padding: '0 24px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
@@ -776,9 +776,9 @@ const SupplierPanel = () => {
       <div style={{
         flex: 1,
         display: 'flex',
-        maxWidth: '1600px',
-        margin: '0 auto',
         width: '100%',
+        margin: '0 auto',
+        display: 'flex',
         overflow: 'hidden'
       }}>
         <div style={{
@@ -878,7 +878,7 @@ const SupplierPanel = () => {
 
         {selectedProblem && (
           <div style={{
-            flex: '0 0 40%',
+            flex: '0 0 500px',
             background: 'white',
             borderLeft: '1px solid #E5E7EB',
             display: 'flex',
@@ -1213,8 +1213,8 @@ const StorePanel = () => {
         padding: '16px 24px'
       }}>
         <div style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
+          width: '100%',
+          padding: '0 24px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
