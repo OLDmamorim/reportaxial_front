@@ -1093,12 +1093,511 @@ const ProblemCard = ({ problem, onClick, selected, getStatusColor, getStatusText
 };
 
 const StorePanel = () => {
-  const { logout } = React.useContext(AuthContext);
+  const { logout, token, user } = React.useContext(AuthContext);
+  const [problems, setProblems] = useState([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    priority: 'normal'
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    loadProblems();
+  }, []);
+
+  const loadProblems = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/store/problems`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProblems(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    try {
+      const res = await fetch(`${API_URL}/store/problems`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (res.ok) {
+        setSuccess('Problema reportado com sucesso!');
+        setFormData({ title: '', description: '', priority: 'normal' });
+        setShowCreateForm(false);
+        loadProblems();
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        const data = await res.json();
+        setError(data.error || 'Erro ao criar problema');
+      }
+    } catch (err) {
+      setError('Erro ao conectar ao servidor');
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'pending': return '#FEF3C7';
+      case 'in_progress': return '#DBEAFE';
+      case 'resolved': return '#D1FAE5';
+      case 'closed': return '#F3F4F6';
+      default: return '#F3F4F6';
+    }
+  };
+
+  const getStatusTextColor = (status) => {
+    switch (status) {
+      case 'pending': return '#92400E';
+      case 'in_progress': return '#1E40AF';
+      case 'resolved': return '#065F46';
+      case 'closed': return '#6B7280';
+      default: return '#6B7280';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'pending': return 'Pendente';
+      case 'in_progress': return 'Em Progresso';
+      case 'resolved': return 'Resolvido';
+      case 'closed': return 'Fechado';
+      default: return status;
+    }
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'urgent': return '#FEE2E2';
+      case 'high': return '#FED7AA';
+      case 'normal': return '#E0E7FF';
+      case 'low': return '#F3F4F6';
+      default: return '#F3F4F6';
+    }
+  };
+
+  const getPriorityTextColor = (priority) => {
+    switch (priority) {
+      case 'urgent': return '#991B1B';
+      case 'high': return '#9A3412';
+      case 'normal': return '#3730A3';
+      case 'low': return '#6B7280';
+      default: return '#6B7280';
+    }
+  };
+
   return (
-    <div style={{padding: '20px', fontFamily: 'Arial'}}>
-      <h1>Minha Loja</h1>
-      <button onClick={logout} style={{padding: '10px 20px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}>Sair</button>
-      <p style={{marginTop: '20px'}}>Vista Loja em desenvolvimento.</p>
+    <div style={{minHeight: '100vh', background: '#F9FAFB', display: 'flex', flexDirection: 'column'}}>
+      <header style={{
+        background: 'white',
+        borderBottom: '1px solid #E5E7EB',
+        padding: '16px 24px'
+      }}>
+        <div style={{
+          maxWidth: '1400px',
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div>
+            <h1 style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#1B2B4D',
+              margin: 0
+            }}>
+              <span style={{color: '#E31837'}}>EXPRESS</span>
+              <span style={{color: '#1B2B4D'}}>GLASS</span>
+            </h1>
+            <p style={{fontSize: '14px', color: '#6B7280', margin: '4px 0 0'}}>
+              {user.profile?.store_name || 'Minha Loja'}
+            </p>
+          </div>
+          <button
+            onClick={logout}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 20px',
+              background: '#E31837',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500'
+            }}
+          >
+            <LogOut size={18} />
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        maxWidth: '1400px',
+        margin: '0 auto',
+        width: '100%',
+        padding: '24px',
+        gap: '24px'
+      }}>
+        <div style={{flex: '0 0 400px'}}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            padding: '24px',
+            position: 'sticky',
+            top: '24px'
+          }}>
+            <h2 style={{
+              fontSize: '20px',
+              fontWeight: '600',
+              color: '#1F2937',
+              marginBottom: '20px'
+            }}>
+              Reportar Problema
+            </h2>
+
+            {success && (
+              <div style={{
+                background: '#D1FAE5',
+                border: '1px solid #6EE7B7',
+                color: '#065F46',
+                padding: '12px',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                fontSize: '14px'
+              }}>
+                {success}
+              </div>
+            )}
+
+            {error && (
+              <div style={{
+                background: '#FEE2E2',
+                border: '1px solid #FCA5A5',
+                color: '#991B1B',
+                padding: '12px',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                fontSize: '14px'
+              }}>
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '8px'
+                }}>
+                  Título do Problema
+                </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  placeholder="Ex: Vidro partido na porta"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '8px'
+                }}>
+                  Descrição
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  placeholder="Descreva o problema em detalhe..."
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    minHeight: '120px',
+                    resize: 'vertical',
+                    fontFamily: 'inherit'
+                  }}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '8px'
+                }}>
+                  Prioridade
+                </label>
+                <select
+                  value={formData.priority}
+                  onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    background: 'white',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="low">Baixa</option>
+                  <option value="normal">Normal</option>
+                  <option value="high">Alta</option>
+                  <option value="urgent">Urgente</option>
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                style={{
+                  width: '100%',
+                  background: '#7c3aed',
+                  color: 'white',
+                  padding: '14px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  marginTop: '8px'
+                }}
+              >
+                <Plus size={18} />
+                Reportar Problema
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div style={{flex: 1}}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            overflow: 'hidden'
+          }}>
+            <div style={{padding: '20px 24px', borderBottom: '1px solid #E5E7EB'}}>
+              <h2 style={{
+                fontSize: '20px',
+                fontWeight: '600',
+                color: '#1F2937',
+                margin: 0
+              }}>
+                Meus Problemas ({problems.length})
+              </h2>
+            </div>
+
+            {loading ? (
+              <div style={{padding: '40px', textAlign: 'center', color: '#6B7280'}}>
+                A carregar problemas...
+              </div>
+            ) : problems.length === 0 ? (
+              <div style={{padding: '40px', textAlign: 'center'}}>
+                <AlertCircle size={48} style={{color: '#D1D5DB', margin: '0 auto 16px'}} />
+                <p style={{color: '#6B7280', fontSize: '14px'}}>
+                  Ainda não reportou nenhum problema
+                </p>
+              </div>
+            ) : (
+              <div style={{overflowX: 'auto'}}>
+                <table style={{width: '100%', borderCollapse: 'collapse'}}>
+                  <thead>
+                    <tr style={{background: '#F9FAFB', borderBottom: '1px solid #E5E7EB'}}>
+                      <th style={{
+                        padding: '12px 16px',
+                        textAlign: 'left',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        color: '#6B7280',
+                        textTransform: 'uppercase'
+                      }}>
+                        Problema
+                      </th>
+                      <th style={{
+                        padding: '12px 16px',
+                        textAlign: 'left',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        color: '#6B7280',
+                        textTransform: 'uppercase'
+                      }}>
+                        Status
+                      </th>
+                      <th style={{
+                        padding: '12px 16px',
+                        textAlign: 'left',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        color: '#6B7280',
+                        textTransform: 'uppercase'
+                      }}>
+                        Prioridade
+                      </th>
+                      <th style={{
+                        padding: '12px 16px',
+                        textAlign: 'left',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        color: '#6B7280',
+                        textTransform: 'uppercase'
+                      }}>
+                        Respostas
+                      </th>
+                      <th style={{
+                        padding: '12px 16px',
+                        textAlign: 'left',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        color: '#6B7280',
+                        textTransform: 'uppercase'
+                      }}>
+                        Data
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {problems.map((problem) => (
+                      <tr key={problem.id} style={{
+                        borderBottom: '1px solid #F3F4F6',
+                        cursor: 'pointer'
+                      }}>
+                        <td style={{padding: '16px'}}>
+                          <div>
+                            <p style={{
+                              fontSize: '14px',
+                              fontWeight: '500',
+                              color: '#1F2937',
+                              marginBottom: '4px'
+                            }}>
+                              {problem.title}
+                            </p>
+                            <p style={{
+                              fontSize: '13px',
+                              color: '#6B7280',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              maxWidth: '300px'
+                            }}>
+                              {problem.description}
+                            </p>
+                          </div>
+                        </td>
+                        <td style={{padding: '16px'}}>
+                          <span style={{
+                            padding: '4px 12px',
+                            borderRadius: '12px',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            background: getStatusColor(problem.status),
+                            color: getStatusTextColor(problem.status),
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {getStatusText(problem.status)}
+                          </span>
+                        </td>
+                        <td style={{padding: '16px'}}>
+                          <span style={{
+                            padding: '4px 12px',
+                            borderRadius: '12px',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            background: getPriorityColor(problem.priority),
+                            color: getPriorityTextColor(problem.priority),
+                            textTransform: 'capitalize'
+                          }}>
+                            {problem.priority}
+                          </span>
+                        </td>
+                        <td style={{padding: '16px', fontSize: '14px', color: '#6B7280'}}>
+                          {problem.responses && problem.responses.length > 0 ? (
+                            <div>
+                              <p style={{fontSize: '13px', fontWeight: '500', color: '#3B82F6', marginBottom: '4px'}}>
+                                {problem.responses.length} resposta{problem.responses.length > 1 ? 's' : ''}
+                              </p>
+                              {problem.responses.slice(0, 1).map(r => (
+                                <p key={r.id} style={{
+                                  fontSize: '12px',
+                                  color: '#6B7280',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                  maxWidth: '200px'
+                                }}>
+                                  {r.response_text}
+                                </p>
+                              ))}
+                            </div>
+                          ) : (
+                            <span style={{fontSize: '13px', color: '#9CA3AF', fontStyle: 'italic'}}>
+                              Sem respostas
+                            </span>
+                          )}
+                        </td>
+                        <td style={{padding: '16px', fontSize: '13px', color: '#6B7280'}}>
+                          {new Date(problem.created_at).toLocaleDateString('pt-PT')}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
