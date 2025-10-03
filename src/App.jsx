@@ -1062,14 +1062,16 @@ const ProblemCard = ({ problem, onClick, selected, getStatusColor, getStatusText
       <p style={{
         fontSize: '13px',
         color: '#6B7280',
-        marginBottom: '12px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        display: '-webkit-box',
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: 'vertical'
+        marginBottom: '12px'
       }}>
-        {problem.title}
+        {problem.problem_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || '-'}
+      </p>
+      <p style={{
+        fontSize: '12px',
+        color: '#9CA3AF',
+        marginBottom: '12px'
+      }}>
+        Enc: {problem.supplier_order} | {problem.product}
       </p>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <span style={{
@@ -1590,7 +1592,7 @@ const StorePanel = () => {
                         color: '#6B7280',
                         textTransform: 'uppercase'
                       }}>
-                        Prioridade
+                        Data Pedido
                       </th>
                       <th style={{
                         padding: '12px 16px',
@@ -1628,17 +1630,13 @@ const StorePanel = () => {
                               color: '#1F2937',
                               marginBottom: '4px'
                             }}>
-                              {problem.title}
+                              {problem.problem_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || '-'}
                             </p>
                             <p style={{
                               fontSize: '13px',
-                              color: '#6B7280',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              maxWidth: '300px'
+                              color: '#6B7280'
                             }}>
-                              {problem.description}
+                              Enc: {problem.supplier_order} | {problem.product}
                             </p>
                           </div>
                         </td>
@@ -1655,18 +1653,8 @@ const StorePanel = () => {
                             {getStatusText(problem.status)}
                           </span>
                         </td>
-                        <td style={{padding: '16px'}}>
-                          <span style={{
-                            padding: '4px 12px',
-                            borderRadius: '12px',
-                            fontSize: '12px',
-                            fontWeight: '500',
-                            background: getPriorityColor(problem.priority),
-                            color: getPriorityTextColor(problem.priority),
-                            textTransform: 'capitalize'
-                          }}>
-                            {problem.priority}
-                          </span>
+                        <td style={{padding: '16px', fontSize: '14px', color: '#6B7280'}}>
+                          {problem.order_date || '-'}
                         </td>
                         <td style={{padding: '16px', fontSize: '14px', color: '#6B7280'}}>
                           {problem.responses && problem.responses.length > 0 ? (
