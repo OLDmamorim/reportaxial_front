@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, AlertCircle, CheckCircle, Clock, Send } from 'lucide-react';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://reportaxialback-production.up.railway.app/api';
 
 const AuthContext = React.createContext();
 
