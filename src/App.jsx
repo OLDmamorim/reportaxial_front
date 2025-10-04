@@ -932,12 +932,37 @@ const SupplierPanel = () => {
                 borderRadius: '8px',
                 marginBottom: '24px'
               }}>
-                <h4 style={{fontSize: '14px', fontWeight: '600', color: '#1F2937', marginBottom: '8px'}}>
-                  {selectedProblem.title}
-                </h4>
-                <p style={{fontSize: '14px', color: '#6B7280', lineHeight: '1.5'}}>
-                  {selectedProblem.description}
-                </p>
+                <div style={{marginBottom: '12px'}}>
+                  <h4 style={{fontSize: '14px', fontWeight: '600', color: '#1F2937', marginBottom: '8px'}}>
+                    {selectedProblem.problem_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </h4>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px'}}>
+                    <div>
+                      <p style={{fontSize: '12px', color: '#6B7280', marginBottom: '4px'}}>Data do Pedido</p>
+                      <p style={{fontSize: '14px', color: '#1F2937', fontWeight: '500'}}>{selectedProblem.order_date}</p>
+                    </div>
+                    <div>
+                      <p style={{fontSize: '12px', color: '#6B7280', marginBottom: '4px'}}>Encomenda</p>
+                      <p style={{fontSize: '14px', color: '#1F2937', fontWeight: '500'}}>{selectedProblem.supplier_order}</p>
+                    </div>
+                    <div>
+                      <p style={{fontSize: '12px', color: '#6B7280', marginBottom: '4px'}}>Produto</p>
+                      <p style={{fontSize: '14px', color: '#1F2937', fontWeight: '500', textTransform: 'capitalize'}}>{selectedProblem.product}</p>
+                    </div>
+                    {selectedProblem.eurocode && (
+                      <div>
+                        <p style={{fontSize: '12px', color: '#6B7280', marginBottom: '4px'}}>Eurocode</p>
+                        <p style={{fontSize: '14px', color: '#1F2937', fontWeight: '500'}}>{selectedProblem.eurocode}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <p style={{fontSize: '12px', color: '#6B7280', marginBottom: '4px'}}>Observações</p>
+                  <p style={{fontSize: '14px', color: '#1F2937', lineHeight: '1.5'}}>
+                    {selectedProblem.observations}
+                  </p>
+                </div>
                 <div style={{marginTop: '12px', display: 'flex', gap: '8px', alignItems: 'center'}}>
                   <span style={{
                     padding: '4px 12px',
@@ -954,7 +979,7 @@ const SupplierPanel = () => {
                   </span>
                 </div>
               </div>
-
+              
               <h4 style={{fontSize: '14px', fontWeight: '600', color: '#1F2937', marginBottom: '12px'}}>
                 Histórico de Respostas
               </h4>
