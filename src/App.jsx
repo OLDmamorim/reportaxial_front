@@ -351,3 +351,291 @@ const CreateSupplierForm = ({ onSuccess }) => {
     </div>
   );
 };
+
+// APP.JSX - FRONTEND PARTE 2 CONTINUAÇÃO (Portal Reportaxial - CORRIGIDO)
+
+                border: 'none',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              {selectedProblem.response_text ? '📝 Atualizar Resposta' : '✉️ Enviar Resposta'}
+            </button>
+          </form>
+
+          {/* 🆕 BOTÃO MARCAR COMO RESOLVIDO - Só aparece se já tiver respondido e não estiver resolvido */}
+          {selectedProblem.response_text && selectedProblem.status !== 'resolved' && (
+            <button
+              onClick={() => handleResolve(selectedProblem.id)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: '#10B981',
+                color: 'white',
+                borderRadius: '8px',
+                border: 'none',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              ✅ Marcar como Resolvido
+            </button>
+          )}
+
+          {/* Indicador se já está resolvido */}
+          {selectedProblem.status === 'resolved' && (
+            <div style={{padding: '16px', background: '#D1FAE5', borderRadius: '8px', textAlign: 'center', border: '2px solid #10B981'}}>
+              <p style={{fontSize: '16px', fontWeight: '600', color: '#065F46'}}>✅ Problema Resolvido</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// 🆕 VISTA LOJA - MELHORADA (mostra status colorido)
+const StoreDashboard = ({ onLogout }) => {
+  const [problems, setProblems] = useState([]);
+  const [formData, setFormData] = useState({
+    problem_description: '',
+    order_date: '',
+    supplier_order: '',
+    product: '',
+    eurocode: '',
+    observations: ''
+  });
+
+  useEffect(() => {
+    fetchProblems();
+  }, []);
+
+  const fetchProblems = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const res = await fetch(`${API_URL}/problems/store`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setProblems(data);
+    } catch (error) {
+      console.error('Erro ao carregar problemas:', error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('authToken');
+      await fetch(`${API_URL}/problems`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(formData)
+      });
+      alert('Problema reportado com sucesso!');
+      setFormData({ problem_description: '', order_date: '', supplier_order: '', product: '', eurocode: '', observations: '' });
+      fetchProblems();
+    } catch (error) {
+      alert('Erro ao reportar problema');
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const styles = {
+      pending: { bg: '#FEF3C7', color: '#92400E', text: 'Pendente' },
+      in_progress: { bg: '#DBEAFE', color: '#1E40AF', text: 'Em Progresso' },
+      resolved: { bg: '#D1FAE5', color: '#065F46', text: 'Resolvido' }
+    };
+    const s = styles[status] || styles.pending;
+    return <span style={{padding: '6px 12px', borderRadius: '12px', fontSize: '12px', background: s.bg, color: s.color, fontWeight: '600'}}>{s.text}</span>;
+  };
+
+  return (
+    <div style={{minHeight: '100vh', background: '#F3F4F6', display: 'flex'}}>
+      {/* Formulário */}
+      <div style={{width: '40%', padding: '20px', overflowY: 'auto'}}>
+        <div style={{background: 'white', padding: '20px', borderRadius: '8px', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <div>
+              <h1 style={{fontSize: '20px', fontWeight: 'bold', color: '#1F2937'}}>EXPRESSGLASS</h1>
+              <p style={{fontSize: '12px', color: '#6B7280'}}>Braga</p>
+            </div>
+            <button onClick={onLogout} style={{padding: '8px 16px', background: '#EF4444', color: 'white', borderRadius: '6px', border: 'none', cursor: 'pointer'}}>Sair</button>
+          </div>
+        </div>
+
+        <div style={{background: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
+          <h2 style={{fontSize: '18px', fontWeight: '600', marginBottom: '20px'}}>Reportar Problema</h2>
+          
+          <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+            <div>
+              <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Problema a Reportar *</label>
+              <input
+                type="text"
+                value={formData.problem_description}
+                onChange={(e) => setFormData({...formData, problem_description: e.target.value})}
+                style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Data do Pedido *</label>
+              <input
+                type="date"
+                value={formData.order_date}
+                onChange={(e) => setFormData({...formData, order_date: e.target.value})}
+                style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Encomenda Fornecedor *</label>
+              <input
+                type="text"
+                placeholder="Apenas números"
+                value={formData.supplier_order}
+                onChange={(e) => setFormData({...formData, supplier_order: e.target.value})}
+                style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Produto *</label>
+              <input
+                type="text"
+                value={formData.product}
+                onChange={(e) => setFormData({...formData, product: e.target.value})}
+                style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Eurocode</label>
+              <input
+                type="text"
+                placeholder="Referência (opcional)"
+                value={formData.eurocode}
+                onChange={(e) => setFormData({...formData, eurocode: e.target.value})}
+                style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
+              />
+            </div>
+
+            <div>
+              <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Observações *</label>
+              <textarea
+                placeholder="Descreva o problema em detalhe..."
+                value={formData.observations}
+                onChange={(e) => setFormData({...formData, observations: e.target.value})}
+                style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px', minHeight: '100px'}}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              style={{
+                width: '100%',
+                padding: '14px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                borderRadius: '8px',
+                border: 'none',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              + Reportar Problema
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Lista de Problemas */}
+      <div style={{width: '60%', padding: '20px', overflowY: 'auto'}}>
+        <h2 style={{fontSize: '20px', fontWeight: '600', marginBottom: '16px', color: '#1F2937'}}>Meus Problemas ({problems.length})</h2>
+        
+        <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+          {problems.map(problem => (
+            <div key={problem.id} style={{background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px'}}>
+                <div style={{flex: 1}}>
+                  <h3 style={{fontSize: '16px', fontWeight: '600', color: '#1F2937', marginBottom: '4px'}}>{problem.problem_description}</h3>
+                  <p style={{fontSize: '12px', color: '#6B7280'}}>Enc: {problem.supplier_order} | {problem.product}</p>
+                </div>
+                {getStatusBadge(problem.status)}
+              </div>
+
+              <div style={{fontSize: '12px', color: '#6B7280', marginBottom: '12px'}}>
+                <strong>Data Pedido:</strong> {problem.order_date ? new Date(problem.order_date).toLocaleDateString('pt-PT') : 'N/A'}
+              </div>
+
+              {problem.response_text && (
+                <div style={{background: '#F3F4F6', padding: '12px', borderRadius: '6px', borderLeft: '3px solid #667eea'}}>
+                  <p style={{fontSize: '12px', fontWeight: '600', color: '#374151', marginBottom: '4px'}}>📩 Resposta do Fornecedor:</p>
+                  <p style={{fontSize: '13px', color: '#4B5563'}}>{problem.response_text}</p>
+                  <p style={{fontSize: '11px', color: '#9CA3AF', marginTop: '6px'}}>
+                    {problem.response_date ? new Date(problem.response_date).toLocaleString('pt-PT') : ''}
+                  </p>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {problems.length === 0 && (
+            <div style={{background: 'white', padding: '40px', borderRadius: '8px', textAlign: 'center', color: '#9CA3AF'}}>
+              <p>Nenhum problema reportado ainda.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Componente Principal
+const App = () => {
+  const [userType, setUserType] = useState(null);
+
+  useEffect(() => {
+    const savedUserType = localStorage.getItem('userType');
+    if (savedUserType) setUserType(savedUserType);
+  }, []);
+
+  const handleLogin = (type) => {
+    setUserType(type);
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    setUserType(null);
+  };
+
+  if (!userType) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={
+          userType === 'admin' ? <AdminDashboard onLogout={handleLogout} /> :
+          userType === 'supplier' ? <SupplierDashboard onLogout={handleLogout} /> :
+          <StoreDashboard onLogout={handleLogout} />
+        } />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
