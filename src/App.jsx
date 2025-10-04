@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-const API_URL = 'http://reportaxialback-production.up.railway.app'; // ⚠️ ALTERAR para URL do Railway
+const API_URL = 'https://reportaxialback-production.up.railway.app'; // ⚠️ ALTERAR para URL do Railway
 
 // ============ COMPONENTES DE AUTENTICAÇÃO ============
 
