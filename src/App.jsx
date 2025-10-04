@@ -1103,3 +1103,147 @@ const SupplierPanel = () => {
     </div>
   );
 };
+const ProblemCard = ({ problem, onClick, selected, getStatusColor, getStatusTextColor, getStatusText }) => {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        background: 'white',
+        padding: '16px',
+        borderRadius: '12px',
+        border: selected ? '2px solid #7c3aed' : '1px solid #E5E7EB',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        boxShadow: selected ? '0 4px 12px rgba(124, 58, 237, 0.15)' : '0 1px 3px rgba(0,0,0,0.1)'
+      }}
+    >
+      <h4 style={{
+        fontSize: '15px',
+        fontWeight: '600',
+        color: '#1F2937',
+        marginBottom: '8px'
+      }}>
+        {problem.store_name}
+      </h4>
+      <p style={{
+        fontSize: '13px',
+        color: '#6B7280',
+        marginBottom: '12px'
+      }}>
+        {problem.problem_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || '-'}
+      </p>
+      <p style={{
+        fontSize: '12px',
+        color: '#9CA3AF',
+        marginBottom: '12px'
+      }}>
+        Enc: {problem.supplier_order} | {problem.product}
+      </p>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <span style={{
+          padding: '4px 10px',
+          borderRadius: '12px',
+          fontSize: '11px',
+          fontWeight: '500',
+          background: getStatusColor(problem.status),
+          color: getStatusTextColor(problem.status)
+        }}>
+          {getStatusText(problem.status)}
+        </span>
+        {problem.response_count > 0 && (
+          <span style={{fontSize: '12px', color: '#9CA3AF'}}>
+            {problem.response_count} resposta{problem.response_count > 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const StorePanel = () => {
+  const { logout, token, user } = React.useContext(AuthContext);
+  const [problems, setProblems] = useState([]);
+  const [formData, setFormData] = useState({
+    problemType: '',
+    orderDate: '',
+    supplierOrder: '',
+    product: '',
+    eurocode: '',
+    observations: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    loadProblems();
+  }, []);
+
+  const loadProblems = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/store/problems`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProblems(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    try {
+      const res = await fetch(`${API_URL}/store/problems`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (res.ok) {
+        setSuccess('Problema reportado com sucesso!');
+        setFormData({ 
+          problemType: '',
+          orderDate: '',
+          supplierOrder: '',
+          product: '',
+          eurocode: '',
+          observations: ''
+        });
+        loadProblems();
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        const data = await res.json();
+        setError(data.error || 'Erro ao criar problema');
+      }
+    } catch (err) {
+      setError('Erro ao conectar ao servidor');
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'pending': return '#FEF3C7';
+      case 'in_progress': return '#DBEAFE';
+      case 'resolved': return '#D1FAE5';
+      case 'closed': return '#F3F4F6';
+      default: return '#F3F4F6';
+    }
+  };
+
+  const getStatusTextColor = (status) => {
+    switch (status) {
+      case 'pending': return '#92400E';
+      case 'in_progress': return '#1E40AF';
+      case 'resolved': return '#065F46';
+      case 'closed': return '#6B7280
