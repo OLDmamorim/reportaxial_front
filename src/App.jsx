@@ -1,3 +1,6 @@
+// COPIE TODO ESTE CÓDIGO PARA src/App.jsx NO GITHUB
+// Este é o código final com TODAS as atualizações
+
 import React, { useState, useEffect } from 'react';
 import { X, Plus, AlertCircle, CheckCircle, Clock, Send, Users, UserPlus, LogOut } from 'lucide-react';
 
@@ -689,6 +692,26 @@ const SupplierPanel = () => {
     }
   };
 
+  const handleMarkAsResolved = async () => {
+    if (!selectedProblem) return;
+
+    try {
+      const res = await fetch(`${API_URL}/supplier/problems/${selectedProblem.id}/resolve`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        loadProblemDetails(selectedProblem.id);
+        loadProblems();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'pending': return '#FEF3C7';
@@ -731,8 +754,8 @@ const SupplierPanel = () => {
         padding: '16px 24px'
       }}>
         <div style={{
-          maxWidth: '1600px',
-          margin: '0 auto',
+          width: '100%',
+          padding: '0 24px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
@@ -778,7 +801,6 @@ const SupplierPanel = () => {
         display: 'flex',
         width: '100%',
         margin: '0 auto',
-        display: 'flex',
         overflow: 'hidden'
       }}>
         <div style={{
@@ -848,6 +870,11 @@ const SupplierPanel = () => {
               </div>
 
               <div>
+                <h3 style={{
+                  fontSize: '14px',
+                  font
+              // CONTINUAÇÃO - Copie desde o início do artefact anterior até aqui
+
                 <h3 style={{
                   fontSize: '14px',
                   fontWeight: '600',
@@ -979,7 +1006,7 @@ const SupplierPanel = () => {
                   </span>
                 </div>
               </div>
-              
+
               <h4 style={{fontSize: '14px', fontWeight: '600', color: '#1F2937', marginBottom: '12px'}}>
                 Histórico de Respostas
               </h4>
@@ -1014,7 +1041,7 @@ const SupplierPanel = () => {
               borderTop: '1px solid #E5E7EB',
               background: '#F9FAFB'
             }}>
-              <form onSubmit={handleSubmitResponse}>
+              <form onSubmit={handleSubmitResponse} style={{marginBottom: '12px'}}>
                 <textarea
                   value={responseText}
                   onChange={(e) => setResponseText(e.target.value)}
@@ -1054,6 +1081,30 @@ const SupplierPanel = () => {
                   Enviar Resposta
                 </button>
               </form>
+              
+              {selectedProblem.status !== 'resolved' && selectedProblem.status !== 'closed' && (
+                <button
+                  onClick={handleMarkAsResolved}
+                  style={{
+                    width: '100%',
+                    background: '#10b981',
+                    color: 'white',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  <CheckCircle size={16} />
+                  Marcar como Resolvido
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -1061,867 +1112,3 @@ const SupplierPanel = () => {
     </div>
   );
 };
-
-const ProblemCard = ({ problem, onClick, selected, getStatusColor, getStatusTextColor, getStatusText }) => {
-  return (
-    <div
-      onClick={onClick}
-      style={{
-        background: 'white',
-        padding: '16px',
-        borderRadius: '12px',
-        border: selected ? '2px solid #7c3aed' : '1px solid #E5E7EB',
-        cursor: 'pointer',
-        transition: 'all 0.2s',
-        boxShadow: selected ? '0 4px 12px rgba(124, 58, 237, 0.15)' : '0 1px 3px rgba(0,0,0,0.1)'
-      }}
-    >
-      <h4 style={{
-        fontSize: '15px',
-        fontWeight: '600',
-        color: '#1F2937',
-        marginBottom: '8px'
-      }}>
-        {problem.store_name}
-      </h4>
-      <p style={{
-        fontSize: '13px',
-        color: '#6B7280',
-        marginBottom: '12px'
-      }}>
-        {problem.problem_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || '-'}
-      </p>
-      <p style={{
-        fontSize: '12px',
-        color: '#9CA3AF',
-        marginBottom: '12px'
-      }}>
-        Enc: {problem.supplier_order} | {problem.product}
-      </p>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        <span style={{
-          padding: '4px 10px',
-          borderRadius: '12px',
-          fontSize: '11px',
-          fontWeight: '500',
-          background: getStatusColor(problem.status),
-          color: getStatusTextColor(problem.status)
-        }}>
-          {getStatusText(problem.status)}
-        </span>
-        {problem.response_count > 0 && (
-          <span style={{fontSize: '12px', color: '#9CA3AF'}}>
-            {problem.response_count} resposta{problem.response_count > 1 ? 's' : ''}
-          </span>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const StorePanel = () => {
-  const { logout, token, user } = React.useContext(AuthContext);
-  const [problems, setProblems] = useState([]);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [formData, setFormData] = useState({
-    problemType: '',
-    orderDate: '',
-    supplierOrder: '',
-    product: '',
-    eurocode: '',
-    observations: ''
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  useEffect(() => {
-    loadProblems();
-  }, []);
-
-  const loadProblems = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/store/problems`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setProblems(data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-
-    try {
-      const res = await fetch(`${API_URL}/store/problems`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (res.ok) {
-        setSuccess('Problema reportado com sucesso!');
-        setFormData({ 
-          problemType: '',
-          orderDate: '',
-          supplierOrder: '',
-          product: '',
-          eurocode: '',
-          observations: ''
-        });
-        setShowCreateForm(false);
-        loadProblems();
-        setTimeout(() => setSuccess(''), 3000);
-      } else {
-        const data = await res.json();
-        setError(data.error || 'Erro ao criar problema');
-      }
-    } catch (err) {
-      setError('Erro ao conectar ao servidor');
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'pending': return '#FEF3C7';
-      case 'in_progress': return '#DBEAFE';
-      case 'resolved': return '#D1FAE5';
-      case 'closed': return '#F3F4F6';
-      default: return '#F3F4F6';
-    }
-  };
-
-  const getStatusTextColor = (status) => {
-    switch (status) {
-      case 'pending': return '#92400E';
-      case 'in_progress': return '#1E40AF';
-      case 'resolved': return '#065F46';
-      case 'closed': return '#6B7280';
-      default: return '#6B7280';
-    }
-  };
-
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'pending': return 'Pendente';
-      case 'in_progress': return 'Em Progresso';
-      case 'resolved': return 'Resolvido';
-      case 'closed': return 'Fechado';
-      default: return status;
-    }
-  };
-
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'urgent': return '#FEE2E2';
-      case 'high': return '#FED7AA';
-      case 'normal': return '#E0E7FF';
-      case 'low': return '#F3F4F6';
-      default: return '#F3F4F6';
-    }
-  };
-
-  const getPriorityTextColor = (priority) => {
-    switch (priority) {
-      case 'urgent': return '#991B1B';
-      case 'high': return '#9A3412';
-      case 'normal': return '#3730A3';
-      case 'low': return '#6B7280';
-      default: return '#6B7280';
-    }
-  };
-
-  return (
-    <div style={{minHeight: '100vh', background: '#F9FAFB', display: 'flex', flexDirection: 'column'}}>
-      <header style={{
-        background: 'white',
-        borderBottom: '1px solid #E5E7EB',
-        padding: '16px 24px'
-      }}>
-        <div style={{
-          width: '100%',
-          padding: '0 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div>
-            <h1 style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#1B2B4D',
-              margin: 0
-            }}>
-              <span style={{color: '#E31837'}}>EXPRESS</span>
-              <span style={{color: '#1B2B4D'}}>GLASS</span>
-            </h1>
-            <p style={{fontSize: '14px', color: '#6B7280', margin: '4px 0 0'}}>
-              {user.profile?.store_name || 'Minha Loja'}
-            </p>
-          </div>
-          <button
-            onClick={logout}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '10px 20px',
-              background: '#E31837',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}
-          >
-            <LogOut size={18} />
-            Sair
-          </button>
-        </div>
-      </header>
-
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        width: '100%',
-        margin: '0 auto',
-        padding: '24px',
-        gap: '24px'
-      }}>
-        <div style={{flex: '0 0 400px'}}>
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            padding: '24px',
-            position: 'sticky',
-            top: '24px'
-          }}>
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: '600',
-              color: '#1F2937',
-              marginBottom: '20px'
-            }}>
-              Reportar Problema
-            </h2>
-
-            {success && (
-              <div style={{
-                background: '#D1FAE5',
-                border: '1px solid #6EE7B7',
-                color: '#065F46',
-                padding: '12px',
-                borderRadius: '8px',
-                marginBottom: '20px',
-                fontSize: '14px'
-              }}>
-                {success}
-              </div>
-            )}
-
-            {error && (
-              <div style={{
-                background: '#FEE2E2',
-                border: '1px solid #FCA5A5',
-                color: '#991B1B',
-                padding: '12px',
-                borderRadius: '8px',
-                marginBottom: '20px',
-                fontSize: '14px'
-              }}>
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#374151',
-                  marginBottom: '8px'
-                }}>
-                  Problema a Reportar *
-                </label>
-                <select
-                  value={formData.problemType}
-                  onChange={(e) => setFormData({...formData, problemType: e.target.value})}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #E5E7EB',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    background: 'white',
-                    cursor: 'pointer'
-                  }}
-                  required
-                >
-                  <option value="">Selecione...</option>
-                  <option value="material_nao_chegou">Material não chegou</option>
-                  <option value="material_danificado">Material danificado</option>
-                  <option value="material_errado">Material errado</option>
-                  <option value="outro">Outro</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#374151',
-                  marginBottom: '8px'
-                }}>
-                  Data do Pedido *
-                </label>
-                <input
-                  type="text"
-                  value={formData.orderDate}
-                  onChange={(e) => {
-                    let value = e.target.value.replace(/\D/g, '');
-                    if (value.length >= 2) {
-                      value = value.slice(0, 2) + '/' + value.slice(2);
-                    }
-                    if (value.length >= 5) {
-                      value = value.slice(0, 5) + '/' + value.slice(5, 9);
-                    }
-                    setFormData({...formData, orderDate: value});
-                  }}
-                  placeholder="DD/MM/AAAA"
-                  maxLength="10"
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #E5E7EB',
-                    borderRadius: '8px',
-                    fontSize: '14px'
-                  }}
-                  required
-                />
-              </div>
-
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#374151',
-                  marginBottom: '8px'
-                }}>
-                  Encomenda Fornecedor *
-                </label>
-                <input
-                  type="text"
-                  value={formData.supplierOrder}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '');
-                    setFormData({...formData, supplierOrder: value});
-                  }}
-                  placeholder="Apenas números"
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #E5E7EB',
-                    borderRadius: '8px',
-                    fontSize: '14px'
-                  }}
-                  required
-                />
-              </div>
-
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#374151',
-                  marginBottom: '8px'
-                }}>
-                  Produto *
-                </label>
-                <select
-                  value={formData.product}
-                  onChange={(e) => setFormData({...formData, product: e.target.value})}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #E5E7EB',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    background: 'white',
-                    cursor: 'pointer'
-                  }}
-                  required
-                >
-                  <option value="">Selecione...</option>
-                  <option value="vidro">Vidro</option>
-                  <option value="friso">Friso</option>
-                  <option value="molas">Molas</option>
-                  <option value="outro">Outro</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#374151',
-                  marginBottom: '8px'
-                }}>
-                  Eurocode
-                </label>
-                <input
-                  type="text"
-                  value={formData.eurocode}
-                  onChange={(e) => setFormData({...formData, eurocode: e.target.value})}
-                  placeholder="Referência (opcional)"
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #E5E7EB',
-                    borderRadius: '8px',
-                    fontSize: '14px'
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#374151',
-                  marginBottom: '8px'
-                }}>
-                  Observações *
-                </label>
-                <textarea
-                  value={formData.observations}
-                  onChange={(e) => setFormData({...formData, observations: e.target.value})}
-                  placeholder="Descreva o problema em detalhe..."
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #E5E7EB',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    minHeight: '100px',
-                    resize: 'vertical',
-                    fontFamily: 'inherit'
-                  }}
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  background: '#7c3aed',
-                  color: 'white',
-                  padding: '14px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  marginTop: '8px'
-                }}
-              >
-                <Plus size={18} />
-                Reportar Problema
-              </button>
-            </form>
-          </div>
-        </div>
-
-        <div style={{flex: 1}}>
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            overflow: 'hidden'
-          }}>
-            <div style={{padding: '20px 24px', borderBottom: '1px solid #E5E7EB'}}>
-              <h2 style={{
-                fontSize: '20px',
-                fontWeight: '600',
-                color: '#1F2937',
-                margin: 0
-              }}>
-                Meus Problemas ({problems.length})
-              </h2>
-            </div>
-
-            {loading ? (
-              <div style={{padding: '40px', textAlign: 'center', color: '#6B7280'}}>
-                A carregar problemas...
-              </div>
-            ) : problems.length === 0 ? (
-              <div style={{padding: '40px', textAlign: 'center'}}>
-                <AlertCircle size={48} style={{color: '#D1D5DB', margin: '0 auto 16px'}} />
-                <p style={{color: '#6B7280', fontSize: '14px'}}>
-                  Ainda não reportou nenhum problema
-                </p>
-              </div>
-            ) : (
-              <div style={{overflowX: 'auto'}}>
-                <table style={{width: '100%', borderCollapse: 'collapse'}}>
-                  <thead>
-                    <tr style={{background: '#F9FAFB', borderBottom: '1px solid #E5E7EB'}}>
-                      <th style={{
-                        padding: '12px 16px',
-                        textAlign: 'left',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        color: '#6B7280',
-                        textTransform: 'uppercase'
-                      }}>
-                        Problema
-                      </th>
-                      <th style={{
-                        padding: '12px 16px',
-                        textAlign: 'left',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        color: '#6B7280',
-                        textTransform: 'uppercase'
-                      }}>
-                        Status
-                      </th>
-                      <th style={{
-                        padding: '12px 16px',
-                        textAlign: 'left',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        color: '#6B7280',
-                        textTransform: 'uppercase'
-                      }}>
-                        Data Pedido
-                      </th>
-                      <th style={{
-                        padding: '12px 16px',
-                        textAlign: 'left',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        color: '#6B7280',
-                        textTransform: 'uppercase'
-                      }}>
-                        Respostas
-                      </th>
-                      <th style={{
-                        padding: '12px 16px',
-                        textAlign: 'left',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        color: '#6B7280',
-                        textTransform: 'uppercase'
-                      }}>
-                        Data
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {problems.map((problem) => (
-                      <tr key={problem.id} style={{
-                        borderBottom: '1px solid #F3F4F6',
-                        cursor: 'pointer'
-                      }}>
-                        <td style={{padding: '16px'}}>
-                          <div>
-                            <p style={{
-                              fontSize: '14px',
-                              fontWeight: '500',
-                              color: '#1F2937',
-                              marginBottom: '4px'
-                            }}>
-                              {problem.problem_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || '-'}
-                            </p>
-                            <p style={{
-                              fontSize: '13px',
-                              color: '#6B7280'
-                            }}>
-                              Enc: {problem.supplier_order} | {problem.product}
-                            </p>
-                          </div>
-                        </td>
-                        <td style={{padding: '16px'}}>
-                          <span style={{
-                            padding: '4px 12px',
-                            borderRadius: '12px',
-                            fontSize: '12px',
-                            fontWeight: '500',
-                            background: getStatusColor(problem.status),
-                            color: getStatusTextColor(problem.status),
-                            whiteSpace: 'nowrap'
-                          }}>
-                            {getStatusText(problem.status)}
-                          </span>
-                        </td>
-                        <td style={{padding: '16px', fontSize: '14px', color: '#6B7280'}}>
-                          {problem.order_date || '-'}
-                        </td>
-                        <td style={{padding: '16px', fontSize: '14px', color: '#6B7280'}}>
-                          {problem.responses && problem.responses.length > 0 ? (
-                            <div>
-                              <p style={{fontSize: '13px', fontWeight: '500', color: '#3B82F6', marginBottom: '4px'}}>
-                                {problem.responses.length} resposta{problem.responses.length > 1 ? 's' : ''}
-                              </p>
-                              {problem.responses.slice(0, 1).map(r => (
-                                <p key={r.id} style={{
-                                  fontSize: '12px',
-                                  color: '#6B7280',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap',
-                                  maxWidth: '200px'
-                                }}>
-                                  {r.response_text}
-                                </p>
-                              ))}
-                            </div>
-                          ) : (
-                            <span style={{fontSize: '13px', color: '#9CA3AF', fontStyle: 'italic'}}>
-                              Sem respostas
-                            </span>
-                          )}
-                        </td>
-                        <td style={{padding: '16px', fontSize: '13px', color: '#6B7280'}}>
-                          {new Date(problem.created_at).toLocaleDateString('pt-PT')}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const RegisterStore = ({ onBack }) => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    storeName: '',
-    contactPerson: '',
-    phone: '',
-    address: ''
-  });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    try {
-      const res = await fetch(`${API_URL}/auth/register/store`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setSuccess(true);
-        setTimeout(() => onBack(), 2000);
-      } else {
-        setError(data.error);
-      }
-    } catch (err) {
-      setError('Erro ao conectar ao servidor');
-    }
-  };
-
-  if (success) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px'
-      }}>
-        <div style={{
-          background: 'white',
-          borderRadius: '16px',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-          padding: '40px',
-          width: '100%',
-          maxWidth: '400px',
-          textAlign: 'center'
-        }}>
-          <CheckCircle style={{width: '64px', height: '64px', color: '#10b981', margin: '0 auto 20px'}} />
-          <h3 style={{fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '10px'}}>Registo Concluído!</h3>
-          <p style={{color: '#666'}}>A redirecionar para o login...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px'
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '16px',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-        padding: '40px',
-        width: '100%',
-        maxWidth: '500px'
-      }}>
-        <h2 style={{fontSize: '28px', fontWeight: 'bold', color: '#1B2B4D', marginBottom: '30px', textAlign: 'center'}}>Registar Loja</h2>
-        
-        {error && (
-          <div style={{
-            background: '#FEE2E2',
-            border: '1px solid #FCA5A5',
-            color: '#991B1B',
-            padding: '12px',
-            borderRadius: '8px',
-            marginBottom: '20px',
-            fontSize: '14px'
-          }}>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
-          <div>
-            <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Nome da Loja</label>
-            <input
-              type="text"
-              value={formData.storeName}
-              onChange={(e) => setFormData({...formData, storeName: e.target.value})}
-              style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
-              required
-            />
-          </div>
-
-          <div>
-            <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Pessoa de Contacto</label>
-            <input
-              type="text"
-              value={formData.contactPerson}
-              onChange={(e) => setFormData({...formData, contactPerson: e.target.value})}
-              style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
-              required
-            />
-          </div>
-
-          <div>
-            <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Telefone</label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
-              style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
-              required
-            />
-          </div>
-
-          <div>
-            <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Morada</label>
-            <textarea
-              value={formData.address}
-              onChange={(e) => setFormData({...formData, address: e.target.value})}
-              style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
-              rows="2"
-            />
-          </div>
-
-          <div>
-            <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Email</label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-              style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
-              required
-            />
-          </div>
-
-          <div>
-            <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Password</label>
-            <input
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
-              style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            style={{
-              width: '100%',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              padding: '14px',
-              borderRadius: '8px',
-              border: 'none',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }}
-          >
-            Registar
-          </button>
-
-          <button
-            type="button"
-            onClick={onBack}
-            style={{
-              width: '100%',
-              background: 'white',
-              color: '#6B7280',
-              padding: '14px',
-              borderRadius: '8px',
-              border: '2px solid #E5E7EB',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }}
-          >
-            Voltar ao Login
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-export default App;
