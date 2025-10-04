@@ -1,602 +1,203 @@
+// APP.JSX - FRONTEND PARTE 1 (Portal Reportaxial - CORRIGIDO)
+
 import React, { useState, useEffect } from 'react';
-import { X, Plus, AlertCircle, CheckCircle, Clock, Send, Users, UserPlus, LogOut } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-const API_URL = 'https://reportaxialback-production.up.railway.app/api';
+const API_URL = 'http://localhost:5000/api';
 
-const AuthContext = React.createContext();
-
-function App() {
-  const [authState, setAuthState] = useState({
-    user: null,
-    token: localStorage.getItem('token')
-  });
-
-  useEffect(() => {
-    if (authState.token) {
-      const userData = JSON.parse(localStorage.getItem('user'));
-      setAuthState({ user: userData, token: authState.token });
-    }
-  }, []);
-
-  const login = (token, userData) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setAuthState({ token, user: userData });
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setAuthState({ user: null, token: null });
-  };
-
-  if (!authState.user) {
-    return (
-      <AuthContext.Provider value={{ user: authState.user, token: authState.token, login, logout }}>
-        <Login />
-      </AuthContext.Provider>
-    );
-  }
-
-  return (
-    <AuthContext.Provider value={{ user: authState.user, token: authState.token, login, logout }}>
-      {authState.user.userType === 'admin' && <AdminPanel />}
-      {authState.user.userType === 'supplier' && <SupplierPanel />}
-      {authState.user.userType === 'store' && <StorePanel />}
-    </AuthContext.Provider>
-  );
-}
-
-const Login = () => {
-  const { login } = React.useContext(AuthContext);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+// Componente de Login
+const Login = ({ onLogin }) => {
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [showRegister, setShowRegister] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
-
     try {
-      const res = await fetch(`${API_URL}/auth/login`, {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify(credentials)
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        login(data.token, data.user);
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userType', data.user.user_type);
+        localStorage.setItem('userId', data.user.id);
+        onLogin(data.user.user_type);
       } else {
-        setError(data.error);
+        alert(data.message || 'Erro no login');
       }
-    } catch (err) {
-      setError('Erro ao conectar ao servidor');
+    } catch (error) {
+      alert('Erro ao conectar ao servidor');
     }
   };
 
-  if (showRegister) {
-    return <RegisterStore onBack={() => setShowRegister(false)} />;
-  }
-
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '24px',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-        padding: '48px 40px',
-        width: '100%',
-        maxWidth: '400px'
-      }}>
-        <div style={{
-          textAlign: 'center',
-          marginBottom: '40px'
-        }}>
-          <div style={{
-            fontSize: '36px',
-            fontWeight: 'bold',
-            marginBottom: '32px',
-            letterSpacing: '-0.5px'
-          }}>
-            <span style={{color: '#E31837'}}>EXPRESS</span>
-            <span style={{color: '#1B2B4D'}}>GLASS</span>
-          </div>
-          <h2 style={{
-            fontSize: '28px',
-            fontWeight: '600',
-            color: '#1F2937',
-            marginBottom: '8px',
-            margin: '0 0 8px 0'
-          }}>Bem-vindo</h2>
-          <p style={{
-            color: '#6B7280',
-            fontSize: '15px',
-            margin: 0
-          }}>Faça login na sua conta</p>
+    <div style={{minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'}}>
+      <div style={{background: 'white', borderRadius: '16px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', padding: '48px', maxWidth: '440px', width: '100%'}}>
+        <div style={{textAlign: 'center', marginBottom: '32px'}}>
+          <h1 style={{fontSize: '32px', fontWeight: 'bold', color: '#1F2937', marginBottom: '8px'}}>EXPRESSGLASS</h1>
+          <p style={{color: '#6B7280', fontSize: '14px'}}>Braga</p>
         </div>
 
-        {error && (
-          <div style={{
-            background: '#FEE2E2',
-            border: '1px solid #FCA5A5',
-            color: '#991B1B',
-            padding: '12px',
-            borderRadius: '12px',
-            marginBottom: '24px',
-            fontSize: '14px'
-          }}>
-            {error}
-          </div>
+        {!showRegister ? (
+          <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
+            <div>
+              <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Email</label>
+              <input
+                type="email"
+                value={credentials.email}
+                onChange={(e) => setCredentials({...credentials, email: e.target.value})}
+                style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Password</label>
+              <input
+                type="password"
+                value={credentials.password}
+                onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+                style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                padding: '14px',
+                borderRadius: '8px',
+                border: 'none',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              Entrar
+            </button>
+
+            <p style={{textAlign: 'center', color: '#6B7280', fontSize: '14px'}}>
+              Não tem conta?{' '}
+              <button
+                type="button"
+                onClick={() => setShowRegister(true)}
+                style={{color: '#667eea', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline'}}
+              >
+                Criar conta
+              </button>
+            </p>
+          </form>
+        ) : (
+          <RegisterForm onBack={() => setShowRegister(false)} />
         )}
 
-        <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
-          <div>
-            <label style={{
-              display: 'block',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#1F2937',
-              marginBottom: '8px'
-            }}>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@portal.com"
-              style={{
-                width: '100%',
-                padding: '14px 16px',
-                background: '#F3F4F6',
-                border: 'none',
-                borderRadius: '12px',
-                fontSize: '15px',
-                outline: 'none',
-                color: '#1F2937'
-              }}
-              required
-            />
-          </div>
-
-          <div>
-            <label style={{
-              display: 'block',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#1F2937',
-              marginBottom: '8px'
-            }}>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              style={{
-                width: '100%',
-                padding: '14px 16px',
-                background: '#F3F4F6',
-                border: 'none',
-                borderRadius: '12px',
-                fontSize: '15px',
-                outline: 'none',
-                color: '#1F2937'
-              }}
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            style={{
-              width: '100%',
-              background: '#7c3aed',
-              color: 'white',
-              padding: '16px',
-              borderRadius: '12px',
-              border: 'none',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              marginTop: '8px'
-            }}
-          >
-            Entrar
-          </button>
-        </form>
-
-        <div style={{
-          marginTop: '28px',
-          textAlign: 'center',
-          fontSize: '14px',
-          color: '#6B7280'
-        }}>
-          Não tem conta?{' '}
-          <button
-            onClick={() => setShowRegister(true)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#7c3aed',
-              fontWeight: '500',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              padding: 0
-            }}
-          >
-            Criar conta
-          </button>
-        </div>
+        <p style={{textAlign: 'center', color: '#9CA3AF', fontSize: '12px', marginTop: '24px'}}>
+          Powered by Neon PostgreSQL
+        </p>
       </div>
     </div>
   );
 };
 
-const AdminPanel = () => {
-  const { logout, user, token } = React.useContext(AuthContext);
-  const [activeTab, setActiveTab] = useState('users');
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const loadUsers = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/admin/users`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUsers(data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
-  };
-
-  return (
-    <div style={{minHeight: '100vh', background: '#F9FAFB'}}>
-      <header style={{
-        background: 'white',
-        borderBottom: '1px solid #E5E7EB',
-        padding: '16px 24px'
-      }}>
-        <div style={{
-          width: '100%',
-          padding: '0 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div>
-            <h1 style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#1B2B4D',
-              margin: 0
-            }}>
-              <span style={{color: '#E31837'}}>EXPRESS</span>
-              <span style={{color: '#1B2B4D'}}>GLASS</span>
-            </h1>
-            <p style={{fontSize: '14px', color: '#6B7280', margin: '4px 0 0'}}>
-              Painel Administrativo
-            </p>
-          </div>
-          <button
-            onClick={logout}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '10px 20px',
-              background: '#E31837',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}
-          >
-            <LogOut size={18} />
-            Sair
-          </button>
-        </div>
-      </header>
-
-      <div style={{padding: '24px'}}>
-        <div style={{
-          background: 'white',
-          borderRadius: '12px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            borderBottom: '1px solid #E5E7EB',
-            padding: '0 24px',
-            display: 'flex',
-            gap: '32px'
-          }}>
-            <button
-              onClick={() => setActiveTab('users')}
-              style={{
-                padding: '16px 0',
-                background: 'none',
-                border: 'none',
-                borderBottom: activeTab === 'users' ? '2px solid #667eea' : '2px solid transparent',
-                color: activeTab === 'users' ? '#667eea' : '#6B7280',
-                fontWeight: '500',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <Users size={18} />
-              Utilizadores
-            </button>
-            <button
-              onClick={() => setActiveTab('suppliers')}
-              style={{
-                padding: '16px 0',
-                background: 'none',
-                border: 'none',
-                borderBottom: activeTab === 'suppliers' ? '2px solid #667eea' : '2px solid transparent',
-                color: activeTab === 'suppliers' ? '#667eea' : '#6B7280',
-                fontWeight: '500',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <UserPlus size={18} />
-              Criar Fornecedor
-            </button>
-          </div>
-
-          <div style={{padding: '24px'}}>
-            {activeTab === 'users' && (
-              <div>
-                <h2 style={{fontSize: '20px', fontWeight: '600', color: '#1F2937', marginBottom: '20px'}}>
-                  Lista de Utilizadores
-                </h2>
-                {loading ? (
-                  <p style={{color: '#6B7280'}}>A carregar...</p>
-                ) : (
-                  <div style={{overflowX: 'auto'}}>
-                    <table style={{width: '100%', borderCollapse: 'collapse'}}>
-                      <thead>
-                        <tr style={{borderBottom: '2px solid #E5E7EB'}}>
-                          <th style={{padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase'}}>Email</th>
-                          <th style={{padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase'}}>Tipo</th>
-                          <th style={{padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase'}}>Nome</th>
-                          <th style={{padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase'}}>Data</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {users.map((u) => (
-                          <tr key={u.id} style={{borderBottom: '1px solid #F3F4F6'}}>
-                            <td style={{padding: '16px 12px', fontSize: '14px', color: '#1F2937'}}>{u.email}</td>
-                            <td style={{padding: '16px 12px'}}>
-                              <span style={{
-                                padding: '4px 12px',
-                                borderRadius: '12px',
-                                fontSize: '12px',
-                                fontWeight: '500',
-                                background: u.user_type === 'admin' ? '#FEE2E2' : u.user_type === 'supplier' ? '#DBEAFE' : '#D1FAE5',
-                                color: u.user_type === 'admin' ? '#991B1B' : u.user_type === 'supplier' ? '#1E40AF' : '#065F46'
-                              }}>
-                                {u.user_type}
-                              </span>
-                            </td>
-                            <td style={{padding: '16px 12px', fontSize: '14px', color: '#6B7280'}}>
-                              {u.store_name || u.supplier_name || '-'}
-                            </td>
-                            <td style={{padding: '16px 12px', fontSize: '14px', color: '#6B7280'}}>
-                              {new Date(u.created_at).toLocaleDateString('pt-PT')}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'suppliers' && <CreateSupplierForm onSuccess={loadUsers} />}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const CreateSupplierForm = ({ onSuccess }) => {
-  const { token } = React.useContext(AuthContext);
+// Componente de Registo
+const RegisterForm = ({ onBack }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    supplierName: '',
+    storeName: '',
     contactPerson: '',
-    phone: ''
+    phone: '',
+    address: ''
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess(false);
-
     try {
-      const res = await fetch(`${API_URL}/admin/suppliers`, {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setSuccess(true);
-        setFormData({
-          email: '',
-          password: '',
-          supplierName: '',
-          contactPerson: '',
-          phone: ''
-        });
-        onSuccess();
+      const data = await response.json();
+      if (response.ok) {
+        alert('Registo efetuado com sucesso! Pode fazer login.');
+        onBack();
       } else {
-        setError(data.error);
+        alert(data.message || 'Erro no registo');
       }
-    } catch (err) {
-      setError('Erro ao criar fornecedor');
+    } catch (error) {
+      alert('Erro ao conectar ao servidor');
     }
   };
 
   return (
-    <div style={{maxWidth: '600px'}}>
-      <h2 style={{fontSize: '20px', fontWeight: '600', color: '#1F2937', marginBottom: '20px'}}>
-        Criar Novo Fornecedor
-      </h2>
-
-      {success && (
-        <div style={{
-          background: '#D1FAE5',
-          border: '1px solid #6EE7B7',
-          color: '#065F46',
-          padding: '12px',
-          borderRadius: '8px',
-          marginBottom: '20px'
-        }}>
-          Fornecedor criado com sucesso!
-        </div>
-      )}
-
-      {error && (
-        <div style={{
-          background: '#FEE2E2',
-          border: '1px solid #FCA5A5',
-          color: '#991B1B',
-          padding: '12px',
-          borderRadius: '8px',
-          marginBottom: '20px'
-        }}>
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
+    <div>
+      <h2 style={{fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '24px', textAlign: 'center'}}>Registo de Loja</h2>
+      <form onSubmit={handleRegister} style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
         <div>
-          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>
-            Nome do Fornecedor
-          </label>
+          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Nome da Loja</label>
           <input
             type="text"
-            value={formData.supplierName}
-            onChange={(e) => setFormData({...formData, supplierName: e.target.value})}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              border: '2px solid #E5E7EB',
-              borderRadius: '8px',
-              fontSize: '14px'
-            }}
+            value={formData.storeName}
+            onChange={(e) => setFormData({...formData, storeName: e.target.value})}
+            style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
             required
           />
         </div>
 
         <div>
-          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>
-            Pessoa de Contacto
-          </label>
+          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Pessoa de Contacto</label>
           <input
             type="text"
             value={formData.contactPerson}
             onChange={(e) => setFormData({...formData, contactPerson: e.target.value})}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              border: '2px solid #E5E7EB',
-              borderRadius: '8px',
-              fontSize: '14px'
-            }}
-            required
+            style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
           />
         </div>
 
         <div>
-          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>
-            Telefone
-          </label>
+          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Telefone</label>
           <input
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData({...formData, phone: e.target.value})}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              border: '2px solid #E5E7EB',
-              borderRadius: '8px',
-              fontSize: '14px'
-            }}
-            required
+            style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
           />
         </div>
 
         <div>
-          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>
-            Email
-          </label>
+          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Morada</label>
+          <textarea
+            value={formData.address}
+            onChange={(e) => setFormData({...formData, address: e.target.value})}
+            style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
+            rows="2"
+          />
+        </div>
+
+        <div>
+          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Email</label>
           <input
             type="email"
             value={formData.email}
             onChange={(e) => setFormData({...formData, email: e.target.value})}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              border: '2px solid #E5E7EB',
-              borderRadius: '8px',
-              fontSize: '14px'
-            }}
+            style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
             required
           />
         </div>
 
         <div>
-          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>
-            Password
-          </label>
+          <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Password</label>
           <input
             type="password"
             value={formData.password}
             onChange={(e) => setFormData({...formData, password: e.target.value})}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              border: '2px solid #E5E7EB',
-              borderRadius: '8px',
-              fontSize: '14px'
-            }}
+            style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
             required
           />
         </div>
@@ -612,638 +213,141 @@ const CreateSupplierForm = ({ onSuccess }) => {
             border: 'none',
             fontSize: '16px',
             fontWeight: '600',
-            cursor: 'pointer',
-            marginTop: '10px'
+            cursor: 'pointer'
           }}
         >
-          Criar Fornecedor
+          Registar
+        </button>
+
+        <button
+          type="button"
+          onClick={onBack}
+          style={{
+            width: '100%',
+            background: 'white',
+            color: '#6B7280',
+            padding: '14px',
+            borderRadius: '8px',
+            border: '2px solid #E5E7EB',
+            fontSize: '16px',
+            fontWeight: '600',
+            cursor: 'pointer'
+          }}
+        >
+          Voltar ao Login
         </button>
       </form>
     </div>
   );
 };
 
-const SupplierPanel = () => {
-  const { logout, token } = React.useContext(AuthContext);
-  const [problems, setProblems] = useState([]);
-  const [selectedProblem, setSelectedProblem] = useState(null);
-  const [responseText, setResponseText] = useState('');
-  const [loading, setLoading] = useState(false);
+// Vista Admin
+const AdminDashboard = ({ onLogout }) => {
+  const [users, setUsers] = useState([]);
+  const [showCreateSupplier, setShowCreateSupplier] = useState(false);
 
   useEffect(() => {
-    loadProblems();
+    fetchUsers();
   }, []);
 
-  const loadProblems = async () => {
-    setLoading(true);
+  const fetchUsers = async () => {
     try {
-      const res = await fetch(`${API_URL}/supplier/problems`, {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${API_URL}/admin/users`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (res.ok) {
-        const data = await res.json();
-        setProblems(data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
-  };
-
-  const loadProblemDetails = async (problemId) => {
-    try {
-      const res = await fetch(`${API_URL}/supplier/problems/${problemId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setSelectedProblem(data);
-      }
-    } catch (err) {
-      console.error(err);
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Erro ao carregar utilizadores:', error);
     }
   };
-
-  const handleSubmitResponse = async (e) => {
-    e.preventDefault();
-    if (!responseText.trim() || !selectedProblem) return;
-
-    try {
-      const res = await fetch(`${API_URL}/supplier/problems/${selectedProblem.id}/responses`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ responseText })
-      });
-
-      if (res.ok) {
-        setResponseText('');
-        loadProblemDetails(selectedProblem.id);
-        loadProblems();
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleMarkAsResolved = async () => {
-    if (!selectedProblem) return;
-
-    try {
-      const res = await fetch(`${API_URL}/supplier/problems/${selectedProblem.id}/resolve`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (res.ok) {
-        loadProblemDetails(selectedProblem.id);
-        loadProblems();
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'pending': return '#FEF3C7';
-      case 'in_progress': return '#DBEAFE';
-      case 'resolved': return '#D1FAE5';
-      case 'closed': return '#F3F4F6';
-      default: return '#F3F4F6';
-    }
-  };
-
-  const getStatusTextColor = (status) => {
-    switch (status) {
-      case 'pending': return '#92400E';
-      case 'in_progress': return '#1E40AF';
-      case 'resolved': return '#065F46';
-      case 'closed': return '#6B7280';
-      default: return '#6B7280';
-    }
-  };
-
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'pending': return 'Pendente';
-      case 'in_progress': return 'Em Progresso';
-      case 'resolved': return 'Resolvido';
-      case 'closed': return 'Fechado';
-      default: return status;
-    }
-  };
-
-  const pendingProblems = problems.filter(p => p.status === 'pending');
-  const inProgressProblems = problems.filter(p => p.status === 'in_progress');
-  const resolvedProblems = problems.filter(p => p.status === 'resolved' || p.status === 'closed');
 
   return (
-    <div style={{minHeight: '100vh', background: '#F9FAFB', display: 'flex', flexDirection: 'column'}}>
-      <header style={{
-        background: 'white',
-        borderBottom: '1px solid #E5E7EB',
-        padding: '16px 24px'
-      }}>
-        <div style={{
-          width: '100%',
-          padding: '0 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div>
-            <h1 style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#1B2B4D',
-              margin: 0
-            }}>
-              <span style={{color: '#E31837'}}>EXPRESS</span>
-              <span style={{color: '#1B2B4D'}}>GLASS</span>
-            </h1>
-            <p style={{fontSize: '14px', color: '#6B7280', margin: '4px 0 0'}}>
-              Monitor de Pedidos
-            </p>
+    <div style={{minHeight: '100vh', background: '#F3F4F6', padding: '20px'}}>
+      <div style={{maxWidth: '1200px', margin: '0 auto'}}>
+        <div style={{background: 'white', padding: '20px', borderRadius: '8px', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <h1 style={{fontSize: '24px', fontWeight: 'bold', color: '#1F2937'}}>Painel Admin - ExpressGlass</h1>
+            <button onClick={onLogout} style={{padding: '8px 16px', background: '#EF4444', color: 'white', borderRadius: '6px', border: 'none', cursor: 'pointer'}}>Sair</button>
           </div>
-          <button
-            onClick={logout}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '10px 20px',
-              background: '#E31837',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}
-          >
-            <LogOut size={18} />
-            Sair
-          </button>
         </div>
-      </header>
 
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        width: '100%',
-        margin: '0 auto',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          flex: selectedProblem ? '1' : '1',
-          padding: '24px',
-          overflowY: 'auto',
-          transition: 'flex 0.3s'
-        }}>
-          {loading ? (
-            <p style={{color: '#6B7280', textAlign: 'center', marginTop: '40px'}}>A carregar pedidos...</p>
-          ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: selectedProblem ? 'repeat(auto-fill, minmax(280px, 1fr))' : 'repeat(auto-fill, minmax(350px, 1fr))',
-              gap: '20px'
-            }}>
-              <div>
-                <h3 style={{
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#6B7280',
-                  marginBottom: '12px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Pendentes ({pendingProblems.length})
-                </h3>
-                <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
-                  {pendingProblems.map(problem => (
-                    <ProblemCard 
-                      key={problem.id} 
-                      problem={problem} 
-                      onClick={() => loadProblemDetails(problem.id)}
-                      selected={selectedProblem?.id === problem.id}
-                      getStatusColor={getStatusColor}
-                      getStatusTextColor={getStatusTextColor}
-                      getStatusText={getStatusText}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 style={{
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#6B7280',
-                  marginBottom: '12px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Em Progresso ({inProgressProblems.length})
-                </h3>
-                <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
-                  {inProgressProblems.map(problem => (
-                    <ProblemCard 
-                      key={problem.id} 
-                      problem={problem} 
-                      onClick={() => loadProblemDetails(problem.id)}
-                      selected={selectedProblem?.id === problem.id}
-                      getStatusColor={getStatusColor}
-                      getStatusTextColor={getStatusTextColor}
-                      getStatusText={getStatusText}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 style={{
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#6B7280',
-                  marginBottom: '12px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Resolvidos ({resolvedProblems.length})
-                </h3>
-                <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
-                  {resolvedProblems.map(problem => (
-                    <ProblemCard 
-                      key={problem.id} 
-                      problem={problem} 
-                      onClick={() => loadProblemDetails(problem.id)}
-                      selected={selectedProblem?.id === problem.id}
-                      getStatusColor={getStatusColor}
-                      getStatusTextColor={getStatusTextColor}
-                      getStatusText={getStatusText}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+        <div style={{background: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+            <h2 style={{fontSize: '20px', fontWeight: '600'}}>Gestão de Utilizadores</h2>
+            <button
+              onClick={() => setShowCreateSupplier(!showCreateSupplier)}
+              style={{padding: '10px 20px', background: '#667eea', color: 'white', borderRadius: '6px', border: 'none', cursor: 'pointer'}}
+            >
+              + Criar Fornecedor
+            </button>
           </div>
 
-        {selectedProblem && (
-          <div style={{
-            flex: '0 0 500px',
-            background: 'white',
-            borderLeft: '1px solid #E5E7EB',
-            display: 'flex',
-            flexDirection: 'column',
-            maxHeight: 'calc(100vh - 73px)'
-          }}>
-            <div style={{
-              padding: '20px 24px',
-              borderBottom: '1px solid #E5E7EB',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <h2 style={{fontSize: '18px', fontWeight: '600', color: '#1F2937', margin: 0}}>
-                Detalhes do Pedido
-              </h2>
-              <button
-                onClick={() => setSelectedProblem(null)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  color: '#6B7280'
-                }}
-              >
-                <X size={20} />
-              </button>
-            </div>
+          {showCreateSupplier && <CreateSupplierForm onSuccess={() => { setShowCreateSupplier(false); fetchUsers(); }} />}
 
-            <div style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '24px'
-            }}>
-              <div style={{marginBottom: '24px'}}>
-                <h3 style={{fontSize: '16px', fontWeight: '600', color: '#1F2937', marginBottom: '8px'}}>
-                  {selectedProblem.store_name}
-                </h3>
-                <p style={{fontSize: '14px', color: '#6B7280', marginBottom: '4px'}}>
-                  Contacto: {selectedProblem.contact_person}
-                </p>
-                <p style={{fontSize: '14px', color: '#6B7280'}}>
-                  Tel: {selectedProblem.phone}
-                </p>
-              </div>
-
-              <div style={{
-                background: '#F9FAFB',
-                padding: '16px',
-                borderRadius: '8px',
-                marginBottom: '24px'
-              }}>
-                <div style={{marginBottom: '12px'}}>
-                  <h4 style={{fontSize: '14px', fontWeight: '600', color: '#1F2937', marginBottom: '8px'}}>
-                    {selectedProblem.problem_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </h4>
-                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px'}}>
-                    <div>
-                      <p style={{fontSize: '12px', color: '#6B7280', marginBottom: '4px'}}>Data do Pedido</p>
-                      <p style={{fontSize: '14px', color: '#1F2937', fontWeight: '500'}}>{selectedProblem.order_date}</p>
-                    </div>
-                    <div>
-                      <p style={{fontSize: '12px', color: '#6B7280', marginBottom: '4px'}}>Encomenda</p>
-                      <p style={{fontSize: '14px', color: '#1F2937', fontWeight: '500'}}>{selectedProblem.supplier_order}</p>
-                    </div>
-                    <div>
-                      <p style={{fontSize: '12px', color: '#6B7280', marginBottom: '4px'}}>Produto</p>
-                      <p style={{fontSize: '14px', color: '#1F2937', fontWeight: '500', textTransform: 'capitalize'}}>{selectedProblem.product}</p>
-                    </div>
-                    {selectedProblem.eurocode && (
-                      <div>
-                        <p style={{fontSize: '12px', color: '#6B7280', marginBottom: '4px'}}>Eurocode</p>
-                        <p style={{fontSize: '14px', color: '#1F2937', fontWeight: '500'}}>{selectedProblem.eurocode}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <p style={{fontSize: '12px', color: '#6B7280', marginBottom: '4px'}}>Observações</p>
-                  <p style={{fontSize: '14px', color: '#1F2937', lineHeight: '1.5'}}>
-                    {selectedProblem.observations}
-                  </p>
-                </div>
-                <div style={{marginTop: '12px', display: 'flex', gap: '8px', alignItems: 'center'}}>
-                  <span style={{
-                    padding: '4px 12px',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    background: getStatusColor(selectedProblem.status),
-                    color: getStatusTextColor(selectedProblem.status)
-                  }}>
-                    {getStatusText(selectedProblem.status)}
-                  </span>
-                  <span style={{fontSize: '12px', color: '#9CA3AF'}}>
-                    {new Date(selectedProblem.created_at).toLocaleString('pt-PT')}
-                  </span>
-                </div>
-              </div>
-
-              <h4 style={{fontSize: '14px', fontWeight: '600', color: '#1F2937', marginBottom: '12px'}}>
-                Histórico de Respostas
-              </h4>
-
-              {selectedProblem.responses && selectedProblem.responses.length > 0 ? (
-                <div style={{display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px'}}>
-                  {selectedProblem.responses.map((response) => (
-                    <div key={response.id} style={{
-                      background: '#F0F9FF',
-                      padding: '12px',
-                      borderRadius: '8px',
-                      borderLeft: '3px solid #3B82F6'
-                    }}>
-                      <p style={{fontSize: '13px', color: '#1F2937', marginBottom: '8px'}}>
-                        {response.response_text}
-                      </p>
-                      <p style={{fontSize: '11px', color: '#6B7280'}}>
-                        {response.supplier_name} • {new Date(response.created_at).toLocaleString('pt-PT')}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p style={{fontSize: '14px', color: '#9CA3AF', marginBottom: '24px', fontStyle: 'italic'}}>
-                  Ainda sem respostas
-                </p>
-              )}
-            </div>
-
-            <div style={{
-              padding: '20px 24px',
-              borderTop: '1px solid #E5E7EB',
-              background: '#F9FAFB'
-            }}>
-              <form onSubmit={handleSubmitResponse} style={{marginBottom: '12px'}}>
-                <textarea
-                  value={responseText}
-                  onChange={(e) => setResponseText(e.target.value)}
-                  placeholder="Escreva a sua resposta..."
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #E5E7EB',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    resize: 'vertical',
-                    minHeight: '80px',
-                    marginBottom: '12px',
-                    fontFamily: 'inherit'
-                  }}
-                  required
-                />
-                <button
-                  type="submit"
-                  style={{
-                    width: '100%',
-                    background: '#7c3aed',
-                    color: 'white',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px'
-                  }}
-                >
-                  <Send size={16} />
-                  Enviar Resposta
-                </button>
-              </form>
-              
-              {selectedProblem.status !== 'resolved' && selectedProblem.status !== 'closed' && (
-                <button
-                  onClick={handleMarkAsResolved}
-                  style={{
-                    width: '100%',
-                    background: '#10b981',
-                    color: 'white',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px'
-                  }}
-                >
-                  <CheckCircle size={16} />
-                  Marcar como Resolvido
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-const ProblemCard = ({ problem, onClick, selected, getStatusColor, getStatusTextColor, getStatusText }) => {
-  return (
-    <div
-      onClick={onClick}
-      style={{
-        background: 'white',
-        padding: '16px',
-        borderRadius: '12px',
-        border: selected ? '2px solid #7c3aed' : '1px solid #E5E7EB',
-        cursor: 'pointer',
-        transition: 'all 0.2s',
-        boxShadow: selected ? '0 4px 12px rgba(124, 58, 237, 0.15)' : '0 1px 3px rgba(0,0,0,0.1)'
-      }}
-    >
-      <h4 style={{
-        fontSize: '15px',
-        fontWeight: '600',
-        color: '#1F2937',
-        marginBottom: '8px'
-      }}>
-        {problem.store_name}
-      </h4>
-      <p style={{
-        fontSize: '13px',
-        color: '#6B7280',
-        marginBottom: '12px'
-      }}>
-        {problem.problem_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || '-'}
-      </p>
-      <p style={{
-        fontSize: '12px',
-        color: '#9CA3AF',
-        marginBottom: '12px'
-      }}>
-        Enc: {problem.supplier_order} | {problem.product}
-      </p>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        <span style={{
-          padding: '4px 10px',
-          borderRadius: '12px',
-          fontSize: '11px',
-          fontWeight: '500',
-          background: getStatusColor(problem.status),
-          color: getStatusTextColor(problem.status)
-        }}>
-          {getStatusText(problem.status)}
-        </span>
-        {problem.response_count > 0 && (
-          <span style={{fontSize: '12px', color: '#9CA3AF'}}>
-            {problem.response_count} resposta{problem.response_count > 1 ? 's' : ''}
-          </span>
-        )}
+          <table style={{width: '100%', borderCollapse: 'collapse'}}>
+            <thead>
+              <tr style={{background: '#F9FAFB', borderBottom: '2px solid #E5E7EB'}}>
+                <th style={{padding: '12px', textAlign: 'left', fontWeight: '600'}}>Email</th>
+                <th style={{padding: '12px', textAlign: 'left', fontWeight: '600'}}>Tipo</th>
+                <th style={{padding: '12px', textAlign: 'left', fontWeight: '600'}}>Status</th>
+                <th style={{padding: '12px', textAlign: 'left', fontWeight: '600'}}>Data</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map(user => (
+                <tr key={user.id} style={{borderBottom: '1px solid #E5E7EB'}}>
+                  <td style={{padding: '12px'}}>{user.email}</td>
+                  <td style={{padding: '12px'}}>
+                    <span style={{padding: '4px 12px', borderRadius: '12px', fontSize: '12px', background: user.user_type === 'admin' ? '#FEE2E2' : user.user_type === 'supplier' ? '#DBEAFE' : '#D1FAE5', color: user.user_type === 'admin' ? '#991B1B' : user.user_type === 'supplier' ? '#1E40AF' : '#065F46'}}>
+                      {user.user_type}
+                    </span>
+                  </td>
+                  <td style={{padding: '12px'}}>{user.is_active ? '✅ Ativo' : '❌ Inativo'}</td>
+                  <td style={{padding: '12px'}}>{new Date(user.created_at).toLocaleDateString('pt-PT')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 };
 
-const StorePanel = () => {
-  const { logout, token, user } = React.useContext(AuthContext);
-  const [problems, setProblems] = useState([]);
-  const [formData, setFormData] = useState({
-    problemType: '',
-    orderDate: '',
-    supplierOrder: '',
-    product: '',
-    eurocode: '',
-    observations: ''
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  useEffect(() => {
-    loadProblems();
-  }, []);
-
-  const loadProblems = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/store/problems`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setProblems(data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
-  };
+// Criar Fornecedor
+const CreateSupplierForm = ({ onSuccess }) => {
+  const [formData, setFormData] = useState({ email: '', password: '', supplierName: '', contactPerson: '' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-
     try {
-      const res = await fetch(`${API_URL}/store/problems`, {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${API_URL}/admin/create-supplier`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(formData)
       });
-
-      if (res.ok) {
-        setSuccess('Problema reportado com sucesso!');
-        setFormData({ 
-          problemType: '',
-          orderDate: '',
-          supplierOrder: '',
-          product: '',
-          eurocode: '',
-          observations: ''
-        });
-        loadProblems();
-        setTimeout(() => setSuccess(''), 3000);
-      } else {
-        const data = await res.json();
-        setError(data.error || 'Erro ao criar problema');
+      if (response.ok) {
+        alert('Fornecedor criado com sucesso!');
+        onSuccess();
       }
-    } catch (err) {
-      setError('Erro ao conectar ao servidor');
+    } catch (error) {
+      alert('Erro ao criar fornecedor');
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'pending': return '#FEF3C7';
-      case 'in_progress': return '#DBEAFE';
-      case 'resolved': return '#D1FAE5';
-      case 'closed': return '#F3F4F6';
-      default: return '#F3F4F6';
-    }
-  };
-
-  const getStatusTextColor = (status) => {
-    switch (status) {
-      case 'pending': return '#92400E';
-      case 'in_progress': return '#1E40AF';
-      case 'resolved': return '#065F46';
-      case 'closed': return '#6B7280
+  return (
+    <div style={{background: '#F9FAFB', padding: '20px', borderRadius: '8px', marginBottom: '20px'}}>
+      <h3 style={{fontSize: '18px', fontWeight: '600', marginBottom: '16px'}}>Novo Fornecedor</h3>
+      <form onSubmit={handleSubmit} style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+        <input type="email" placeholder="Email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} style={{padding: '10px', border: '1px solid #D1D5DB', borderRadius: '6px'}} required />
+        <input type="password" placeholder="Password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} style={{padding: '10px', border: '1px solid #D1D5DB', borderRadius: '6px'}} required />
+        <input type="text" placeholder="Nome Fornecedor" value={formData.supplierName} onChange={(e) => setFormData({...formData, supplierName: e.target.value})} style={{padding: '10px', border: '1px solid #D1D5DB', borderRadius: '6px'}} required />
+        <input type="text" placeholder="Pessoa Contacto" value={formData.contactPerson} onChange={(e) => setFormData({...formData, contactPerson: e.target.value})} style={{padding: '10px', border: '1px solid #D1D5DB', borderRadius: '6px'}} />
+        <button type="submit" style={{gridColumn: '1 / -1', padding: '10px', background: '#10B981', color: 'white', borderRadius: '6px', border: 'none', cursor: 'pointer'}}>Criar</button>
+      </form>
+    </div>
+  );
+};
