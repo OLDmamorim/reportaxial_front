@@ -1,6 +1,3 @@
-// COPIE TODO ESTE CÓDIGO PARA src/App.jsx NO GITHUB
-// Este é o código final com TODAS as atualizações
-
 import React, { useState, useEffect } from 'react';
 import { X, Plus, AlertCircle, CheckCircle, Clock, Send, Users, UserPlus, LogOut } from 'lucide-react';
 
@@ -248,7 +245,6 @@ const AdminPanel = () => {
   const { logout, user, token } = React.useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
-  const [showCreateSupplier, setShowCreateSupplier] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -872,11 +868,6 @@ const SupplierPanel = () => {
               <div>
                 <h3 style={{
                   fontSize: '14px',
-                  font
-              // CONTINUAÇÃO - Copie desde o início do artefact anterior até aqui
-
-                <h3 style={{
-                  fontSize: '14px',
                   fontWeight: '600',
                   color: '#6B7280',
                   marginBottom: '12px',
@@ -901,7 +892,7 @@ const SupplierPanel = () => {
               </div>
             </div>
           )}
-        </div>
+          </div>
 
         {selectedProblem && (
           <div style={{
