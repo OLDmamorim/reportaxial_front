@@ -366,22 +366,27 @@ const DashboardHeader = ({ title, onLogout }) => (
 
 // ============ VISTA LOJA ============
 
+
+// ============ VISTA LOJA - REDESENHADA ============
+
 const StoreDashboard = ({ onLogout }) => {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterPriority, setFilterPriority] = useState('all');
-  const [filteredProblems, setFilteredProblems] = useState([]);
   const [formData, setFormData] = useState({
-    problem_description: '',
+    problem_type: '',
     order_date: '',
     supplier_order: '',
-    product: '',
     eurocode: '',
     observations: ''
   });
+
+  const problemTypes = [
+    'Material não chegou',
+    'Material danificado',
+    'Material errado',
+    'Outro'
+  ];
 
   useEffect(() => {
     fetchProblems();
@@ -412,20 +417,26 @@ const StoreDashboard = ({ onLogout }) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          problem_description: formData.problem_type,
+          order_date: formData.order_date || null,
+          supplier_order: formData.supplier_order || null,
+          eurocode: formData.eurocode || null,
+          observations: formData.observations || null,
+          priority: 'normal'
+        })
       });
 
       if (response.ok) {
         alert('Problema reportado com sucesso!');
-        setShowForm(false);
         setFormData({
-          problem_description: '',
+          problem_type: '',
           order_date: '',
           supplier_order: '',
-          product: '',
           eurocode: '',
           observations: ''
         });
+        setShowForm(false);
         fetchProblems();
       }
     } catch (error) {
@@ -470,243 +481,199 @@ const StoreDashboard = ({ onLogout }) => {
       <DashboardHeader title="Painel Loja" onLogout={onLogout} />
 
       <div style={{ padding: '20px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
-
+        
         {/* Estatísticas */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-          {[
-            { label: 'Total', value: stats.total, color: '#6366F1' },
-            { label: 'Pendentes', value: stats.pending, color: '#F59E0B' },
-            { label: 'Em Progresso', value: stats.in_progress, color: '#3B82F6' },
-            { label: 'Resolvidos', value: stats.resolved, color: '#10B981' }
-          ].map((stat, i) => (
-            <div key={i} style={{ background: '#FFFFFF', padding: '24px', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-              <div style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#6B7280', marginBottom: '8px' }}>{stat.label}</div>
-              <div style={{ fontSize: '40px', fontWeight: 'bold', color: stat.color }}>{stat.value}</div>
-            </div>
-          ))}
-        </div>
-
-
-                {/* Controles e Filtros */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap' }}>
-            <input
-              type="text"
-              placeholder="🔍 Pesquisar..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
-                fontSize: '14px', flex: '1', minWidth: '200px'
-              }}
-            />
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
-            >
-              <option value="all">Todos os Status</option>
-              <option value="pending">Pendente</option>
-              <option value="in_progress">Em Progresso</option>
-              <option value="resolved">Resolvido</option>
-            </select>
-            <select
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
-              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
-            >
-              <option value="all">Todas as Prioridades</option>
-              <option value="low">Baixa</option>
-              <option value="normal">Normal</option>
-              <option value="high">Alta</option>
-              <option value="urgent">Urgente</option>
-            </select>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '20px',
+          marginBottom: '24px'
+        }}>
+          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>TOTAL</p>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
           </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button
-              onClick={() => exportToPDF(filteredProblems.length > 0 ? filteredProblems : problems, localStorage.getItem('userName'))}
-              style={{
-                padding: '12px 24px', background: '#10B981', color: 'white', border: 'none',
-                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
-              }}
-            >
-              📄 Exportar PDF
-            </button>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              style={{
-                padding: '12px 24px', background: '#6366F1', color: 'white', border: 'none',
-                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
-              }}
-            >
-              {showForm ? 'Cancelar' : '+ Novo Reporte'}
-            </button>
+          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>PENDENTES</p>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>EM PROGRESSO</p>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>RESOLVIDOS</p>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
           </div>
         </div>
 
+        {/* Botão Novo Reporte */}
+        <div style={{ marginBottom: '24px' }}>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            style={{
+              padding: '12px 24px',
+              background: '#6366F1',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer'
+            }}
+          >
+            {showForm ? '✕ Cancelar' : '+ Novo Reporte'}
+          </button>
+        </div>
 
-
+        {/* Formulário */}
         {showForm && (
           <div style={{
             background: '#FFFFFF',
-            padding: '24px',
+            padding: '32px',
             borderRadius: '12px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
             marginBottom: '24px'
           }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1F2937', marginBottom: '20px' }}>
-              Reportar Problema
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '24px' }}>
+              Reportar Novo Problema
             </h2>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
-                  Descrição do Problema *
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                  Problema a Reportar *
                 </label>
-                <textarea
-                  value={formData.problem_description}
-                  onChange={(e) => setFormData({...formData, problem_description: e.target.value})}
+                <select
+                  value={formData.problem_type}
+                  onChange={(e) => setFormData({...formData, problem_type: e.target.value})}
                   required
-                  rows="3"
                   style={{
                     width: '100%',
                     padding: '12px',
-                    border: '1px solid #E5E7EB',
+                    border: '2px solid #E5E7EB',
                     borderRadius: '8px',
-                    fontSize: '14px',
+                    fontSize: '15px',
+                    boxSizing: 'border-box',
+                    background: '#FFFFFF'
+                  }}
+                >
+                  <option value="">Selecione o tipo de problema</option>
+                  {problemTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                  Data *
+                </label>
+                <input
+                  type="date"
+                  value={formData.order_date}
+                  onChange={(e) => setFormData({...formData, order_date: e.target.value})}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '15px',
                     boxSizing: 'border-box'
                   }}
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
-                    Data da Encomenda
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.order_date}
-                    onChange={(e) => setFormData({...formData, order_date: e.target.value})}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
-                    Nº Encomenda Fornecedor
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.supplier_order}
-                    onChange={(e) => setFormData({...formData, supplier_order: e.target.value})}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
-                    Produto
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.product}
-                    onChange={(e) => setFormData({...formData, product: e.target.value})}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
-                    Eurocódigo
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.eurocode}
-                    onChange={(e) => setFormData({...formData, eurocode: e.target.value})}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-              </div>
+
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                  Enc Fornecedor (opcional)
+                </label>
+                <input
+                  type="number"
+                  value={formData.supplier_order}
+                  onChange={(e) => setFormData({...formData, supplier_order: e.target.value})}
+                  placeholder="Apenas números"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '15px',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                  Referência/Eurocode (opcional)
+                </label>
+                <input
+                  type="text"
+                  value={formData.eurocode}
+                  onChange={(e) => setFormData({...formData, eurocode: e.target.value})}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '15px',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
                   Observações
                 </label>
                 <textarea
                   value={formData.observations}
                   onChange={(e) => setFormData({...formData, observations: e.target.value})}
-                  rows="2"
+                  rows="4"
+                  placeholder="Descreva detalhes adicionais..."
                   style={{
                     width: '100%',
                     padding: '12px',
-                    border: '1px solid #E5E7EB',
+                    border: '2px solid #E5E7EB',
                     borderRadius: '8px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box'
+                    fontSize: '15px',
+                    boxSizing: 'border-box',
+                    resize: 'vertical'
                   }}
                 />
               </div>
+
               <button
                 type="submit"
                 style={{
-                  padding: '12px',
-                  background: '#6366F1',
+                  padding: '14px',
+                  background: '#10B981',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '600'
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
                 }}
               >
-                Enviar Reporte
+                Criar Reporte
               </button>
             </form>
           </div>
         )}
 
+        {/* Lista de Reportes */}
+        <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '16px' }}>
+          Meus Reportes
+        </h2>
+
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '48px 60px', color: '#6B7280' }}>
-            A carregar...
-          </div>
-        ) : problems.length === 0 ? (
-          <div style={{
-            background: '#FFFFFF',
-            padding: '40px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            color: '#6B7280'
-          }}>
-            Nenhum problema reportado ainda.
-          </div>
+          <p>Carregando...</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {(filteredProblems.length > 0 ? filteredProblems : problems).map((problem) => (
+            {problems.map((problem) => (
               <div key={problem.id} style={{
                 background: '#FFFFFF',
                 padding: '20px',
@@ -714,19 +681,17 @@ const StoreDashboard = ({ onLogout }) => {
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                      {getPriorityBadge(problem.priority)}
-                      {getStatusBadge(problem.status)}
-                    </div>
-                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1F2937', margin: '0 0 4px 0' }}>
+                  <div>
+                    <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1F2937', margin: '0 0 8px 0' }}>
                       {problem.problem_description}
                     </h3>
-                    <p style={{ fontSize: '13px', color: '#6B7280', margin: 0 }}>
+                    <p style={{ fontSize: '14px', color: '#6B7280', margin: 0 }}>
                       {new Date(problem.created_at).toLocaleDateString('pt-PT')}
                     </p>
                   </div>
+                  {getStatusBadge(problem.status)}
                 </div>
+
                 {problem.response_text && (
                   <div style={{
                     marginTop: '12px',
@@ -752,7 +717,8 @@ const StoreDashboard = ({ onLogout }) => {
   );
 };
 
-// ============ VISTA FORNECEDOR ============
+
+// ============ VISTA FORNECEDOR - REDESENHADA COM GRID E PAINEL LATERAL ============
 
 const SupplierDashboard = ({ onLogout }) => {
   const [problems, setProblems] = useState([]);
@@ -783,12 +749,29 @@ const SupplierDashboard = ({ onLogout }) => {
     }
   };
 
-  const handleRespond = async (problemId) => {
-    if (!responseText.trim()) {
-      alert('Por favor, escreva uma resposta');
-      return;
-    }
+  const handleResolve = async (problemId) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${API_URL}/problems/${problemId}/resolve`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
 
+      if (response.ok) {
+        alert('Problema marcado como resolvido!');
+        setSelectedProblem(null);
+        fetchProblems();
+      }
+    } catch (error) {
+      alert('Erro ao resolver problema');
+    }
+  };
+
+  const handleResponse = async (problemId) => {
+    if (!responseText.trim()) return;
+    
     try {
       const token = localStorage.getItem('authToken');
       const response = await fetch(`${API_URL}/problems/${problemId}/respond`, {
@@ -802,7 +785,6 @@ const SupplierDashboard = ({ onLogout }) => {
 
       if (response.ok) {
         alert('Resposta enviada com sucesso!');
-        setSelectedProblem(null);
         setResponseText('');
         fetchProblems();
       }
@@ -833,26 +815,6 @@ const SupplierDashboard = ({ onLogout }) => {
     setFilteredProblems(filtered);
   }, [problems, searchTerm, filterStatus, filterPriority]);
 
-
-  const handleResolve = async (problemId) => {
-    if (!confirm('Marcar este problema como resolvido?')) return;
-
-    try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`${API_URL}/problems/${problemId}/resolve`, {
-        method: 'PATCH',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (response.ok) {
-        alert('Problema marcado como resolvido!');
-        fetchProblems();
-      }
-    } catch (error) {
-      alert('Erro ao resolver problema');
-    }
-  };
-
   const getStatusBadge = (status) => {
     const colors = {
       pending: { bg: '#FEF3C7', text: '#92400E', label: 'Pendente' },
@@ -862,9 +824,9 @@ const SupplierDashboard = ({ onLogout }) => {
     const style = colors[status] || colors.pending;
     return (
       <span style={{
-        padding: '4px 12px',
+        padding: '4px 10px',
         borderRadius: '12px',
-        fontSize: '12px',
+        fontSize: '11px',
         fontWeight: '600',
         background: style.bg,
         color: style.text
@@ -874,6 +836,27 @@ const SupplierDashboard = ({ onLogout }) => {
     );
   };
 
+  const getPriorityBadge = (priority) => {
+    const colors = {
+      low: { bg: '#F3F4F6', text: '#6B7280', label: 'Baixa' },
+      normal: { bg: '#DBEAFE', text: '#1E40AF', label: 'Normal' },
+      high: { bg: '#FED7AA', text: '#9A3412', label: 'Alta' },
+      urgent: { bg: '#FECACA', text: '#991B1B', label: 'Urgente' }
+    };
+    const style = colors[priority] || colors.normal;
+    return (
+      <span style={{
+        padding: '4px 10px',
+        borderRadius: '12px',
+        fontSize: '11px',
+        fontWeight: '600',
+        background: style.bg,
+        color: style.text
+      }}>
+        {style.label}
+      </span>
+    );
+  };
 
   const stats = {
     total: problems.length,
@@ -882,267 +865,389 @@ const SupplierDashboard = ({ onLogout }) => {
     resolved: problems.filter(p => p.status === 'resolved').length
   };
 
+  const selectedProblemData = problems.find(p => p.id === selectedProblem);
+
   return (
     <div style={{
       minHeight: '100vh',
       background: '#F3F4F6',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      position: 'relative'
     }}>
       <DashboardHeader title="Painel Fornecedor" onLogout={onLogout} />
 
       <div style={{ padding: '20px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
-
+        
         {/* Estatísticas */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-          {[
-            { label: 'Total', value: stats.total, color: '#6366F1' },
-            { label: 'Pendentes', value: stats.pending, color: '#F59E0B' },
-            { label: 'Em Progresso', value: stats.in_progress, color: '#3B82F6' },
-            { label: 'Resolvidos', value: stats.resolved, color: '#10B981' }
-          ].map((stat, i) => (
-            <div key={i} style={{ background: '#FFFFFF', padding: '24px', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-              <div style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#6B7280', marginBottom: '8px' }}>{stat.label}</div>
-              <div style={{ fontSize: '40px', fontWeight: 'bold', color: stat.color }}>{stat.value}</div>
-            </div>
-          ))}
-        </div>
-
-
-                {/* Controles e Filtros */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
-          <h1 style={{ fontSize: '40px', fontWeight: 'bold', color: '#1F2937', margin: 0 }}>
-            Problemas Reportados
-          </h1>
-          <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-            <input
-              type="text"
-              placeholder="🔍 Pesquisar..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
-                fontSize: '14px', flex: '1', minWidth: '200px'
-              }}
-            />
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
-            >
-              <option value="all">Todos os Status</option>
-              <option value="pending">Pendente</option>
-              <option value="in_progress">Em Progresso</option>
-              <option value="resolved">Resolvido</option>
-            </select>
-            <select
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
-              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
-            >
-              <option value="all">Todas as Prioridades</option>
-              <option value="low">Baixa</option>
-              <option value="normal">Normal</option>
-              <option value="high">Alta</option>
-              <option value="urgent">Urgente</option>
-            </select>
-            <button
-              onClick={() => exportToPDF(filteredProblems.length > 0 ? filteredProblems : problems, 'Fornecedor')}
-              style={{
-                padding: '12px 24px', background: '#10B981', color: 'white', border: 'none',
-                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
-              }}
-            >
-              📄 Exportar PDF
-            </button>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '20px',
+          marginBottom: '24px'
+        }}>
+          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>TOTAL</p>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>PENDENTES</p>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>EM PROGRESSO</p>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>RESOLVIDOS</p>
+            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
           </div>
         </div>
 
+        {/* Filtros */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            placeholder="🔍 Pesquisar..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              border: '2px solid #E5E7EB',
+              borderRadius: '8px',
+              fontSize: '14px',
+              minWidth: '250px'
+            }}
+          />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              border: '2px solid #E5E7EB',
+              borderRadius: '8px',
+              fontSize: '14px',
+              background: '#FFFFFF'
+            }}
+          >
+            <option value="all">Todos os Status</option>
+            <option value="pending">Pendente</option>
+            <option value="in_progress">Em Progresso</option>
+            <option value="resolved">Resolvido</option>
+          </select>
+          <select
+            value={filterPriority}
+            onChange={(e) => setFilterPriority(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              border: '2px solid #E5E7EB',
+              borderRadius: '8px',
+              fontSize: '14px',
+              background: '#FFFFFF'
+            }}
+          >
+            <option value="all">Todas as Prioridades</option>
+            <option value="low">Baixa</option>
+            <option value="normal">Normal</option>
+            <option value="high">Alta</option>
+            <option value="urgent">Urgente</option>
+          </select>
+        </div>
 
-
+        {/* Grid de Cards */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6B7280' }}>
-            A carregar...
-          </div>
-        ) : problems.length === 0 ? (
-          <div style={{
-            background: '#FFFFFF',
-            padding: '40px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            color: '#6B7280'
-          }}>
-            Nenhum problema reportado.
-          </div>
+          <p>Carregando...</p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: '20px'
+          }}>
             {(filteredProblems.length > 0 ? filteredProblems : problems).map((problem) => (
-              <div key={problem.id} style={{
-                background: '#FFFFFF',
-                padding: '20px',
-                borderRadius: '12px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-              }}>
-                <div style={{ marginBottom: '20px' }}>
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                    {getPriorityBadge(problem.priority)}
-                    {getStatusBadge(problem.status)}
-                  </div>
-                  
-                  <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1F2937', margin: '0 0 12px 0' }}>
-                    {problem.problem_description}
-                  </h3>
-                  
-                  <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 16px', marginBottom: '12px' }}>
-                    <span style={{ color: '#6B7280', fontWeight: '600' }}>Loja:</span>
-                    <span style={{ color: '#1F2937' }}>{problem.store_name}</span>
-                    
-                    <span style={{ color: '#6B7280', fontWeight: '600' }}>Data:</span>
-                    <span style={{ color: '#1F2937' }}>{new Date(problem.created_at).toLocaleDateString('pt-PT')}</span>
-                    
-                    {problem.order_date && (
-                      <>
-                        <span style={{ color: '#6B7280', fontWeight: '600' }}>Data Pedido:</span>
-                        <span style={{ color: '#1F2937' }}>{problem.order_date}</span>
-                      </>
-                    )}
-                    
-                    {problem.product && (
-                      <>
-                        <span style={{ color: '#6B7280', fontWeight: '600' }}>Produto:</span>
-                        <span style={{ color: '#1F2937' }}>{problem.product}</span>
-                      </>
-                    )}
-                    
-                    {problem.eurocode && (
-                      <>
-                        <span style={{ color: '#6B7280', fontWeight: '600' }}>Eurocódigo:</span>
-                        <span style={{ color: '#1F2937' }}>{problem.eurocode}</span>
-                      </>
-                    )}
-                  </div>
-                  
-                  {problem.observations && (
-                    <div style={{ marginTop: '12px', padding: '12px', background: '#F9FAFB', borderRadius: '8px' }}>
-                      <span style={{ color: '#6B7280', fontWeight: '600', fontSize: '13px' }}>Observações:</span>
-                      <p style={{ margin: '4px 0 0 0', color: '#374151' }}>{problem.observations}</p>
-                    </div>
-                  )}
+              <div
+                key={problem.id}
+                onClick={() => setSelectedProblem(problem.id)}
+                style={{
+                  background: '#FFFFFF',
+                  padding: '20px',
+                  borderRadius: '12px',
+                  boxShadow: selectedProblem === problem.id ? '0 4px 12px rgba(99, 102, 241, 0.3)' : '0 2px 4px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  border: selectedProblem === problem.id ? '2px solid #6366F1' : '2px solid transparent',
+                  minHeight: '180px',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedProblem !== problem.id) {
+                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedProblem !== problem.id) {
+                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }
+                }}
+              >
+                <h3 style={{
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  color: '#1F2937',
+                  margin: '0 0 8px 0',
+                  lineHeight: '1.3'
+                }}>
+                  {problem.store_name}
+                </h3>
+                
+                <p style={{
+                  fontSize: '14px',
+                  color: '#6B7280',
+                  margin: '0 0 16px 0',
+                  flex: 1,
+                  lineHeight: '1.5'
+                }}>
+                  {problem.problem_description}
+                </p>
+                
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                  {getStatusBadge(problem.status)}
+                  {getPriorityBadge(problem.priority)}
                 </div>
-
-                {problem.response_text ? (
-                  <div style={{
-                    padding: '12px',
-                    background: '#F9FAFB',
-                    borderRadius: '8px',
-                    marginBottom: '12px'
-                  }}>
-                    <p style={{ fontSize: '13px', fontWeight: '600', color: '#1F2937', margin: '0 0 4px 0' }}>
-                      Sua Resposta:
-                    </p>
-                    <p style={{ fontSize: '14px', color: '#374151', margin: 0 }}>
-                      {problem.response_text}
-                    </p>
-                  </div>
-                ) : null}
-
-                <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                  {problem.status !== 'resolved' && (
-                    <>
-                      <button
-                        onClick={() => setSelectedProblem(problem.id === selectedProblem ? null : problem.id)}
-                        style={{
-                          padding: '8px 16px',
-                          background: '#6366F1',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: '500'
-                        }}
-                      >
-                        {problem.response_text ? 'Editar Resposta' : 'Responder'}
-                      </button>
-                      {problem.response_text && (
-                        <button
-                          onClick={() => handleResolve(problem.id)}
-                          style={{
-                            padding: '8px 16px',
-                            background: '#10B981',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                            fontWeight: '500'
-                          }}
-                        >
-                          Marcar como Resolvido
-                        </button>
-                      )}
-                    </>
-                  )}
-                </div>
-
-                {selectedProblem === problem.id && (
-                  <div style={{ marginTop: '16px', padding: '16px', background: '#F9FAFB', borderRadius: '8px' }}>
-                    <textarea
-                      value={responseText}
-                      onChange={(e) => setResponseText(e.target.value)}
-                      placeholder="Escreva sua resposta..."
-                      rows="3"
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        border: '1px solid #E5E7EB',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        marginBottom: '8px',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button
-                        onClick={() => handleRespond(problem.id)}
-                        style={{
-                          padding: '8px 16px',
-                          background: '#6366F1',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: '500'
-                        }}
-                      >
-                        Enviar Resposta
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedProblem(null);
-                          setResponseText('');
-                        }}
-                        style={{
-                          padding: '8px 16px',
-                          background: '#E5E7EB',
-                          color: '#374151',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: '500'
-                        }}
-                      >
-                        Cancelar
-                      </button>
-                    </div>
-                  </div>
-                )}
+                
+                <p style={{ fontSize: '12px', color: '#9CA3AF', margin: 0 }}>
+                  {new Date(problem.created_at).toLocaleDateString('pt-PT')}
+                </p>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Painel Lateral */}
+      {selectedProblemData && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: '500px',
+          height: '100vh',
+          background: '#FFFFFF',
+          boxShadow: '-4px 0 12px rgba(0,0,0,0.15)',
+          overflowY: 'auto',
+          zIndex: 1000,
+          animation: 'slideIn 0.3s ease-out'
+        }}>
+          <style>{`
+            @keyframes slideIn {
+              from { transform: translateX(100%); }
+              to { transform: translateX(0); }
+            }
+          `}</style>
+          
+          <div style={{ padding: '24px' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', margin: 0 }}>
+                Detalhes do Reporte
+              </h2>
+              <button
+                onClick={() => setSelectedProblem(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  color: '#6B7280',
+                  cursor: 'pointer',
+                  padding: '4px 8px'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Loja */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#6366F1', margin: '0 0 8px 0' }}>
+                {selectedProblemData.store_name}
+              </h3>
+              <p style={{ fontSize: '16px', color: '#374151', margin: 0 }}>
+                {selectedProblemData.problem_description}
+              </p>
+            </div>
+
+            {/* Badges */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+              {getStatusBadge(selectedProblemData.status)}
+              {getPriorityBadge(selectedProblemData.priority)}
+            </div>
+
+            {/* Informações */}
+            <div style={{
+              background: '#F9FAFB',
+              padding: '16px',
+              borderRadius: '8px',
+              marginBottom: '24px'
+            }}>
+              <div style={{ marginBottom: '12px' }}>
+                <span style={{ fontSize: '13px', color: '#6B7280', fontWeight: '600' }}>Data do Reporte:</span>
+                <p style={{ fontSize: '14px', color: '#1F2937', margin: '4px 0 0 0' }}>
+                  {new Date(selectedProblemData.created_at).toLocaleDateString('pt-PT')}
+                </p>
+              </div>
+              
+              {selectedProblemData.order_date && (
+                <div style={{ marginBottom: '12px' }}>
+                  <span style={{ fontSize: '13px', color: '#6B7280', fontWeight: '600' }}>Data da Encomenda:</span>
+                  <p style={{ fontSize: '14px', color: '#1F2937', margin: '4px 0 0 0' }}>
+                    {selectedProblemData.order_date}
+                  </p>
+                </div>
+              )}
+              
+              {selectedProblemData.supplier_order && (
+                <div style={{ marginBottom: '12px' }}>
+                  <span style={{ fontSize: '13px', color: '#6B7280', fontWeight: '600' }}>Enc Fornecedor:</span>
+                  <p style={{ fontSize: '14px', color: '#1F2937', margin: '4px 0 0 0' }}>
+                    {selectedProblemData.supplier_order}
+                  </p>
+                </div>
+              )}
+              
+              {selectedProblemData.eurocode && (
+                <div style={{ marginBottom: '12px' }}>
+                  <span style={{ fontSize: '13px', color: '#6B7280', fontWeight: '600' }}>Eurocódigo:</span>
+                  <p style={{ fontSize: '14px', color: '#1F2937', margin: '4px 0 0 0' }}>
+                    {selectedProblemData.eurocode}
+                  </p>
+                </div>
+              )}
+              
+              {selectedProblemData.observations && (
+                <div>
+                  <span style={{ fontSize: '13px', color: '#6B7280', fontWeight: '600' }}>Observações:</span>
+                  <p style={{ fontSize: '14px', color: '#1F2937', margin: '4px 0 0 0' }}>
+                    {selectedProblemData.observations}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Resposta Existente */}
+            {selectedProblemData.response_text && (
+              <div style={{
+                background: '#EEF2FF',
+                padding: '16px',
+                borderRadius: '8px',
+                marginBottom: '24px',
+                borderLeft: '4px solid #6366F1'
+              }}>
+                <p style={{ fontSize: '13px', fontWeight: '600', color: '#4F46E5', margin: '0 0 8px 0' }}>
+                  Sua Resposta:
+                </p>
+                <p style={{ fontSize: '14px', color: '#1F2937', margin: 0 }}>
+                  {selectedProblemData.response_text}
+                </p>
+              </div>
+            )}
+
+            {/* Campo de Resposta */}
+            {selectedProblemData.status !== 'resolved' && (
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                  {selectedProblemData.response_text ? 'Atualizar Resposta' : 'Responder'}
+                </label>
+                <textarea
+                  value={responseText}
+                  onChange={(e) => setResponseText(e.target.value)}
+                  rows="4"
+                  placeholder="Digite sua resposta..."
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    boxSizing: 'border-box',
+                    resize: 'vertical'
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Botões */}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              {selectedProblemData.status !== 'resolved' && (
+                <>
+                  <button
+                    onClick={() => handleResponse(selectedProblemData.id)}
+                    disabled={!responseText.trim()}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      background: responseText.trim() ? '#6366F1' : '#E5E7EB',
+                      color: responseText.trim() ? 'white' : '#9CA3AF',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '15px',
+                      fontWeight: '600',
+                      cursor: responseText.trim() ? 'pointer' : 'not-allowed'
+                    }}
+                  >
+                    Enviar Resposta
+                  </button>
+                  <button
+                    onClick={() => handleResolve(selectedProblemData.id)}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      background: '#10B981',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '15px',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    ✓ Resolver
+                  </button>
+                </>
+              )}
+              {selectedProblemData.status === 'resolved' && (
+                <div style={{
+                  width: '100%',
+                  padding: '16px',
+                  background: '#D1FAE5',
+                  color: '#065F46',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                  fontWeight: '600'
+                }}>
+                  ✓ Problema Resolvido
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Overlay */}
+      {selectedProblem && (
+        <div
+          onClick={() => setSelectedProblem(null)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.3)',
+            zIndex: 999
+          }}
+        />
+      )}
     </div>
   );
 };
