@@ -399,9 +399,11 @@ const StoreDashboard = ({ onLogout }) => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
-      setProblems(data);
+      // Garantir que data é sempre um array
+      setProblems(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Erro ao carregar problemas:', error);
+      setProblems([]); // Em caso de erro, usar array vazio
     } finally {
       setLoading(false);
     }
@@ -743,9 +745,11 @@ const SupplierDashboard = ({ onLogout }) => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
-      setProblems(data);
+      // Garantir que data é sempre um array
+      setProblems(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Erro ao carregar problemas:', error);
+      setProblems([]); // Em caso de erro, usar array vazio
     } finally {
       setLoading(false);
     }
