@@ -461,19 +461,19 @@ const StoreDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Loja" onLogout={onLogout} />
 
-      <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ padding: '24px 48px' }}>
 
         {/* Estatísticas */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
           {[
             { label: 'Total', value: stats.total, color: '#6366F1' },
             { label: 'Pendentes', value: stats.pending, color: '#F59E0B' },
             { label: 'Em Progresso', value: stats.in_progress, color: '#3B82F6' },
             { label: 'Resolvidos', value: stats.resolved, color: '#10B981' }
           ].map((stat, i) => (
-            <div key={i} style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px' }}>{stat.label}</div>
-              <div style={{ fontSize: '32px', fontWeight: 'bold', color: stat.color }}>{stat.value}</div>
+            <div key={i} style={{ background: '#FFFFFF', padding: '24px', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+              <div style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#6B7280', marginBottom: '8px' }}>{stat.label}</div>
+              <div style={{ fontSize: '40px', fontWeight: 'bold', color: stat.color }}>{stat.value}</div>
             </div>
           ))}
         </div>
@@ -489,7 +489,7 @@ const StoreDashboard = ({ onLogout }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
                 padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
-                fontSize: '14px', minWidth: '200px'
+                fontSize: '14px', flex: '1', minWidth: '250px', maxWidth: '350px'
               }}
             />
             <select
@@ -518,7 +518,7 @@ const StoreDashboard = ({ onLogout }) => {
             <button
               onClick={() => exportToPDF(filteredProblems.length > 0 ? filteredProblems : problems, localStorage.getItem('userName'))}
               style={{
-                padding: '10px 20px', background: '#10B981', color: 'white', border: 'none',
+                padding: '12px 24px', background: '#10B981', color: 'white', border: 'none',
                 borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
               }}
             >
@@ -527,7 +527,7 @@ const StoreDashboard = ({ onLogout }) => {
             <button
               onClick={() => setShowForm(!showForm)}
               style={{
-                padding: '10px 20px', background: '#6366F1', color: 'white', border: 'none',
+                padding: '12px 24px', background: '#6366F1', color: 'white', border: 'none',
                 borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
               }}
             >
@@ -569,7 +569,7 @@ const StoreDashboard = ({ onLogout }) => {
                   }}
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
                     Data da Encomenda
@@ -607,7 +607,7 @@ const StoreDashboard = ({ onLogout }) => {
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
                     Produto
@@ -884,19 +884,19 @@ const SupplierDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Fornecedor" onLogout={onLogout} />
 
-      <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ padding: '24px 48px' }}>
 
         {/* Estatísticas */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
           {[
             { label: 'Total', value: stats.total, color: '#6366F1' },
             { label: 'Pendentes', value: stats.pending, color: '#F59E0B' },
             { label: 'Em Progresso', value: stats.in_progress, color: '#3B82F6' },
             { label: 'Resolvidos', value: stats.resolved, color: '#10B981' }
           ].map((stat, i) => (
-            <div key={i} style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px' }}>{stat.label}</div>
-              <div style={{ fontSize: '32px', fontWeight: 'bold', color: stat.color }}>{stat.value}</div>
+            <div key={i} style={{ background: '#FFFFFF', padding: '24px', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+              <div style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#6B7280', marginBottom: '8px' }}>{stat.label}</div>
+              <div style={{ fontSize: '40px', fontWeight: 'bold', color: stat.color }}>{stat.value}</div>
             </div>
           ))}
         </div>
@@ -904,7 +904,7 @@ const SupplierDashboard = ({ onLogout }) => {
 
                 {/* Controles e Filtros */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
-          <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1F2937', margin: 0 }}>
+          <h1 style={{ fontSize: '40px', fontWeight: 'bold', color: '#1F2937', margin: 0 }}>
             Problemas Reportados
           </h1>
           <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
@@ -915,7 +915,7 @@ const SupplierDashboard = ({ onLogout }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
                 padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
-                fontSize: '14px', minWidth: '200px'
+                fontSize: '14px', flex: '1', minWidth: '250px', maxWidth: '350px'
               }}
             />
             <select
@@ -942,7 +942,7 @@ const SupplierDashboard = ({ onLogout }) => {
             <button
               onClick={() => exportToPDF(filteredProblems.length > 0 ? filteredProblems : problems, 'Fornecedor')}
               style={{
-                padding: '10px 20px', background: '#10B981', color: 'white', border: 'none',
+                padding: '12px 24px', background: '#10B981', color: 'white', border: 'none',
                 borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
               }}
             >
@@ -1207,7 +1207,7 @@ const AdminDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Admin" onLogout={onLogout} />
 
-      <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ padding: '24px 48px' }}>
                 {/* Controles e Filtros */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap' }}>
@@ -1218,7 +1218,7 @@ const AdminDashboard = ({ onLogout }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
                 padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
-                fontSize: '14px', minWidth: '200px'
+                fontSize: '14px', flex: '1', minWidth: '250px', maxWidth: '350px'
               }}
             />
             <select
@@ -1247,7 +1247,7 @@ const AdminDashboard = ({ onLogout }) => {
             <button
               onClick={() => exportToPDF(filteredProblems.length > 0 ? filteredProblems : problems, localStorage.getItem('userName'))}
               style={{
-                padding: '10px 20px', background: '#10B981', color: 'white', border: 'none',
+                padding: '12px 24px', background: '#10B981', color: 'white', border: 'none',
                 borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
               }}
             >
@@ -1256,7 +1256,7 @@ const AdminDashboard = ({ onLogout }) => {
             <button
               onClick={() => setShowForm(!showForm)}
               style={{
-                padding: '10px 20px', background: '#6366F1', color: 'white', border: 'none',
+                padding: '12px 24px', background: '#6366F1', color: 'white', border: 'none',
                 borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
               }}
             >
@@ -1279,7 +1279,7 @@ const AdminDashboard = ({ onLogout }) => {
               Criar Novo Fornecedor
             </h2>
             <form onSubmit={handleCreateSupplier} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
                     Nome do Fornecedor *
@@ -1318,7 +1318,7 @@ const AdminDashboard = ({ onLogout }) => {
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
                     Email *
