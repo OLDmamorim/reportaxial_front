@@ -759,6 +759,10 @@ const SupplierDashboard = ({ onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [responseText, setResponseText] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterPriority, setFilterPriority] = useState('all');
+  const [filteredProblems, setFilteredProblems] = useState([]);
 
   useEffect(() => {
     fetchProblems();
