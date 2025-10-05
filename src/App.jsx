@@ -1,130 +1,228 @@
-// App.jsx - CÓDIGO COMPLETO (Portal Reportaxial)
-// Copie este ficheiro COMPLETO para substituir o src/App.jsx
+// App.jsx - CÓDIGO ATUALIZADO (Portal Reportaxial)
+// Nova interface de login conforme design fornecido
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-const API_URL = 'https://reportaxialback-production.up.railway.app/api'; // ⚠️ ALTERAR para URL do Railway
+const API_URL = 'https://reportaxialback-production.up.railway.app/api';
 
-// ============ COMPONENTES DE AUTENTICAÇÃO ============
+// ============ COMPONENTE LOGO ============
+
+const ExpressGlassLogo = () => (
+  <div style={{
+    background: 'linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%)',
+    padding: '24px',
+    borderRadius: '16px',
+    marginBottom: '32px',
+    textAlign: 'center'
+  }}>
+    <div style={{
+      fontSize: '42px',
+      fontWeight: 'bold',
+      letterSpacing: '-1px',
+      marginBottom: '4px'
+    }}>
+      <span style={{ color: '#DC2626' }}>EXPRESS</span>
+      <span style={{ color: '#1E3A8A' }}>GLASS</span>
+    </div>
+    <div style={{
+      fontSize: '14px',
+      color: '#6B7280',
+      fontWeight: '500'
+    }}>
+      Vidros para Viaturas
+    </div>
+  </div>
+);
+
+// ============ COMPONENTE DE AUTENTICAÇÃO ============
 
 const Login = ({ onLogin }) => {
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
-  const [showRegister, setShowRegister] = useState(false);
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials)
+        body: JSON.stringify({
+          email: credentials.username, // Backend espera 'email'
+          password: credentials.password
+        })
       });
+      
       const data = await response.json();
+      
       if (response.ok) {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('userType', data.user.user_type);
         localStorage.setItem('userId', data.user.id);
         onLogin(data.user.user_type);
       } else {
-        alert(data.message || 'Erro no login');
+        setError(data.message || 'Credenciais inválidas');
       }
     } catch (error) {
-      alert('Erro ao conectar ao servidor');
+      setError('Erro ao conectar ao servidor');
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (showRegister) {
-    return <RegisterForm onBack={() => setShowRegister(false)} />;
-  }
-
   return (
-    <div style={{minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'}}>
-      <div style={{background: 'white', borderRadius: '16px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', padding: '48px', maxWidth: '440px', width: '100%'}}>
-        <div style={{textAlign: 'center', marginBottom: '32px'}}>
-          <h1 style={{fontSize: '32px', fontWeight: 'bold', color: '#1F2937', marginBottom: '8px'}}>EXPRESSGLASS</h1>
-          <p style={{color: '#6B7280', fontSize: '14px'}}>Braga</p>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '20px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    }}>
+      <div style={{
+        background: '#FFFFFF',
+        borderRadius: '24px',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        padding: '48px',
+        maxWidth: '480px',
+        width: '100%'
+      }}>
+        <ExpressGlassLogo />
+
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <h1 style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: '#1F2937',
+            marginBottom: '8px',
+            margin: '0 0 8px 0'
+          }}>
+            Bem-vindo
+          </h1>
+          <p style={{
+            fontSize: '16px',
+            color: '#6B7280',
+            margin: 0
+          }}>
+            Faça login na sua conta
+          </p>
         </div>
 
-        <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
+        <form onSubmit={handleLogin} style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px'
+        }}>
           <div>
-            <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Email</label>
+            <label style={{
+              display: 'block',
+              fontSize: '15px',
+              fontWeight: '500',
+              color: '#374151',
+              marginBottom: '8px'
+            }}>
+              Username
+            </label>
             <input
-              type="email"
-              value={credentials.email}
-              onChange={(e) => setCredentials({...credentials, email: e.target.value})}
-              style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
+              type="text"
+              value={credentials.username}
+              onChange={(e) => setCredentials({...credentials, username: e.target.value})}
+              placeholder="braga"
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                background: '#E0E7FF',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '15px',
+                color: '#1F2937',
+                outline: 'none',
+                transition: 'all 0.2s',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.background = '#C7D2FE'}
+              onBlur={(e) => e.target.style.background = '#E0E7FF'}
               required
             />
           </div>
 
           <div>
-            <label style={{display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px'}}>Password</label>
+            <label style={{
+              display: 'block',
+              fontSize: '15px',
+              fontWeight: '500',
+              color: '#374151',
+              marginBottom: '8px'
+            }}>
+              Password
+            </label>
             <input
               type="password"
               value={credentials.password}
               onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-              style={{width: '100%', padding: '12px 16px', border: '2px solid #E5E7EB', borderRadius: '8px', fontSize: '14px'}}
+              placeholder="••••••••"
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                background: '#E0E7FF',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '15px',
+                color: '#1F2937',
+                outline: 'none',
+                transition: 'all 0.2s',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.background = '#C7D2FE'}
+              onBlur={(e) => e.target.style.background = '#E0E7FF'}
               required
             />
           </div>
 
-          <button type="submit" style={{width: '100%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', padding: '14px', borderRadius: '8px', border: 'none', fontSize: '16px', fontWeight: '600', cursor: 'pointer'}}>
-            Entrar
+          {error && (
+            <div style={{
+              padding: '12px',
+              background: '#FEE2E2',
+              border: '1px solid #FCA5A5',
+              borderRadius: '8px',
+              color: '#DC2626',
+              fontSize: '14px',
+              textAlign: 'center'
+            }}>
+              {error}
+            </div>
+          )}
+
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={{
+              width: '100%',
+              background: loading ? '#9CA3AF' : '#6366F1',
+              color: '#FFFFFF',
+              padding: '16px',
+              borderRadius: '12px',
+              border: 'none',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s',
+              marginTop: '8px'
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) e.target.style.background = '#4F46E5';
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) e.target.style.background = '#6366F1';
+            }}
+          >
+            {loading ? 'A entrar...' : 'Entrar'}
           </button>
-
-          <p style={{textAlign: 'center', color: '#6B7280', fontSize: '14px'}}>
-            Não tem conta?{' '}
-            <button type="button" onClick={() => setShowRegister(true)} style={{color: '#667eea', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline'}}>
-              Criar conta
-            </button>
-          </p>
-        </form>
-
-        <p style={{textAlign: 'center', color: '#9CA3AF', fontSize: '12px', marginTop: '24px'}}>
-          Powered by Neon PostgreSQL
-        </p>
-      </div>
-    </div>
-  );
-};
-
-const RegisterForm = ({ onBack }) => {
-  const [formData, setFormData] = useState({ email: '', password: '', storeName: '', contactPerson: '', phone: '', address: '' });
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      const data = await response.json();
-      if (response.ok) {
-        alert('Registo efetuado com sucesso!');
-        onBack();
-      } else {
-        alert(data.message || 'Erro no registo');
-      }
-    } catch (error) {
-      alert('Erro ao conectar ao servidor');
-    }
-  };
-
-  return (
-    <div style={{minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'}}>
-      <div style={{background: 'white', borderRadius: '16px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', padding: '48px', maxWidth: '440px', width: '100%'}}>
-        <h2 style={{fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '24px', textAlign: 'center'}}>Registo de Loja</h2>
-        <form onSubmit={handleRegister} style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
-          <input type="text" placeholder="Nome da Loja" value={formData.storeName} onChange={(e) => setFormData({...formData, storeName: e.target.value})} style={{padding: '12px', border: '2px solid #E5E7EB', borderRadius: '8px'}} required />
-          <input type="text" placeholder="Pessoa de Contacto" value={formData.contactPerson} onChange={(e) => setFormData({...formData, contactPerson: e.target.value})} style={{padding: '12px', border: '2px solid #E5E7EB', borderRadius: '8px'}} />
-          <input type="tel" placeholder="Telefone" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{padding: '12px', border: '2px solid #E5E7EB', borderRadius: '8px'}} />
-          <textarea placeholder="Morada" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} style={{padding: '12px', border: '2px solid #E5E7EB', borderRadius: '8px'}} rows="2" />
-          <input type="email" placeholder="Email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} style={{padding: '12px', border: '2px solid #E5E7EB', borderRadius: '8px'}} required />
-          <input type="password" placeholder="Password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} style={{padding: '12px', border: '2px solid #E5E7EB', borderRadius: '8px'}} required />
-          <button type="submit" style={{padding: '14px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', borderRadius: '8px', border: 'none', fontWeight: '600', cursor: 'pointer'}}>Registar</button>
-          <button type="button" onClick={onBack} style={{padding: '14px', background: 'white', color: '#6B7280', borderRadius: '8px', border: '2px solid #E5E7EB', fontWeight: '600', cursor: 'pointer'}}>Voltar</button>
         </form>
       </div>
     </div>
@@ -135,10 +233,60 @@ const RegisterForm = ({ onBack }) => {
 
 const AdminDashboard = ({ onLogout }) => {
   return (
-    <div style={{padding: '20px'}}>
-      <h1>Painel Admin</h1>
-      <button onClick={onLogout}>Sair</button>
-      <p>Vista Admin em desenvolvimento...</p>
+    <div style={{
+      minHeight: '100vh',
+      background: '#F3F4F6',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }}>
+      {/* Header */}
+      <div style={{
+        background: '#FFFFFF',
+        borderBottom: '1px solid #E5E7EB',
+        padding: '16px 24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
+            <span style={{ color: '#DC2626' }}>EXPRESS</span>
+            <span style={{ color: '#1E3A8A' }}>GLASS</span>
+          </div>
+          <span style={{ color: '#6B7280', fontSize: '14px' }}>| Painel Admin</span>
+        </div>
+        <button 
+          onClick={onLogout}
+          style={{
+            padding: '8px 16px',
+            background: '#EF4444',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '500'
+          }}
+        >
+          Sair
+        </button>
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: '24px' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '16px' }}>
+          Dashboard Administrativo
+        </h1>
+        <div style={{
+          background: '#FFFFFF',
+          padding: '32px',
+          borderRadius: '12px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}>
+          <p style={{ color: '#6B7280', fontSize: '16px' }}>
+            Vista Admin em desenvolvimento...
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
@@ -147,10 +295,60 @@ const AdminDashboard = ({ onLogout }) => {
 
 const SupplierDashboard = ({ onLogout }) => {
   return (
-    <div style={{padding: '20px'}}>
-      <h1>Painel Fornecedor</h1>
-      <button onClick={onLogout}>Sair</button>
-      <p>Vista Fornecedor em desenvolvimento...</p>
+    <div style={{
+      minHeight: '100vh',
+      background: '#F3F4F6',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }}>
+      {/* Header */}
+      <div style={{
+        background: '#FFFFFF',
+        borderBottom: '1px solid #E5E7EB',
+        padding: '16px 24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
+            <span style={{ color: '#DC2626' }}>EXPRESS</span>
+            <span style={{ color: '#1E3A8A' }}>GLASS</span>
+          </div>
+          <span style={{ color: '#6B7280', fontSize: '14px' }}>| Painel Fornecedor</span>
+        </div>
+        <button 
+          onClick={onLogout}
+          style={{
+            padding: '8px 16px',
+            background: '#EF4444',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '500'
+          }}
+        >
+          Sair
+        </button>
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: '24px' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '16px' }}>
+          Dashboard Fornecedor
+        </h1>
+        <div style={{
+          background: '#FFFFFF',
+          padding: '32px',
+          borderRadius: '12px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}>
+          <p style={{ color: '#6B7280', fontSize: '16px' }}>
+            Vista Fornecedor em desenvolvimento...
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
@@ -159,10 +357,60 @@ const SupplierDashboard = ({ onLogout }) => {
 
 const StoreDashboard = ({ onLogout }) => {
   return (
-    <div style={{padding: '20px'}}>
-      <h1>Painel Loja</h1>
-      <button onClick={onLogout}>Sair</button>
-      <p>Vista Loja em desenvolvimento...</p>
+    <div style={{
+      minHeight: '100vh',
+      background: '#F3F4F6',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }}>
+      {/* Header */}
+      <div style={{
+        background: '#FFFFFF',
+        borderBottom: '1px solid #E5E7EB',
+        padding: '16px 24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
+            <span style={{ color: '#DC2626' }}>EXPRESS</span>
+            <span style={{ color: '#1E3A8A' }}>GLASS</span>
+          </div>
+          <span style={{ color: '#6B7280', fontSize: '14px' }}>| Painel Loja</span>
+        </div>
+        <button 
+          onClick={onLogout}
+          style={{
+            padding: '8px 16px',
+            background: '#EF4444',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '500'
+          }}
+        >
+          Sair
+        </button>
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: '24px' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '16px' }}>
+          Dashboard Loja
+        </h1>
+        <div style={{
+          background: '#FFFFFF',
+          padding: '32px',
+          borderRadius: '12px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}>
+          <p style={{ color: '#6B7280', fontSize: '16px' }}>
+            Vista Loja em desenvolvimento...
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
