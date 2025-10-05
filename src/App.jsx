@@ -454,6 +454,13 @@ const StoreDashboard = ({ onLogout }) => {
     );
   };
 
+  const stats = {
+    total: problems.length,
+    pending: problems.filter(p => p.status === 'pending').length,
+    in_progress: problems.filter(p => p.status === 'in_progress').length,
+    resolved: problems.filter(p => p.status === 'resolved').length
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
