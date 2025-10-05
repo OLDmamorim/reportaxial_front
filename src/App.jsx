@@ -255,11 +255,12 @@ const AdminDashboard = ({ onLogout }) => {
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
-            <span style={{ color: '#DC2626' }}>EXPRESS</span>
-            <span style={{ color: '#1E3A8A' }}>GLASS</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <img 
+            src="/expressglass-logo.png" 
+            alt="EXPRESSGLASS" 
+            style={{ height: '32px' }}
+          />
           <span style={{ color: '#6B7280', fontSize: '14px' }}>| Painel Admin</span>
         </div>
         <button 
@@ -317,11 +318,12 @@ const SupplierDashboard = ({ onLogout }) => {
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
-            <span style={{ color: '#DC2626' }}>EXPRESS</span>
-            <span style={{ color: '#1E3A8A' }}>GLASS</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <img 
+            src="/expressglass-logo.png" 
+            alt="EXPRESSGLASS" 
+            style={{ height: '32px' }}
+          />
           <span style={{ color: '#6B7280', fontSize: '14px' }}>| Painel Fornecedor</span>
         </div>
         <button 
@@ -379,11 +381,12 @@ const StoreDashboard = ({ onLogout }) => {
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
-            <span style={{ color: '#DC2626' }}>EXPRESS</span>
-            <span style={{ color: '#1E3A8A' }}>GLASS</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <img 
+            src="/expressglass-logo.png" 
+            alt="EXPRESSGLASS" 
+            style={{ height: '32px' }}
+          />
           <span style={{ color: '#6B7280', fontSize: '14px' }}>| Painel Loja</span>
         </div>
         <button 
