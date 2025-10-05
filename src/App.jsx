@@ -174,7 +174,7 @@ const Login = ({ onLogin }) => {
         borderRadius: '24px',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         padding: '48px',
-        maxWidth: '500px',
+        maxWidth: '600px',
         width: '100%'
       }}>
         <ExpressGlassLogo />
@@ -461,7 +461,7 @@ const StoreDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Loja" onLogout={onLogout} />
 
-      <div style={{ padding: '24px 48px' }}>
+      <div style={{ padding: '32px 64px' }}>
 
         {/* Estatísticas */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
@@ -884,7 +884,7 @@ const SupplierDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Fornecedor" onLogout={onLogout} />
 
-      <div style={{ padding: '24px 48px' }}>
+      <div style={{ padding: '32px 64px' }}>
 
         {/* Estatísticas */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
@@ -1207,7 +1207,7 @@ const AdminDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Admin" onLogout={onLogout} />
 
-      <div style={{ padding: '24px 48px' }}>
+      <div style={{ padding: '32px 64px' }}>
                 {/* Controles e Filtros */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap' }}>
