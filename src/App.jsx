@@ -11,27 +11,23 @@ const API_URL = 'https://reportaxialback-production.up.railway.app/api';
 const ExpressGlassLogo = () => (
   <div style={{
     background: 'linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%)',
-    padding: '24px',
+    padding: '32px',
     borderRadius: '16px',
     marginBottom: '32px',
-    textAlign: 'center'
+    textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   }}>
-    <div style={{
-      fontSize: '42px',
-      fontWeight: 'bold',
-      letterSpacing: '-1px',
-      marginBottom: '4px'
-    }}>
-      <span style={{ color: '#DC2626' }}>EXPRESS</span>
-      <span style={{ color: '#1E3A8A' }}>GLASS</span>
-    </div>
-    <div style={{
-      fontSize: '14px',
-      color: '#6B7280',
-      fontWeight: '500'
-    }}>
-      Vidros para Viaturas
-    </div>
+    <img 
+      src="/expressglass-logo.png" 
+      alt="EXPRESSGLASS - Vidros para Viaturas" 
+      style={{
+        maxWidth: '100%',
+        height: 'auto',
+        maxHeight: '80px'
+      }}
+    />
   </div>
 );
 
@@ -132,12 +128,12 @@ const Login = ({ onLogin }) => {
               type="text"
               value={credentials.username}
               onChange={(e) => setCredentials({...credentials, username: e.target.value})}
-              placeholder="braga"
+              placeholder="Insira o seu username"
               style={{
                 width: '100%',
-                padding: '14px 16px',
-                background: '#E0E7FF',
-                border: 'none',
+                padding: '16px',
+                background: '#FFFFFF',
+                border: '2px solid #E5E7EB',
                 borderRadius: '12px',
                 fontSize: '15px',
                 color: '#1F2937',
@@ -145,8 +141,14 @@ const Login = ({ onLogin }) => {
                 transition: 'all 0.2s',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.background = '#C7D2FE'}
-              onBlur={(e) => e.target.style.background = '#E0E7FF'}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#6366F1';
+                e.target.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#E5E7EB';
+                e.target.style.boxShadow = 'none';
+              }}
               required
             />
           </div>
@@ -168,9 +170,9 @@ const Login = ({ onLogin }) => {
               placeholder="••••••••"
               style={{
                 width: '100%',
-                padding: '14px 16px',
-                background: '#E0E7FF',
-                border: 'none',
+                padding: '16px',
+                background: '#FFFFFF',
+                border: '2px solid #E5E7EB',
                 borderRadius: '12px',
                 fontSize: '15px',
                 color: '#1F2937',
@@ -178,8 +180,14 @@ const Login = ({ onLogin }) => {
                 transition: 'all 0.2s',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.background = '#C7D2FE'}
-              onBlur={(e) => e.target.style.background = '#E0E7FF'}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#6366F1';
+                e.target.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#E5E7EB';
+                e.target.style.boxShadow = 'none';
+              }}
               required
             />
           </div>
