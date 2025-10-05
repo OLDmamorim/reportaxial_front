@@ -421,6 +421,7 @@ const StoreDashboard = ({ onLogout }) => {
           problem_description: formData.problem_type,
           order_date: formData.order_date || null,
           supplier_order: formData.supplier_order || null,
+          product: null,
           eurocode: formData.eurocode || null,
           observations: formData.observations || null,
           priority: 'normal'
@@ -551,11 +552,12 @@ const StoreDashboard = ({ onLogout }) => {
                   style={{
                     width: '100%',
                     padding: '12px',
-                    border: '2px solid #E5E7EB',
+                    border: '2px solid #4B5563',
                     borderRadius: '8px',
                     fontSize: '15px',
                     boxSizing: 'border-box',
-                    background: '#FFFFFF'
+                    background: '#374151',
+                    color: '#FFFFFF'
                   }}
                 >
                   <option value="">Selecione o tipo de problema</option>
