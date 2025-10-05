@@ -554,7 +554,13 @@ const StoreDashboard = ({ onLogout }) => {
                 <select
                   value={formData.problem_type}
                   onChange={(e) => {
-                    console.log('Select changed to:', e.target.value);
+                    console.log('Select onChange:', e.target.value);
+                    const newFormData = {...formData, problem_type: e.target.value};
+                    console.log('New formData:', newFormData);
+                    setFormData(newFormData);
+                  }}
+                  onInput={(e) => {
+                    console.log('Select onInput:', e.target.value);
                     setFormData({...formData, problem_type: e.target.value});
                   }}
                   required
