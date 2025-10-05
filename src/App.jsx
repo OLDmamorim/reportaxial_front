@@ -174,7 +174,7 @@ const Login = ({ onLogin }) => {
         background: '#FFFFFF',
         borderRadius: '24px',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-        padding: '48px',
+        padding: '48px 60px',
         maxWidth: '800px',
         width: '100%'
       }}>
