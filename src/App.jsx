@@ -6,6 +6,95 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const API_URL = 'https://reportaxialback-production.up.railway.app/api';
 
+// ============ FUNÇÕES AUXILIARES ============
+
+const exportToPDF = (problems, storeName) => {
+  const printWindow = window.open('', '_blank');
+  const getPriorityLabel = (priority) => {
+    const labels = { low: 'Baixa', normal: 'Normal', high: 'Alta', urgent: 'Urgente' };
+    return labels[priority] || 'Normal';
+  };
+  const getStatusLabel = (status) => {
+    const labels = { pending: 'Pendente', in_progress: 'Em Progresso', resolved: 'Resolvido', closed: 'Fechado' };
+    return labels[status] || 'Pendente';
+  };
+  
+  const html = \`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Relatório de Problemas - \${storeName || 'ReportAxial'}</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 40px; }
+        h1 { color: #1F2937; border-bottom: 3px solid #6366F1; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #E5E7EB; padding: 12px; text-align: left; }
+        th { background: #F3F4F6; font-weight: 600; }
+        .priority-urgent { color: #DC2626; font-weight: bold; }
+        .priority-high { color: #EA580C; }
+        .footer { margin-top: 40px; text-align: center; color: #6B7280; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <h1>Relatório de Problemas\${storeName ? ' - ' + storeName : ''}</h1>
+      <p>Gerado em: \${new Date().toLocaleString('pt-PT')}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Descrição</th>
+            <th>Prioridade</th>
+            <th>Status</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          \${problems.map(p => \`
+            <tr>
+              <td>#\${p.id}</td>
+              <td>\${p.problem_description || p.description}</td>
+              <td class="priority-\${p.priority}">\${getPriorityLabel(p.priority)}</td>
+              <td>\${getStatusLabel(p.status)}</td>
+              <td>\${new Date(p.created_at).toLocaleDateString('pt-PT')}</td>
+            </tr>
+          \`).join('')}
+        </tbody>
+      </table>
+      <div class="footer">
+        <p>EXPRESSGLASS - Vidros para Viaturas</p>
+        <p>ReportAxial © \${new Date().getFullYear()}</p>
+      </div>
+      <script>
+        window.print();
+        window.onafterprint = () => window.close();
+      </script>
+    </body>
+    </html>
+  \`;
+  printWindow.document.write(html);
+  printWindow.document.close();
+};
+
+const getPriorityBadge = (priority) => {
+  const colors = {
+    low: { bg: '#F3F4F6', text: '#6B7280', label: 'Baixa' },
+    normal: { bg: '#DBEAFE', text: '#1E40AF', label: 'Normal' },
+    high: { bg: '#FED7AA', text: '#9A3412', label: 'Alta' },
+    urgent: { bg: '#FEE2E2', text: '#991B1B', label: 'Urgente' }
+  };
+  const style = colors[priority] || colors.normal;
+  return (
+    <span style={{
+      padding: '4px 12px', borderRadius: '12px', fontSize: '12px',
+      fontWeight: '600', background: style.bg, color: style.text
+    }}>
+      {style.label}
+    </span>
+  );
+};
+
+
+
 // ============ COMPONENTE LOGO ============
 
 const ExpressGlassLogo = () => (
@@ -280,6 +369,10 @@ const StoreDashboard = ({ onLogout }) => {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterPriority, setFilterPriority] = useState('all');
+  const [filteredProblems, setFilteredProblems] = useState([]);
   const [formData, setFormData] = useState({
     problem_description: '',
     order_date: '',
@@ -369,26 +462,81 @@ const StoreDashboard = ({ onLogout }) => {
       <DashboardHeader title="Painel Loja" onLogout={onLogout} />
 
       <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1F2937', margin: 0 }}>
-            Meus Reportes
-          </h1>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            style={{
-              padding: '12px 24px',
-              background: '#6366F1',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '600'
-            }}
-          >
-            {showForm ? 'Cancelar' : '+ Novo Reporte'}
-          </button>
+
+        {/* Estatísticas */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+          {[
+            { label: 'Total', value: stats.total, color: '#6366F1' },
+            { label: 'Pendentes', value: stats.pending, color: '#F59E0B' },
+            { label: 'Em Progresso', value: stats.in_progress, color: '#3B82F6' },
+            { label: 'Resolvidos', value: stats.resolved, color: '#10B981' }
+          ].map((stat, i) => (
+            <div key={i} style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px' }}>{stat.label}</div>
+              <div style={{ fontSize: '32px', fontWeight: 'bold', color: stat.color }}>{stat.value}</div>
+            </div>
+          ))}
         </div>
+
+
+                {/* Controles e Filtros */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap' }}>
+            <input
+              type="text"
+              placeholder="🔍 Pesquisar..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
+                fontSize: '14px', minWidth: '200px'
+              }}
+            />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
+            >
+              <option value="all">Todos os Status</option>
+              <option value="pending">Pendente</option>
+              <option value="in_progress">Em Progresso</option>
+              <option value="resolved">Resolvido</option>
+            </select>
+            <select
+              value={filterPriority}
+              onChange={(e) => setFilterPriority(e.target.value)}
+              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
+            >
+              <option value="all">Todas as Prioridades</option>
+              <option value="low">Baixa</option>
+              <option value="normal">Normal</option>
+              <option value="high">Alta</option>
+              <option value="urgent">Urgente</option>
+            </select>
+          </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={() => exportToPDF(filteredProblems.length > 0 ? filteredProblems : problems, localStorage.getItem('userName'))}
+              style={{
+                padding: '10px 20px', background: '#10B981', color: 'white', border: 'none',
+                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
+              }}
+            >
+              📄 Exportar PDF
+            </button>
+            <button
+              onClick={() => setShowForm(!showForm)}
+              style={{
+                padding: '10px 20px', background: '#6366F1', color: 'white', border: 'none',
+                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
+              }}
+            >
+              {showForm ? 'Cancelar' : '+ Novo Reporte'}
+            </button>
+          </div>
+        </div>
+
+
 
         {showForm && (
           <div style={{
@@ -550,7 +698,7 @@ const StoreDashboard = ({ onLogout }) => {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {problems.map((problem) => (
+            {(filteredProblems.length > 0 ? filteredProblems : problems).map((problem) => (
               <div key={problem.id} style={{
                 background: '#FFFFFF',
                 padding: '20px',
@@ -559,6 +707,16 @@ const StoreDashboard = ({ onLogout }) => {
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
                   <div>
+                    <h3style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                      {getPriorityBadge(problem.priority)}
+                      {getStatusBadge(problem.status)}
+                    </div>
+                    <h3style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                      {getPriorityBadge(problem.priority)}
+                      {getStatusBadge(problem.status)}
+                    </div>
                     <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1F2937', margin: '0 0 4px 0' }}>
                       {problem.problem_description}
                     </h3>
@@ -566,7 +724,6 @@ const StoreDashboard = ({ onLogout }) => {
                       {new Date(problem.created_at).toLocaleDateString('pt-PT')}
                     </p>
                   </div>
-                  {getStatusBadge(problem.status)}
                 </div>
                 {problem.response_text && (
                   <div style={{
@@ -648,6 +805,29 @@ const SupplierDashboard = ({ onLogout }) => {
     }
   };
 
+  useEffect(() => {
+    let filtered = [...problems];
+    
+    if (searchTerm) {
+      filtered = filtered.filter(p => 
+        (p.problem_description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.product || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.store_name || '').toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(p => p.status === filterStatus);
+    }
+    
+    if (filterPriority !== 'all') {
+      filtered = filtered.filter(p => p.priority === filterPriority);
+    }
+    
+    setFilteredProblems(filtered);
+  }, [problems, searchTerm, filterStatus, filterPriority]);
+
+
   const handleResolve = async (problemId) => {
     if (!confirm('Marcar este problema como resolvido?')) return;
 
@@ -688,6 +868,14 @@ const SupplierDashboard = ({ onLogout }) => {
     );
   };
 
+
+  const stats = {
+    total: problems.length,
+    pending: problems.filter(p => p.status === 'pending').length,
+    in_progress: problems.filter(p => p.status === 'in_progress').length,
+    resolved: problems.filter(p => p.status === 'resolved').length
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -697,9 +885,73 @@ const SupplierDashboard = ({ onLogout }) => {
       <DashboardHeader title="Painel Fornecedor" onLogout={onLogout} />
 
       <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1F2937', marginBottom: '24px' }}>
-          Problemas Reportados
-        </h1>
+
+        {/* Estatísticas */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+          {[
+            { label: 'Total', value: stats.total, color: '#6366F1' },
+            { label: 'Pendentes', value: stats.pending, color: '#F59E0B' },
+            { label: 'Em Progresso', value: stats.in_progress, color: '#3B82F6' },
+            { label: 'Resolvidos', value: stats.resolved, color: '#10B981' }
+          ].map((stat, i) => (
+            <div key={i} style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px' }}>{stat.label}</div>
+              <div style={{ fontSize: '32px', fontWeight: 'bold', color: stat.color }}>{stat.value}</div>
+            </div>
+          ))}
+        </div>
+
+
+                {/* Controles e Filtros */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1F2937', margin: 0 }}>
+            Problemas Reportados
+          </h1>
+          <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <input
+              type="text"
+              placeholder="🔍 Pesquisar..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
+                fontSize: '14px', minWidth: '200px'
+              }}
+            />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
+            >
+              <option value="all">Todos os Status</option>
+              <option value="pending">Pendente</option>
+              <option value="in_progress">Em Progresso</option>
+              <option value="resolved">Resolvido</option>
+            </select>
+            <select
+              value={filterPriority}
+              onChange={(e) => setFilterPriority(e.target.value)}
+              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
+            >
+              <option value="all">Todas as Prioridades</option>
+              <option value="low">Baixa</option>
+              <option value="normal">Normal</option>
+              <option value="high">Alta</option>
+              <option value="urgent">Urgente</option>
+            </select>
+            <button
+              onClick={() => exportToPDF(filteredProblems.length > 0 ? filteredProblems : problems, 'Fornecedor')}
+              style={{
+                padding: '10px 20px', background: '#10B981', color: 'white', border: 'none',
+                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
+              }}
+            >
+              📄 Exportar PDF
+            </button>
+          </div>
+        </div>
+
+
 
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px', color: '#6B7280' }}>
@@ -717,7 +969,7 @@ const SupplierDashboard = ({ onLogout }) => {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {problems.map((problem) => (
+            {(filteredProblems.length > 0 ? filteredProblems : problems).map((problem) => (
               <div key={problem.id} style={{
                 background: '#FFFFFF',
                 padding: '20px',
@@ -726,6 +978,16 @@ const SupplierDashboard = ({ onLogout }) => {
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
                   <div style={{ flex: 1 }}>
+                    <h3style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                      {getPriorityBadge(problem.priority)}
+                      {getStatusBadge(problem.status)}
+                    </div>
+                    <h3style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                      {getPriorityBadge(problem.priority)}
+                      {getStatusBadge(problem.status)}
+                    </div>
                     <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1F2937', margin: '0 0 4px 0' }}>
                       {problem.problem_description}
                     </h3>
@@ -733,7 +995,6 @@ const SupplierDashboard = ({ onLogout }) => {
                       Loja: {problem.store_name} | {new Date(problem.created_at).toLocaleDateString('pt-PT')}
                     </p>
                   </div>
-                  {getStatusBadge(problem.status)}
                 </div>
 
                 {problem.response_text ? (
@@ -860,6 +1121,10 @@ const AdminDashboard = ({ onLogout }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterPriority, setFilterPriority] = useState('all');
+  const [filteredProblems, setFilteredProblems] = useState([]);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -943,26 +1208,64 @@ const AdminDashboard = ({ onLogout }) => {
       <DashboardHeader title="Painel Admin" onLogout={onLogout} />
 
       <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1F2937', margin: 0 }}>
-            Gestão de Utilizadores
-          </h1>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            style={{
-              padding: '12px 24px',
-              background: '#6366F1',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '600'
-            }}
-          >
-            {showForm ? 'Cancelar' : '+ Novo Fornecedor'}
-          </button>
+                {/* Controles e Filtros */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap' }}>
+            <input
+              type="text"
+              placeholder="🔍 Pesquisar..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
+                fontSize: '14px', minWidth: '200px'
+              }}
+            />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
+            >
+              <option value="all">Todos os Status</option>
+              <option value="pending">Pendente</option>
+              <option value="in_progress">Em Progresso</option>
+              <option value="resolved">Resolvido</option>
+            </select>
+            <select
+              value={filterPriority}
+              onChange={(e) => setFilterPriority(e.target.value)}
+              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
+            >
+              <option value="all">Todas as Prioridades</option>
+              <option value="low">Baixa</option>
+              <option value="normal">Normal</option>
+              <option value="high">Alta</option>
+              <option value="urgent">Urgente</option>
+            </select>
+          </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={() => exportToPDF(filteredProblems.length > 0 ? filteredProblems : problems, localStorage.getItem('userName'))}
+              style={{
+                padding: '10px 20px', background: '#10B981', color: 'white', border: 'none',
+                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
+              }}
+            >
+              📄 Exportar PDF
+            </button>
+            <button
+              onClick={() => setShowForm(!showForm)}
+              style={{
+                padding: '10px 20px', background: '#6366F1', color: 'white', border: 'none',
+                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
+              }}
+            >
+              {showForm ? 'Cancelar' : '+ Novo Reporte'}
+            </button>
+          </div>
         </div>
+
+
 
         {showForm && (
           <div style={{
