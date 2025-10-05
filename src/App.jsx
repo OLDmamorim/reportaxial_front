@@ -392,6 +392,10 @@ const StoreDashboard = ({ onLogout }) => {
     fetchProblems();
   }, []);
 
+  useEffect(() => {
+    console.log('formData changed:', formData);
+  }, [formData]);
+
   const fetchProblems = async () => {
     try {
       const token = localStorage.getItem('authToken');
@@ -549,7 +553,10 @@ const StoreDashboard = ({ onLogout }) => {
                 </label>
                 <select
                   value={formData.problem_type}
-                  onChange={(e) => setFormData({...formData, problem_type: e.target.value})}
+                  onChange={(e) => {
+                    console.log('Select changed to:', e.target.value);
+                    setFormData({...formData, problem_type: e.target.value});
+                  }}
                   required
                   autoComplete="off"
                   style={{
@@ -577,7 +584,10 @@ const StoreDashboard = ({ onLogout }) => {
                 <input
                   type="date"
                   value={formData.order_date}
-                  onChange={(e) => setFormData({...formData, order_date: e.target.value})}
+                  onChange={(e) => {
+                    console.log('Date changed to:', e.target.value, 'Current formData:', formData);
+                    setFormData({...formData, order_date: e.target.value});
+                  }}
                   required
                   style={{
                     width: '100%',
@@ -738,6 +748,10 @@ const SupplierDashboard = ({ onLogout }) => {
   useEffect(() => {
     fetchProblems();
   }, []);
+
+  useEffect(() => {
+    console.log('formData changed:', formData);
+  }, [formData]);
 
   const fetchProblems = async () => {
     try {
