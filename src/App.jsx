@@ -19,11 +19,11 @@ const exportToPDF = (problems, storeName) => {
     return labels[status] || 'Pendente';
   };
   
-  const html = \`
+  const html = `
     <!DOCTYPE html>
     <html>
     <head>
-      <title>Relatório de Problemas - \${storeName || 'ReportAxial'}</title>
+      <title>Relatório de Problemas - ${storeName || 'ReportAxial'}</title>
       <style>
         body { font-family: Arial, sans-serif; padding: 40px; }
         h1 { color: #1F2937; border-bottom: 3px solid #6366F1; padding-bottom: 10px; }
@@ -36,8 +36,8 @@ const exportToPDF = (problems, storeName) => {
       </style>
     </head>
     <body>
-      <h1>Relatório de Problemas\${storeName ? ' - ' + storeName : ''}</h1>
-      <p>Gerado em: \${new Date().toLocaleString('pt-PT')}</p>
+      <h1>Relatório de Problemas${storeName ? ' - ' + storeName : ''}</h1>
+      <p>Gerado em: ${new Date().toLocaleString('pt-PT')}</p>
       <table>
         <thead>
           <tr>
@@ -49,20 +49,20 @@ const exportToPDF = (problems, storeName) => {
           </tr>
         </thead>
         <tbody>
-          \${problems.map(p => \`
+          ${problems.map(p => `
             <tr>
-              <td>#\${p.id}</td>
-              <td>\${p.problem_description || p.description}</td>
-              <td class="priority-\${p.priority}">\${getPriorityLabel(p.priority)}</td>
-              <td>\${getStatusLabel(p.status)}</td>
-              <td>\${new Date(p.created_at).toLocaleDateString('pt-PT')}</td>
+              <td>#${p.id}</td>
+              <td>${p.problem_description || p.description}</td>
+              <td class="priority-${p.priority}">${getPriorityLabel(p.priority)}</td>
+              <td>${getStatusLabel(p.status)}</td>
+              <td>${new Date(p.created_at).toLocaleDateString('pt-PT')}</td>
             </tr>
-          \`).join('')}
+          `).join('')}
         </tbody>
       </table>
       <div class="footer">
         <p>EXPRESSGLASS - Vidros para Viaturas</p>
-        <p>ReportAxial © \${new Date().getFullYear()}</p>
+        <p>ReportAxial © ${new Date().getFullYear()}</p>
       </div>
       <script>
         window.print();
@@ -70,7 +70,7 @@ const exportToPDF = (problems, storeName) => {
       </script>
     </body>
     </html>
-  \`;
+  `;
   printWindow.document.write(html);
   printWindow.document.close();
 };
