@@ -706,13 +706,7 @@ const StoreDashboard = ({ onLogout }) => {
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-                  <div>
-                    <h3style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                      {getPriorityBadge(problem.priority)}
-                      {getStatusBadge(problem.status)}
-                    </div>
-                    <h3style={{ flex: 1 }}>
+                  <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
                       {getPriorityBadge(problem.priority)}
                       {getStatusBadge(problem.status)}
@@ -976,25 +970,20 @@ const SupplierDashboard = ({ onLogout }) => {
                 borderRadius: '12px',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-                  <div style={{ flex: 1 }}>
-                    <h3style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                      {getPriorityBadge(problem.priority)}
-                      {getStatusBadge(problem.status)}
-                    </div>
-                    <h3style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                      {getPriorityBadge(problem.priority)}
-                      {getStatusBadge(problem.status)}
-                    </div>
-                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1F2937', margin: '0 0 4px 0' }}>
-                      {problem.problem_description}
-                    </h3>
-                    <p style={{ fontSize: '13px', color: '#6B7280', margin: '0 0 8px 0' }}>
-                      Loja: {problem.store_name} | {new Date(problem.created_at).toLocaleDateString('pt-PT')}
-                    </p>
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                    {getPriorityBadge(problem.priority)}
+                    {getStatusBadge(problem.status)}
                   </div>
+                  <div style={{ marginBottom: '16px' }}>
+                    <strong>Loja:</strong> {problem.store_name}
+                  </div>
+                  <div style={{ marginBottom: '16px' }}>
+                    <strong>Descrição:</strong> {problem.problem_description}
+                  </div>
+                  <p style={{ fontSize: '13px', color: '#6B7280', margin: 0 }}>
+                    {new Date(problem.created_at).toLocaleDateString('pt-PT')}
+                  </p>
                 </div>
 
                 {problem.response_text ? (
