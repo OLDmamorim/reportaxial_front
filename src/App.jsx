@@ -174,7 +174,7 @@ const Login = ({ onLogin }) => {
         borderRadius: '24px',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         padding: '48px',
-        maxWidth: '600px',
+        maxWidth: '500px',
         width: '100%'
       }}>
         <ExpressGlassLogo />
@@ -461,7 +461,7 @@ const StoreDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Loja" onLogout={onLogout} />
 
-      <div style={{ padding: '32px 64px' }}>
+      <div style={{ padding: '20px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
 
         {/* Estatísticas */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
@@ -489,7 +489,7 @@ const StoreDashboard = ({ onLogout }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
                 padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
-                fontSize: '14px', flex: '1', minWidth: '250px', maxWidth: '350px'
+                fontSize: '14px', flex: '1', minWidth: '200px'
               }}
             />
             <select
@@ -878,7 +878,7 @@ const SupplierDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Fornecedor" onLogout={onLogout} />
 
-      <div style={{ padding: '32px 64px' }}>
+      <div style={{ padding: '20px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
 
         {/* Estatísticas */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
@@ -909,7 +909,7 @@ const SupplierDashboard = ({ onLogout }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
                 padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
-                fontSize: '14px', flex: '1', minWidth: '250px', maxWidth: '350px'
+                fontSize: '14px', flex: '1', minWidth: '200px'
               }}
             />
             <select
@@ -1196,7 +1196,7 @@ const AdminDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Admin" onLogout={onLogout} />
 
-      <div style={{ padding: '32px 64px' }}>
+      <div style={{ padding: '20px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
                 {/* Controles e Filtros */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap' }}>
@@ -1207,7 +1207,7 @@ const AdminDashboard = ({ onLogout }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
                 padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
-                fontSize: '14px', flex: '1', minWidth: '250px', maxWidth: '350px'
+                fontSize: '14px', flex: '1', minWidth: '200px'
               }}
             />
             <select
