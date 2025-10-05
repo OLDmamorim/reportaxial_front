@@ -175,7 +175,7 @@ const Login = ({ onLogin }) => {
         borderRadius: '24px',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         padding: '48px',
-        maxWidth: '500px',
+        maxWidth: '800px',
         width: '100%'
       }}>
         <ExpressGlassLogo />
@@ -691,7 +691,7 @@ const StoreDashboard = ({ onLogout }) => {
         )}
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6B7280' }}>
+          <div style={{ textAlign: 'center', padding: '48px 60px', color: '#6B7280' }}>
             A carregar...
           </div>
         ) : problems.length === 0 ? (
@@ -978,20 +978,51 @@ const SupplierDashboard = ({ onLogout }) => {
                 borderRadius: '12px',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
               }}>
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                     {getPriorityBadge(problem.priority)}
                     {getStatusBadge(problem.status)}
                   </div>
-                  <div style={{ marginBottom: '16px' }}>
-                    <strong>Loja:</strong> {problem.store_name}
+                  
+                  <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1F2937', margin: '0 0 12px 0' }}>
+                    {problem.problem_description}
+                  </h3>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 16px', marginBottom: '12px' }}>
+                    <span style={{ color: '#6B7280', fontWeight: '600' }}>Loja:</span>
+                    <span style={{ color: '#1F2937' }}>{problem.store_name}</span>
+                    
+                    <span style={{ color: '#6B7280', fontWeight: '600' }}>Data:</span>
+                    <span style={{ color: '#1F2937' }}>{new Date(problem.created_at).toLocaleDateString('pt-PT')}</span>
+                    
+                    {problem.order_date && (
+                      <>
+                        <span style={{ color: '#6B7280', fontWeight: '600' }}>Data Pedido:</span>
+                        <span style={{ color: '#1F2937' }}>{problem.order_date}</span>
+                      </>
+                    )}
+                    
+                    {problem.product && (
+                      <>
+                        <span style={{ color: '#6B7280', fontWeight: '600' }}>Produto:</span>
+                        <span style={{ color: '#1F2937' }}>{problem.product}</span>
+                      </>
+                    )}
+                    
+                    {problem.eurocode && (
+                      <>
+                        <span style={{ color: '#6B7280', fontWeight: '600' }}>Eurocódigo:</span>
+                        <span style={{ color: '#1F2937' }}>{problem.eurocode}</span>
+                      </>
+                    )}
                   </div>
-                  <div style={{ marginBottom: '16px' }}>
-                    <strong>Descrição:</strong> {problem.problem_description}
-                  </div>
-                  <p style={{ fontSize: '13px', color: '#6B7280', margin: 0 }}>
-                    {new Date(problem.created_at).toLocaleDateString('pt-PT')}
-                  </p>
+                  
+                  {problem.observations && (
+                    <div style={{ marginTop: '12px', padding: '12px', background: '#F9FAFB', borderRadius: '8px' }}>
+                      <span style={{ color: '#6B7280', fontWeight: '600', fontSize: '13px' }}>Observações:</span>
+                      <p style={{ margin: '4px 0 0 0', color: '#374151' }}>{problem.observations}</p>
+                    </div>
+                  )}
                 </div>
 
                 {problem.response_text ? (
