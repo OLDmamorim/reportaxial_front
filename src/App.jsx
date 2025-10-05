@@ -551,6 +551,7 @@ const StoreDashboard = ({ onLogout }) => {
                   value={formData.problem_type}
                   onChange={(e) => setFormData({...formData, problem_type: e.target.value})}
                   required
+                  autoComplete="off"
                   style={{
                     width: '100%',
                     padding: '12px',
