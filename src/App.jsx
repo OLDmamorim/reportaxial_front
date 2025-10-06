@@ -87,7 +87,6 @@ const ExpressGlassLogo = () => (
     borderRadius: '16px',
     marginBottom: '32px',
     textAlign: 'center',
-        textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
