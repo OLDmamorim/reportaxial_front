@@ -791,7 +791,7 @@ const StoreDashboard = ({ onLogout }) => {
 
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
-                  Data *
+                  Data Encomenda *
                 </label>
                 <input
                   type="date"
