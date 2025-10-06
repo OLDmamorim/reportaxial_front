@@ -379,6 +379,8 @@ const StoreDashboard = ({ onLogout }) => {
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [editedObservations, setEditedObservations] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
   
   // Usar refs em vez de controlled components
   const problemTypeRef = useRef(null);
@@ -920,6 +922,22 @@ const StoreDashboard = ({ onLogout }) => {
                   setEditedObservations(problem.observations || '');
                   setShowDetailModal(true);
                   
+                  // Carregar mensagens do histórico
+                  try {
+                    const token = localStorage.getItem('token');
+                    const messagesResponse = await fetch(`${API_URL}/api/problems/${problem.id}/messages`, {
+                      headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                    });
+                    if (messagesResponse.ok) {
+                      const messagesData = await messagesResponse.json();
+                      setMessages(messagesData);
+                    }
+                  } catch (error) {
+                    console.error('Erro ao carregar mensagens:', error);
+                  }
+                  
                   // Marcar como visto pela loja
                   try {
                     const token = localStorage.getItem('token');
@@ -1095,17 +1113,55 @@ const StoreDashboard = ({ onLogout }) => {
                   {getStatusBadge(selectedProblem.status)}
                 </div>
 
-                {/* Observações (Editável) */}
+                {/* Histórico de Conversação */}
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '8px' }}>
+                    Histórico de Conversação
+                  </label>
+                  <div style={{
+                    maxHeight: '300px',
+                    overflowY: 'auto',
+                    border: '1px solid #D1D5DB',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    background: '#F9FAFB'
+                  }}>
+                    {messages.length === 0 ? (
+                      <p style={{ fontSize: '14px', color: '#9CA3AF', textAlign: 'center', margin: 0 }}>
+                        Nenhuma mensagem ainda
+                      </p>
+                    ) : (
+                      messages.map((msg, index) => (
+                        <div key={index} style={{
+                          marginBottom: '12px',
+                          padding: '10px',
+                          background: msg.user_type === 'store' ? '#EEF2FF' : '#FEF3C7',
+                          borderRadius: '8px',
+                          borderLeft: `3px solid ${msg.user_type === 'store' ? '#6366F1' : '#F59E0B'}`
+                        }}>
+                          <p style={{ fontSize: '12px', fontWeight: '600', color: '#374151', margin: '0 0 4px 0' }}>
+                            {msg.user_type === 'store' ? '🏪 Loja' : '📦 Fornecedor'} • {new Date(msg.created_at).toLocaleString('pt-PT')}
+                          </p>
+                          <p style={{ fontSize: '14px', color: '#1F2937', margin: 0 }}>
+                            {msg.message}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Nova Mensagem */}
                 <div>
                   <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                    Observações
+                    Nova Mensagem
                   </label>
                   <textarea
-                    value={editedObservations}
-                    onChange={(e) => setEditedObservations(e.target.value)}
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
                     style={{
                       width: '100%',
-                      minHeight: '100px',
+                      minHeight: '80px',
                       padding: '12px',
                       border: '1px solid #D1D5DB',
                       borderRadius: '8px',
@@ -1113,56 +1169,53 @@ const StoreDashboard = ({ onLogout }) => {
                       fontFamily: 'inherit',
                       resize: 'vertical'
                     }}
-                    placeholder="Adicione observações..."
+                    placeholder="Escreva sua mensagem..."
                   />
                 </div>
-
-                {/* Resposta do Fornecedor */}
-                {selectedProblem.response_text && (
-                  <div style={{
-                    padding: '12px',
-                    background: '#F9FAFB',
-                    borderLeft: '3px solid #6366F1',
-                    borderRadius: '4px'
-                  }}>
-                    <p style={{ fontSize: '13px', fontWeight: '600', color: '#1F2937', margin: '0 0 4px 0' }}>
-                      Resposta do Fornecedor:
-                    </p>
-                    <p style={{ fontSize: '14px', color: '#374151', margin: 0 }}>
-                      {selectedProblem.response_text}
-                    </p>
-                  </div>
-                )}
               </div>
 
               {/* Botões de Ação */}
               <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
                 <button
                   onClick={async () => {
+                    if (!newMessage.trim()) {
+                      alert('Por favor, escreva uma mensagem');
+                      return;
+                    }
+                    
                     try {
                       const token = localStorage.getItem('token');
-                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}`, {
-                        method: 'PATCH',
+                      const response = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                        method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
                           'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({
-                          observations: editedObservations
+                          message: newMessage
                         })
                       });
 
                       if (response.ok) {
-                        alert('Alterações gravadas com sucesso!');
-                        fetchProblems();
-                        setShowDetailModal(false);
-                        setSelectedProblem(null);
+                        // Recarregar mensagens
+                        const messagesResponse = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                          headers: {
+                            'Authorization': `Bearer ${token}`
+                          }
+                        });
+                        if (messagesResponse.ok) {
+                          const messagesData = await messagesResponse.json();
+                          setMessages(messagesData);
+                        }
+                        setNewMessage('');
+                        fetchProblems(); // Atualizar lista para refletir mudanças de visualização
+                        alert('Mensagem enviada com sucesso!');
                       } else {
-                        alert('Erro ao gravar alterações');
+                        alert('Erro ao enviar mensagem');
                       }
                     } catch (error) {
                       console.error('Erro:', error);
-                      alert('Erro ao gravar alterações');
+                      alert('Erro ao enviar mensagem');
                     }
                   }}
                   style={{
@@ -1177,13 +1230,14 @@ const StoreDashboard = ({ onLogout }) => {
                     cursor: 'pointer'
                   }}
                 >
-                  Gravar
+                  Enviar Mensagem
                 </button>
 
                 <button
                   onClick={() => {
                     setShowDetailModal(false);
                     setSelectedProblem(null);
+                    setNewMessage('');
                   }}
                   style={{
                     flex: 1,
@@ -1197,7 +1251,7 @@ const StoreDashboard = ({ onLogout }) => {
                     cursor: 'pointer'
                   }}
                 >
-                  Cancelar
+                  Fechar
                 </button>
 
                 <button
@@ -1266,6 +1320,8 @@ const SupplierDashboard = ({ onLogout }) => {
   const [activeFilter, setActiveFilter] = useState({ type: null, value: null });
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [editedObservations, setEditedObservations] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
     fetchProblems();
@@ -1682,6 +1738,22 @@ const SupplierDashboard = ({ onLogout }) => {
                   setEditedObservations(problem.observations || '');
                   setShowDetailModal(true);
                   
+                  // Carregar mensagens do histórico
+                  try {
+                    const token = localStorage.getItem('token');
+                    const messagesResponse = await fetch(`${API_URL}/api/problems/${problem.id}/messages`, {
+                      headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                    });
+                    if (messagesResponse.ok) {
+                      const messagesData = await messagesResponse.json();
+                      setMessages(messagesData);
+                    }
+                  } catch (error) {
+                    console.error('Erro ao carregar mensagens:', error);
+                  }
+                  
                   // Marcar como visto pelo fornecedor
                   try {
                     const token = localStorage.getItem('token');
@@ -2088,39 +2160,67 @@ const SupplierDashboard = ({ onLogout }) => {
                 {getStatusBadge(selectedProblem.status)}
               </div>
 
-              {/* Observações (Editável) */}
+              {/* Observações (Somente Leitura) */}
+              {selectedProblem.observations && (
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Observações
+                  </label>
+                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0, padding: '12px', background: '#F9FAFB', borderRadius: '8px' }}>
+                    {selectedProblem.observations}
+                  </p>
+                </div>
+              )}
+
+              {/* Histórico de Conversação */}
               <div>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                  Observações
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '8px' }}>
+                  Histórico de Conversação
                 </label>
-                <textarea
-                  value={editedObservations}
-                  onChange={(e) => setEditedObservations(e.target.value)}
-                  style={{
-                    width: '100%',
-                    minHeight: '100px',
-                    padding: '12px',
-                    border: '1px solid #D1D5DB',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    fontFamily: 'inherit',
-                    resize: 'vertical'
-                  }}
-                  placeholder="Adicione observações..."
-                />
+                <div style={{
+                  maxHeight: '300px',
+                  overflowY: 'auto',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  background: '#F9FAFB'
+                }}>
+                  {messages.length === 0 ? (
+                    <p style={{ fontSize: '14px', color: '#9CA3AF', textAlign: 'center', margin: 0 }}>
+                      Nenhuma mensagem ainda
+                    </p>
+                  ) : (
+                    messages.map((msg, index) => (
+                      <div key={index} style={{
+                        marginBottom: '12px',
+                        padding: '10px',
+                        background: msg.user_type === 'store' ? '#EEF2FF' : '#FEF3C7',
+                        borderRadius: '8px',
+                        borderLeft: `3px solid ${msg.user_type === 'store' ? '#6366F1' : '#F59E0B'}`
+                      }}>
+                        <p style={{ fontSize: '12px', fontWeight: '600', color: '#374151', margin: '0 0 4px 0' }}>
+                          {msg.user_type === 'store' ? '🏪 Loja' : '📦 Fornecedor'} • {new Date(msg.created_at).toLocaleString('pt-PT')}
+                        </p>
+                        <p style={{ fontSize: '14px', color: '#1F2937', margin: 0 }}>
+                          {msg.message}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
 
-              {/* Resposta do Fornecedor (Editável para Fornecedor) */}
+              {/* Nova Mensagem */}
               <div>
                 <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                  Resposta do Fornecedor
+                  Nova Mensagem
                 </label>
                 <textarea
-                  value={responseText}
-                  onChange={(e) => setResponseText(e.target.value)}
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
                   style={{
                     width: '100%',
-                    minHeight: '100px',
+                    minHeight: '80px',
                     padding: '12px',
                     border: '1px solid #D1D5DB',
                     borderRadius: '8px',
@@ -2128,7 +2228,7 @@ const SupplierDashboard = ({ onLogout }) => {
                     fontFamily: 'inherit',
                     resize: 'vertical'
                   }}
-                  placeholder="Adicione uma resposta..."
+                  placeholder="Escreva sua mensagem..."
                 />
               </div>
             </div>
@@ -2137,30 +2237,44 @@ const SupplierDashboard = ({ onLogout }) => {
             <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
               <button
                 onClick={async () => {
+                  if (!newMessage.trim()) {
+                    alert('Por favor, escreva uma mensagem');
+                    return;
+                  }
+                  
                   try {
                     const token = localStorage.getItem('token');
-                    const response = await fetch(`${API_URL}/problems/${selectedProblem.id}`, {
-                      method: 'PATCH',
+                    const response = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                      method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                       },
                       body: JSON.stringify({
-                        observations: editedObservations
+                        message: newMessage
                       })
                     });
 
                     if (response.ok) {
-                      alert('Alterações gravadas com sucesso!');
-                      fetchProblems();
-                      setShowDetailModal(false);
-                      setSelectedProblem(null);
+                      // Recarregar mensagens
+                      const messagesResponse = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                        headers: {
+                          'Authorization': `Bearer ${token}`
+                        }
+                      });
+                      if (messagesResponse.ok) {
+                        const messagesData = await messagesResponse.json();
+                        setMessages(messagesData);
+                      }
+                      setNewMessage('');
+                      fetchProblems(); // Atualizar lista para refletir mudanças de visualização
+                      alert('Mensagem enviada com sucesso!');
                     } else {
-                      alert('Erro ao gravar alterações');
+                      alert('Erro ao enviar mensagem');
                     }
                   } catch (error) {
                     console.error('Erro:', error);
-                    alert('Erro ao gravar alterações');
+                    alert('Erro ao enviar mensagem');
                   }
                 }}
                 style={{
@@ -2175,13 +2289,14 @@ const SupplierDashboard = ({ onLogout }) => {
                   cursor: 'pointer'
                 }}
               >
-                Gravar
+                Enviar Mensagem
               </button>
 
               <button
                 onClick={() => {
                   setShowDetailModal(false);
                   setSelectedProblem(null);
+                  setNewMessage('');
                 }}
                 style={{
                   flex: 1,
@@ -2195,7 +2310,7 @@ const SupplierDashboard = ({ onLogout }) => {
                   cursor: 'pointer'
                 }}
               >
-                Cancelar
+                Fechar
               </button>
 
               <button
@@ -2217,6 +2332,7 @@ const SupplierDashboard = ({ onLogout }) => {
                       fetchProblems();
                       setShowDetailModal(false);
                       setSelectedProblem(null);
+                      setNewMessage('');
                     } else {
                       alert('Erro ao resolver report');
                     }
@@ -2651,17 +2767,55 @@ const AdminDashboard = ({ onLogout }) => {
                   {getStatusBadge(selectedProblem.status)}
                 </div>
 
-                {/* Observações (Editável) */}
+                {/* Histórico de Conversação */}
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '8px' }}>
+                    Histórico de Conversação
+                  </label>
+                  <div style={{
+                    maxHeight: '300px',
+                    overflowY: 'auto',
+                    border: '1px solid #D1D5DB',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    background: '#F9FAFB'
+                  }}>
+                    {messages.length === 0 ? (
+                      <p style={{ fontSize: '14px', color: '#9CA3AF', textAlign: 'center', margin: 0 }}>
+                        Nenhuma mensagem ainda
+                      </p>
+                    ) : (
+                      messages.map((msg, index) => (
+                        <div key={index} style={{
+                          marginBottom: '12px',
+                          padding: '10px',
+                          background: msg.user_type === 'store' ? '#EEF2FF' : '#FEF3C7',
+                          borderRadius: '8px',
+                          borderLeft: `3px solid ${msg.user_type === 'store' ? '#6366F1' : '#F59E0B'}`
+                        }}>
+                          <p style={{ fontSize: '12px', fontWeight: '600', color: '#374151', margin: '0 0 4px 0' }}>
+                            {msg.user_type === 'store' ? '🏪 Loja' : '📦 Fornecedor'} • {new Date(msg.created_at).toLocaleString('pt-PT')}
+                          </p>
+                          <p style={{ fontSize: '14px', color: '#1F2937', margin: 0 }}>
+                            {msg.message}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Nova Mensagem */}
                 <div>
                   <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                    Observações
+                    Nova Mensagem
                   </label>
                   <textarea
-                    value={editedObservations}
-                    onChange={(e) => setEditedObservations(e.target.value)}
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
                     style={{
                       width: '100%',
-                      minHeight: '100px',
+                      minHeight: '80px',
                       padding: '12px',
                       border: '1px solid #D1D5DB',
                       borderRadius: '8px',
@@ -2669,56 +2823,53 @@ const AdminDashboard = ({ onLogout }) => {
                       fontFamily: 'inherit',
                       resize: 'vertical'
                     }}
-                    placeholder="Adicione observações..."
+                    placeholder="Escreva sua mensagem..."
                   />
                 </div>
-
-                {/* Resposta do Fornecedor */}
-                {selectedProblem.response_text && (
-                  <div style={{
-                    padding: '12px',
-                    background: '#F9FAFB',
-                    borderLeft: '3px solid #6366F1',
-                    borderRadius: '4px'
-                  }}>
-                    <p style={{ fontSize: '13px', fontWeight: '600', color: '#1F2937', margin: '0 0 4px 0' }}>
-                      Resposta do Fornecedor:
-                    </p>
-                    <p style={{ fontSize: '14px', color: '#374151', margin: 0 }}>
-                      {selectedProblem.response_text}
-                    </p>
-                  </div>
-                )}
               </div>
 
               {/* Botões de Ação */}
               <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
                 <button
                   onClick={async () => {
+                    if (!newMessage.trim()) {
+                      alert('Por favor, escreva uma mensagem');
+                      return;
+                    }
+                    
                     try {
                       const token = localStorage.getItem('token');
-                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}`, {
-                        method: 'PATCH',
+                      const response = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                        method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
                           'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({
-                          observations: editedObservations
+                          message: newMessage
                         })
                       });
 
                       if (response.ok) {
-                        alert('Alterações gravadas com sucesso!');
-                        fetchProblems();
-                        setShowDetailModal(false);
-                        setSelectedProblem(null);
+                        // Recarregar mensagens
+                        const messagesResponse = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                          headers: {
+                            'Authorization': `Bearer ${token}`
+                          }
+                        });
+                        if (messagesResponse.ok) {
+                          const messagesData = await messagesResponse.json();
+                          setMessages(messagesData);
+                        }
+                        setNewMessage('');
+                        fetchProblems(); // Atualizar lista para refletir mudanças de visualização
+                        alert('Mensagem enviada com sucesso!');
                       } else {
-                        alert('Erro ao gravar alterações');
+                        alert('Erro ao enviar mensagem');
                       }
                     } catch (error) {
                       console.error('Erro:', error);
-                      alert('Erro ao gravar alterações');
+                      alert('Erro ao enviar mensagem');
                     }
                   }}
                   style={{
@@ -2733,13 +2884,14 @@ const AdminDashboard = ({ onLogout }) => {
                     cursor: 'pointer'
                   }}
                 >
-                  Gravar
+                  Enviar Mensagem
                 </button>
 
                 <button
                   onClick={() => {
                     setShowDetailModal(false);
                     setSelectedProblem(null);
+                    setNewMessage('');
                   }}
                   style={{
                     flex: 1,
@@ -2753,7 +2905,7 @@ const AdminDashboard = ({ onLogout }) => {
                     cursor: 'pointer'
                   }}
                 >
-                  Cancelar
+                  Fechar
                 </button>
 
                 <button
