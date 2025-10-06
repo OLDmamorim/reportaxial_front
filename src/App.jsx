@@ -744,12 +744,12 @@ const StoreDashboard = ({ onLogout }) => {
             }}
             style={{
               padding: '12px 16px',
-              background: '#FFFFFF',
-              border: '2px solid #E5E7EB',
+              background: '#1F2937',
+              border: '2px solid #374151',
               borderRadius: '8px',
               fontSize: '14px',
               fontWeight: '500',
-              color: '#374151',
+              color: '#FFFFFF',
               cursor: 'pointer',
               minWidth: '200px'
             }}
