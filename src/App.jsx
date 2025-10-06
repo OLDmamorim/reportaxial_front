@@ -653,14 +653,13 @@ const StoreDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Loja" onLogout={onLogout} />
 
-      {/* Título REPORT AXIAL e Botão Export */}
+      {/* Título REPORT AXIAL */}
       <div style={{
         padding: '16px 20px',
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center'
       }}>
-        <div style={{ flex: 1 }}></div>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
@@ -668,31 +667,10 @@ const StoreDashboard = ({ onLogout }) => {
           margin: 0,
           letterSpacing: '1px',
           textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-          flex: 1,
           textAlign: 'center'
         }}>
           REPORT AXIAL
         </h1>
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            onClick={() => setShowExportModal(true)}
-            style={{
-              padding: '10px 20px',
-              background: '#10B981',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
-          >
-            📊 Exportar Excel
-          </button>
-        </div>
       </div>
 
       <div style={{ 
@@ -1921,14 +1899,13 @@ const SupplierDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Fornecedor" onLogout={onLogout} />
 
-      {/* Título REPORT AXIAL e Botão Export */}
+      {/* Título REPORT AXIAL */}
       <div style={{
         padding: '16px 20px',
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center'
       }}>
-        <div style={{ flex: 1 }}></div>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
@@ -1936,31 +1913,10 @@ const SupplierDashboard = ({ onLogout }) => {
           margin: 0,
           letterSpacing: '1px',
           textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-          flex: 1,
           textAlign: 'center'
         }}>
           REPORT AXIAL
         </h1>
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            onClick={() => setShowExportModal(true)}
-            style={{
-              padding: '10px 20px',
-              background: '#10B981',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
-          >
-            📊 Exportar Excel
-          </button>
-        </div>
       </div>
 
       <div style={{ 
@@ -3041,14 +2997,13 @@ const AdminDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Admin" onLogout={onLogout} />
 
-      {/* Título REPORT AXIAL e Botão Export */}
+      {/* Título REPORT AXIAL */}
       <div style={{
         padding: '16px 20px',
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center'
       }}>
-        <div style={{ flex: 1 }}></div>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
@@ -3056,31 +3011,10 @@ const AdminDashboard = ({ onLogout }) => {
           margin: 0,
           letterSpacing: '1px',
           textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-          flex: 1,
           textAlign: 'center'
         }}>
           REPORT AXIAL
         </h1>
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            onClick={() => setShowExportModal(true)}
-            style={{
-              padding: '10px 20px',
-              background: '#10B981',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
-          >
-            📊 Exportar Excel
-          </button>
-        </div>
       </div>
 
       <div style={{ 
