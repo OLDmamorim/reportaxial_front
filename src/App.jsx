@@ -4,6 +4,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 
 const API_URL = 'https://reportaxialback-production.up.railway.app/api';
 
@@ -365,6 +366,9 @@ const StoreDashboard = ({ onLogout }) => {
   const [newMessage, setNewMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProblems, setFilteredProblems] = useState([]);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportStartDate, setExportStartDate] = useState('');
+  const [exportEndDate, setExportEndDate] = useState('');
   
   // Usar refs em vez de controlled components
   const problemTypeRef = useRef(null);
@@ -438,7 +442,81 @@ const StoreDashboard = ({ onLogout }) => {
       // Sem pesquisa, limpar filtro (mostrará apenas não-resolvidos por padrão)
       setFilteredProblems([]);
     }
-  }, [searchTerm, problems]);  const handleSubmit = async (e) => {
+  }, [searchTerm, problems]);
+
+  const handleExportToExcel = () => {
+    // Filtrar problemas por data
+    let problemsToExport = problems;
+    
+    if (exportStartDate || exportEndDate) {
+      problemsToExport = problems.filter(problem => {
+        const createdDate = new Date(problem.created_at);
+        const startDate = exportStartDate ? new Date(exportStartDate) : null;
+        const endDate = exportEndDate ? new Date(exportEndDate) : null;
+        
+        if (startDate && createdDate < startDate) return false;
+        if (endDate && createdDate > endDate) return false;
+        return true;
+      });
+    }
+
+    // Preparar dados para Excel
+    const excelData = problemsToExport.map(problem => {
+      const createdDate = new Date(problem.created_at);
+      const resolvedDate = problem.resolved_at ? new Date(problem.resolved_at) : null;
+      const days = resolvedDate 
+        ? Math.floor((resolvedDate - createdDate) / (1000 * 60 * 60 * 24))
+        : '-';
+      
+      // Pegar último comentário
+      const lastMessage = problem.messages && problem.messages.length > 0
+        ? problem.messages[problem.messages.length - 1].message
+        : '-';
+
+      return {
+        'DATA REGISTO': createdDate.toLocaleDateString('pt-PT'),
+        'DATA RESOLUÇÃO': resolvedDate ? resolvedDate.toLocaleDateString('pt-PT') : '-',
+        'DIAS': days,
+        'LOJA': problem.store_name || '-',
+        'EUROCODE': problem.eurocode || '-',
+        'PROBLEMA A REPORTAR': problem.problem_type || problem.description || '-',
+        'RESOLUÇÃO': lastMessage
+      };
+    });
+
+    // Criar workbook e worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(excelData);
+
+    // Adicionar título
+    XLSX.utils.sheet_add_aoa(ws, [['REPORT AXIAL']], { origin: 'A1' });
+    XLSX.utils.sheet_add_aoa(ws, [[]], { origin: 'A2' }); // Linha vazia
+    
+    // Ajustar largura das colunas
+    ws['!cols'] = [
+      { wch: 15 }, // DATA REGISTO
+      { wch: 15 }, // DATA RESOLUÇÃO
+      { wch: 8 },  // DIAS
+      { wch: 20 }, // LOJA
+      { wch: 15 }, // EUROCODE
+      { wch: 30 }, // PROBLEMA A REPORTAR
+      { wch: 40 }  // RESOLUÇÃO
+    ];
+
+    // Adicionar worksheet ao workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Reportes');
+
+    // Gerar arquivo
+    const fileName = `ReportAxial_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+
+    // Fechar modal
+    setShowExportModal(false);
+    setExportStartDate('');
+    setExportEndDate('');
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Pegar valores diretamente do DOM
@@ -568,21 +646,46 @@ const StoreDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Loja" onLogout={onLogout} />
 
-      {/* Título REPORT AXIAL */}
+      {/* Título REPORT AXIAL e Botão Export */}
       <div style={{
         padding: '16px 20px',
-        textAlign: 'center'
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
+        <div style={{ flex: 1 }}></div>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
           color: '#FFFFFF',
           margin: 0,
           letterSpacing: '1px',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+          textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+          flex: 1,
+          textAlign: 'center'
         }}>
           REPORT AXIAL
         </h1>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            onClick={() => setShowExportModal(true)}
+            style={{
+              padding: '10px 20px',
+              background: '#10B981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+          >
+            📊 Exportar Excel
+          </button>
+        </div>
       </div>
 
       <div style={{ 
@@ -1400,6 +1503,109 @@ const StoreDashboard = ({ onLogout }) => {
         )}
       </div>
     </div>
+      {/* Modal de Exportação Excel */}
+      {showExportModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            padding: '32px',
+            borderRadius: '12px',
+            maxWidth: '500px',
+            width: '90%'
+          }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '24px' }}>
+              Exportar para Excel
+            </h2>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '8px' }}>
+                Data Início (opcional)
+              </label>
+              <input
+                type="date"
+                value={exportStartDate}
+                onChange={(e) => setExportStartDate(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '2px solid #E5E7EB',
+                  borderRadius: '8px',
+                  fontSize: '15px',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '8px' }}>
+                Data Fim (opcional)
+              </label>
+              <input
+                type="date"
+                value={exportEndDate}
+                onChange={(e) => setExportEndDate(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '2px solid #E5E7EB',
+                  borderRadius: '8px',
+                  fontSize: '15px',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => {
+                  setShowExportModal(false);
+                  setExportStartDate('');
+                  setExportEndDate('');
+                }}
+                style={{
+                  padding: '12px 24px',
+                  background: '#6B7280',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleExportToExcel}
+                style={{
+                  padding: '12px 24px',
+                  background: '#10B981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                📊 Exportar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -1606,21 +1812,46 @@ const SupplierDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Fornecedor" onLogout={onLogout} />
 
-      {/* Título REPORT AXIAL */}
+      {/* Título REPORT AXIAL e Botão Export */}
       <div style={{
         padding: '16px 20px',
-        textAlign: 'center'
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
+        <div style={{ flex: 1 }}></div>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
           color: '#FFFFFF',
           margin: 0,
           letterSpacing: '1px',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+          textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+          flex: 1,
+          textAlign: 'center'
         }}>
           REPORT AXIAL
         </h1>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            onClick={() => setShowExportModal(true)}
+            style={{
+              padding: '10px 20px',
+              background: '#10B981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+          >
+            📊 Exportar Excel
+          </button>
+        </div>
       </div>
 
       <div style={{ 
@@ -2579,21 +2810,46 @@ const AdminDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Admin" onLogout={onLogout} />
 
-      {/* Título REPORT AXIAL */}
+      {/* Título REPORT AXIAL e Botão Export */}
       <div style={{
         padding: '16px 20px',
-        textAlign: 'center'
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
+        <div style={{ flex: 1 }}></div>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
           color: '#FFFFFF',
           margin: 0,
           letterSpacing: '1px',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+          textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+          flex: 1,
+          textAlign: 'center'
         }}>
           REPORT AXIAL
         </h1>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            onClick={() => setShowExportModal(true)}
+            style={{
+              padding: '10px 20px',
+              background: '#10B981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+          >
+            📊 Exportar Excel
+          </button>
+        </div>
       </div>
 
       <div style={{ 
