@@ -559,14 +559,16 @@ const StoreDashboard = ({ onLogout }) => {
         
         {/* Layout Desktop: 2 linhas horizontais | Layout Mobile: 2 colunas verticais */}
         <div style={{
-          display: isMobile ? 'grid' : 'block',
+          display: isMobile ? 'grid' : 'flex',
+          flexDirection: isMobile ? 'initial' : 'column',
           gridTemplateColumns: isMobile ? '1fr 1fr' : 'none',
-          gap: isMobile ? '16px' : '0',
-          marginBottom: '24px'
+          gap: isMobile ? '16px' : '24px',
+          marginBottom: '24px',
+          width: '100%'
         }}>
           
           {/* Coluna/Linha STATUS */}
-          <div>
+          <div style={{ width: '100%' }}>
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: '700', 
@@ -654,7 +656,7 @@ const StoreDashboard = ({ onLogout }) => {
           </div>
 
           {/* Coluna/Linha MOTIVOS */}
-          <div>
+          <div style={{ width: '100%' }}>
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: '700', 
@@ -1524,14 +1526,16 @@ const SupplierDashboard = ({ onLogout }) => {
         
         {/* Layout Desktop: 2 linhas horizontais | Layout Mobile: 2 colunas verticais */}
         <div style={{
-          display: isMobile ? 'grid' : 'block',
+          display: isMobile ? 'grid' : 'flex',
+          flexDirection: isMobile ? 'initial' : 'column',
           gridTemplateColumns: isMobile ? '1fr 1fr' : 'none',
-          gap: isMobile ? '16px' : '0',
-          marginBottom: '24px'
+          gap: isMobile ? '16px' : '24px',
+          marginBottom: '24px',
+          width: '100%'
         }}>
           
           {/* Coluna/Linha STATUS */}
-          <div>
+          <div style={{ width: '100%' }}>
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: '700', 
@@ -1619,7 +1623,7 @@ const SupplierDashboard = ({ onLogout }) => {
           </div>
 
           {/* Coluna/Linha MOTIVOS */}
-          <div>
+          <div style={{ width: '100%' }}>
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: '700', 
