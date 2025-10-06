@@ -998,17 +998,17 @@ const StoreDashboard = ({ onLogout }) => {
                 {/* Tipo de Problema */}
                 <div>
                   <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                    Tipo de Problema
+                    Tipo de Problema *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                     {selectedProblem.problem_description}
                   </p>
                 </div>
 
-                {/* Data do Pedido */}
+                {/* Data da Encomenda */}
                 <div>
                   <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                    Data do Pedido
+                    Data da Encomenda *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                     {new Date(selectedProblem.order_date).toLocaleDateString('pt-PT')}
@@ -1019,7 +1019,7 @@ const StoreDashboard = ({ onLogout }) => {
                 {selectedProblem.supplier_order && (
                   <div>
                     <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                      Número do Pedido do Fornecedor
+                      Número do Pedido do Fornecedor *
                     </label>
                     <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                       {selectedProblem.supplier_order}
@@ -1031,7 +1031,7 @@ const StoreDashboard = ({ onLogout }) => {
                 {selectedProblem.eurocode && (
                   <div>
                     <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                      Eurocode
+                      Eurocode *
                     </label>
                     <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                       {selectedProblem.eurocode}
@@ -1946,17 +1946,17 @@ const SupplierDashboard = ({ onLogout }) => {
               {/* Tipo de Problema */}
               <div>
                 <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                  Tipo de Problema
+                  Tipo de Problema *
                 </label>
                 <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                   {selectedProblem.problem_description}
                 </p>
               </div>
 
-              {/* Data do Pedido */}
+              {/* Data da Encomenda */}
               <div>
                 <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                  Data do Pedido
+                  Data da Encomenda *
                 </label>
                 <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                   {new Date(selectedProblem.order_date).toLocaleDateString('pt-PT')}
@@ -1967,7 +1967,7 @@ const SupplierDashboard = ({ onLogout }) => {
               {selectedProblem.supplier_order && (
                 <div>
                   <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                    Número do Pedido do Fornecedor
+                    Número do Pedido do Fornecedor *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                     {selectedProblem.supplier_order}
@@ -1979,7 +1979,7 @@ const SupplierDashboard = ({ onLogout }) => {
               {selectedProblem.eurocode && (
                 <div>
                   <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                    Eurocode
+                    Eurocode *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                     {selectedProblem.eurocode}
@@ -2500,17 +2500,17 @@ const AdminDashboard = ({ onLogout }) => {
                 {/* Tipo de Problema */}
                 <div>
                   <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                    Tipo de Problema
+                    Tipo de Problema *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                     {selectedProblem.problem_description}
                   </p>
                 </div>
 
-                {/* Data do Pedido */}
+                {/* Data da Encomenda */}
                 <div>
                   <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                    Data do Pedido
+                    Data da Encomenda *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                     {new Date(selectedProblem.order_date).toLocaleDateString('pt-PT')}
@@ -2521,7 +2521,7 @@ const AdminDashboard = ({ onLogout }) => {
                 {selectedProblem.supplier_order && (
                   <div>
                     <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                      Número do Pedido do Fornecedor
+                      Número do Pedido do Fornecedor *
                     </label>
                     <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                       {selectedProblem.supplier_order}
@@ -2533,7 +2533,7 @@ const AdminDashboard = ({ onLogout }) => {
                 {selectedProblem.eurocode && (
                   <div>
                     <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                      Eurocode
+                      Eurocode *
                     </label>
                     <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
                       {selectedProblem.eurocode}
