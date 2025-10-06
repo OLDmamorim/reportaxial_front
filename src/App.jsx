@@ -1217,7 +1217,9 @@ const StoreDashboard = ({ onLogout }) => {
                         fetchProblems(); // Atualizar lista para refletir mudanças de visualização
                         alert('Mensagem enviada com sucesso!');
                       } else {
-                        alert('Erro ao enviar mensagem');
+                        const errorData = await response.json();
+                        console.log('[Store] Erro do servidor:', errorData);
+                        alert(`Erro ao enviar mensagem: ${errorData.message || 'Erro desconhecido'}`);
                       }
                     } catch (error) {
                       console.error('Erro:', error);
@@ -2877,7 +2879,9 @@ const AdminDashboard = ({ onLogout }) => {
                         fetchProblems(); // Atualizar lista para refletir mudanças de visualização
                         alert('Mensagem enviada com sucesso!');
                       } else {
-                        alert('Erro ao enviar mensagem');
+                        const errorData = await response.json();
+                        console.log('[Store] Erro do servidor:', errorData);
+                        alert(`Erro ao enviar mensagem: ${errorData.message || 'Erro desconhecido'}`);
                       }
                     } catch (error) {
                       console.error('Erro:', error);
