@@ -570,7 +570,7 @@ const StoreDashboard = ({ onLogout }) => {
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: '700', 
-              color: '#374151', 
+              color: '#FFFFFF', 
               marginBottom: '12px',
               textAlign: 'center'
             }}>
@@ -658,7 +658,7 @@ const StoreDashboard = ({ onLogout }) => {
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: '700', 
-              color: '#374151', 
+              color: '#FFFFFF', 
               marginBottom: '12px',
               textAlign: 'center'
             }}>
@@ -764,7 +764,7 @@ const StoreDashboard = ({ onLogout }) => {
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
                   Problema a Reportar *
                 </label>
                 <select
@@ -790,7 +790,7 @@ const StoreDashboard = ({ onLogout }) => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
                   Data Encomenda *
                 </label>
                 <input
@@ -809,7 +809,7 @@ const StoreDashboard = ({ onLogout }) => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
                   Enc Fornecedor *
                 </label>
                 <input
@@ -829,7 +829,7 @@ const StoreDashboard = ({ onLogout }) => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
                   Referência/Eurocode *
                 </label>
                 <input
@@ -848,7 +848,7 @@ const StoreDashboard = ({ onLogout }) => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
                   Observações
                 </label>
                 <textarea
@@ -887,14 +887,18 @@ const StoreDashboard = ({ onLogout }) => {
         )}
 
         {/* Lista de Reportes */}
-        <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '16px' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#FFFFFF', marginBottom: '16px' }}>
           Meus Reportes
         </h2>
 
         {loading ? (
           <p>Carregando...</p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', 
+            gap: '16px' 
+          }}>
             {problems
               .filter(problem => {
               // Se filtro de status "resolved" está ativo, mostrar resolvidos
@@ -1034,7 +1038,7 @@ const StoreDashboard = ({ onLogout }) => {
                     <p style={{ fontSize: '13px', fontWeight: '600', color: '#1F2937', margin: '0 0 4px 0' }}>
                       Resposta do Fornecedor:
                     </p>
-                    <p style={{ fontSize: '14px', color: '#374151', margin: 0 }}>
+                    <p style={{ fontSize: '14px', color: '#FFFFFF', margin: 0 }}>
                       {problem.response_text}
                     </p>
                   </div>
@@ -1080,10 +1084,14 @@ const StoreDashboard = ({ onLogout }) => {
                 Detalhes do Report
               </h2>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', 
+            gap: '16px' 
+          }}>
                 {/* Tipo de Problema */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Tipo de Problema *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -1093,7 +1101,7 @@ const StoreDashboard = ({ onLogout }) => {
 
                 {/* Data da Encomenda */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Data da Encomenda *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -1104,7 +1112,7 @@ const StoreDashboard = ({ onLogout }) => {
                 {/* Número do Pedido */}
                 {selectedProblem.supplier_order && (
                   <div>
-                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                       Número do Pedido do Fornecedor *
                     </label>
                     <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -1116,7 +1124,7 @@ const StoreDashboard = ({ onLogout }) => {
                 {/* Eurocode */}
                 {selectedProblem.eurocode && (
                   <div>
-                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                       Eurocode *
                     </label>
                     <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -1127,7 +1135,7 @@ const StoreDashboard = ({ onLogout }) => {
 
                 {/* Status */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Status
                   </label>
                   {getStatusBadge(selectedProblem.status)}
@@ -1135,7 +1143,7 @@ const StoreDashboard = ({ onLogout }) => {
 
                 {/* Histórico de Conversação */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '8px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '8px' }}>
                     Histórico de Conversação
                   </label>
                   <div style={{
@@ -1159,7 +1167,7 @@ const StoreDashboard = ({ onLogout }) => {
                           borderRadius: '8px',
                           borderLeft: `3px solid ${msg.user_type === 'store' ? '#6366F1' : '#F59E0B'}`
                         }}>
-                          <p style={{ fontSize: '12px', fontWeight: '600', color: '#374151', margin: '0 0 4px 0' }}>
+                          <p style={{ fontSize: '12px', fontWeight: '600', color: '#FFFFFF', margin: '0 0 4px 0' }}>
                             {msg.user_type === 'store' ? '🏪 Loja' : '📦 Fornecedor'} • {new Date(msg.created_at).toLocaleString('pt-PT')}
                           </p>
                           <p style={{ fontSize: '14px', color: '#1F2937', margin: 0 }}>
@@ -1173,7 +1181,7 @@ const StoreDashboard = ({ onLogout }) => {
 
                 {/* Nova Mensagem */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Nova Mensagem
                   </label>
                   <textarea
@@ -1272,7 +1280,7 @@ const StoreDashboard = ({ onLogout }) => {
                     flex: 1,
                     padding: '12px 24px',
                     background: '#E5E7EB',
-                    color: '#374151',
+                    color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '8px',
                     fontSize: '16px',
@@ -1535,7 +1543,7 @@ const SupplierDashboard = ({ onLogout }) => {
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: '700', 
-              color: '#374151', 
+              color: '#FFFFFF', 
               marginBottom: '12px',
               textAlign: 'center'
             }}>
@@ -1623,7 +1631,7 @@ const SupplierDashboard = ({ onLogout }) => {
             <h3 style={{ 
               fontSize: '14px', 
               fontWeight: '700', 
-              color: '#374151', 
+              color: '#FFFFFF', 
               marginBottom: '12px',
               textAlign: 'center'
             }}>
@@ -1915,7 +1923,7 @@ const SupplierDashboard = ({ onLogout }) => {
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#6366F1', margin: '0 0 8px 0' }}>
                 {selectedProblemData.store_name}
               </h3>
-              <p style={{ fontSize: '16px', color: '#374151', margin: 0 }}>
+              <p style={{ fontSize: '16px', color: '#FFFFFF', margin: 0 }}>
                 {selectedProblemData.problem_description}
               </p>
             </div>
@@ -1997,7 +2005,7 @@ const SupplierDashboard = ({ onLogout }) => {
             {/* Campo de Resposta */}
             {selectedProblemData.status !== 'resolved' && (
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
                   {selectedProblemData.response_text ? 'Atualizar Resposta' : 'Responder'}
                 </label>
                 <textarea
@@ -2127,10 +2135,14 @@ const SupplierDashboard = ({ onLogout }) => {
               Detalhes do Report
             </h2>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', 
+            gap: '16px' 
+          }}>
               {/* Tipo de Problema */}
               <div>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                   Tipo de Problema *
                 </label>
                 <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -2140,7 +2152,7 @@ const SupplierDashboard = ({ onLogout }) => {
 
               {/* Data da Encomenda */}
               <div>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                   Data da Encomenda *
                 </label>
                 <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -2151,7 +2163,7 @@ const SupplierDashboard = ({ onLogout }) => {
               {/* Número do Pedido */}
               {selectedProblem.supplier_order && (
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Número do Pedido do Fornecedor *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -2163,7 +2175,7 @@ const SupplierDashboard = ({ onLogout }) => {
               {/* Eurocode */}
               {selectedProblem.eurocode && (
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Eurocode *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -2174,7 +2186,7 @@ const SupplierDashboard = ({ onLogout }) => {
 
               {/* Status */}
               <div>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                   Status
                 </label>
                 {getStatusBadge(selectedProblem.status)}
@@ -2183,7 +2195,7 @@ const SupplierDashboard = ({ onLogout }) => {
               {/* Observações (Somente Leitura) */}
               {selectedProblem.observations && (
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Observações
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0, padding: '12px', background: '#F9FAFB', borderRadius: '8px' }}>
@@ -2194,7 +2206,7 @@ const SupplierDashboard = ({ onLogout }) => {
 
               {/* Histórico de Conversação */}
               <div>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '8px' }}>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '8px' }}>
                   Histórico de Conversação
                 </label>
                 <div style={{
@@ -2218,7 +2230,7 @@ const SupplierDashboard = ({ onLogout }) => {
                         borderRadius: '8px',
                         borderLeft: `3px solid ${msg.user_type === 'store' ? '#6366F1' : '#F59E0B'}`
                       }}>
-                        <p style={{ fontSize: '12px', fontWeight: '600', color: '#374151', margin: '0 0 4px 0' }}>
+                        <p style={{ fontSize: '12px', fontWeight: '600', color: '#FFFFFF', margin: '0 0 4px 0' }}>
                           {msg.user_type === 'store' ? '🏪 Loja' : '📦 Fornecedor'} • {new Date(msg.created_at).toLocaleString('pt-PT')}
                         </p>
                         <p style={{ fontSize: '14px', color: '#1F2937', margin: 0 }}>
@@ -2232,7 +2244,7 @@ const SupplierDashboard = ({ onLogout }) => {
 
               {/* Nova Mensagem */}
               <div>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                   Nova Mensagem
                 </label>
                 <textarea
@@ -2323,7 +2335,7 @@ const SupplierDashboard = ({ onLogout }) => {
                   flex: 1,
                   padding: '12px 24px',
                   background: '#E5E7EB',
-                  color: '#374151',
+                  color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '16px',
@@ -2556,7 +2568,7 @@ const AdminDashboard = ({ onLogout }) => {
             <form onSubmit={handleCreateSupplier} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#FFFFFF', marginBottom: '6px' }}>
                     Nome do Fornecedor *
                   </label>
                   <input
@@ -2575,7 +2587,7 @@ const AdminDashboard = ({ onLogout }) => {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#FFFFFF', marginBottom: '6px' }}>
                     Pessoa de Contacto
                   </label>
                   <input
@@ -2595,7 +2607,7 @@ const AdminDashboard = ({ onLogout }) => {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#FFFFFF', marginBottom: '6px' }}>
                     Email *
                   </label>
                   <input
@@ -2614,7 +2626,7 @@ const AdminDashboard = ({ onLogout }) => {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#FFFFFF', marginBottom: '6px' }}>
                     Password *
                   </label>
                   <input
@@ -2732,10 +2744,14 @@ const AdminDashboard = ({ onLogout }) => {
                 Detalhes do Report
               </h2>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', 
+            gap: '16px' 
+          }}>
                 {/* Tipo de Problema */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Tipo de Problema *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -2745,7 +2761,7 @@ const AdminDashboard = ({ onLogout }) => {
 
                 {/* Data da Encomenda */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Data da Encomenda *
                   </label>
                   <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -2756,7 +2772,7 @@ const AdminDashboard = ({ onLogout }) => {
                 {/* Número do Pedido */}
                 {selectedProblem.supplier_order && (
                   <div>
-                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                       Número do Pedido do Fornecedor *
                     </label>
                     <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -2768,7 +2784,7 @@ const AdminDashboard = ({ onLogout }) => {
                 {/* Eurocode */}
                 {selectedProblem.eurocode && (
                   <div>
-                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                       Eurocode *
                     </label>
                     <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
@@ -2779,7 +2795,7 @@ const AdminDashboard = ({ onLogout }) => {
 
                 {/* Status */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Status
                   </label>
                   {getStatusBadge(selectedProblem.status)}
@@ -2787,7 +2803,7 @@ const AdminDashboard = ({ onLogout }) => {
 
                 {/* Histórico de Conversação */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '8px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '8px' }}>
                     Histórico de Conversação
                   </label>
                   <div style={{
@@ -2811,7 +2827,7 @@ const AdminDashboard = ({ onLogout }) => {
                           borderRadius: '8px',
                           borderLeft: `3px solid ${msg.user_type === 'store' ? '#6366F1' : '#F59E0B'}`
                         }}>
-                          <p style={{ fontSize: '12px', fontWeight: '600', color: '#374151', margin: '0 0 4px 0' }}>
+                          <p style={{ fontSize: '12px', fontWeight: '600', color: '#FFFFFF', margin: '0 0 4px 0' }}>
                             {msg.user_type === 'store' ? '🏪 Loja' : '📦 Fornecedor'} • {new Date(msg.created_at).toLocaleString('pt-PT')}
                           </p>
                           <p style={{ fontSize: '14px', color: '#1F2937', margin: 0 }}>
@@ -2825,7 +2841,7 @@ const AdminDashboard = ({ onLogout }) => {
 
                 {/* Nova Mensagem */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF', display: 'block', marginBottom: '4px' }}>
                     Nova Mensagem
                   </label>
                   <textarea
@@ -2924,7 +2940,7 @@ const AdminDashboard = ({ onLogout }) => {
                     flex: 1,
                     padding: '12px 24px',
                     background: '#E5E7EB',
-                    color: '#374151',
+                    color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '8px',
                     fontSize: '16px',
