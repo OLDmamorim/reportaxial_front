@@ -913,11 +913,17 @@ const StoreDashboard = ({ onLogout }) => {
               
               return true;
             })
-            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // Ordenar por antiguidade (mais antigos primeiro)
             .map((problem) => (
               <div 
                 key={problem.id} 
                 onClick={async () => {
+                  // Atualizar estado local imediatamente para parar de piscar
+                  setProblems(prevProblems => 
+                    prevProblems.map(p => 
+                      p.id === problem.id ? { ...p, viewed_by_store: true } : p
+                    )
+                  );
+                  
                   setSelectedProblem(problem);
                   setEditedObservations(problem.observations || '');
                   setShowDetailModal(true);
@@ -938,7 +944,7 @@ const StoreDashboard = ({ onLogout }) => {
                     console.error('Erro ao carregar mensagens:', error);
                   }
                   
-                  // Marcar como visto pela loja
+                  // Marcar como visto pela loja no servidor
                   try {
                     const token = localStorage.getItem('token');
                     await fetch(`${API_URL}/problems/${problem.id}/mark-viewed`, {
@@ -1737,11 +1743,17 @@ const SupplierDashboard = ({ onLogout }) => {
             gap: '20px'
           }}>
             {(filteredProblems.length > 0 ? filteredProblems : problems)
-              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // Ordenar por antiguidade (mais antigos primeiro)
               .map((problem) => (
               <div
                 key={problem.id}
                 onClick={async () => {
+                  // Atualizar estado local imediatamente para parar de piscar
+                  setProblems(prevProblems => 
+                    prevProblems.map(p => 
+                      p.id === problem.id ? { ...p, viewed_by_supplier: true } : p
+                    )
+                  );
+                  
                   setSelectedProblem(problem);
                   setEditedObservations(problem.observations || '');
                   setShowDetailModal(true);
@@ -1762,7 +1774,7 @@ const SupplierDashboard = ({ onLogout }) => {
                     console.error('Erro ao carregar mensagens:', error);
                   }
                   
-                  // Marcar como visto pelo fornecedor
+                  // Marcar como visto pelo fornecedor no servidor
                   try {
                     const token = localStorage.getItem('token');
                     await fetch(`${API_URL}/problems/${problem.id}/mark-viewed`, {
