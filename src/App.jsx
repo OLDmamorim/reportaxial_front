@@ -375,6 +375,9 @@ const StoreDashboard = ({ onLogout }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [activeFilter, setActiveFilter] = useState({ type: null, value: null });
   const [loading, setLoading] = useState(true);
+  const [selectedProblem, setSelectedProblem] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [editedObservations, setEditedObservations] = useState('');
   
   // Usar refs em vez de controlled components
   const problemTypeRef = useRef(null);
@@ -898,12 +901,30 @@ const StoreDashboard = ({ onLogout }) => {
               
               return true;
             }).map((problem) => (
-              <div key={problem.id} style={{
-                background: '#FFFFFF',
-                padding: '20px',
-                borderRadius: '12px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-              }}>
+              <div 
+                key={problem.id} 
+                onClick={() => {
+                  setSelectedProblem(problem);
+                  setEditedObservations(problem.observations || '');
+                  setShowDetailModal(true);
+                }}
+                style={{
+                  background: '#FFFFFF',
+                  padding: '20px',
+                  borderRadius: '12px',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s, box-shadow 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                }}
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
                   <div>
                     <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1F2937', margin: '0 0 8px 0' }}>
@@ -936,6 +957,246 @@ const StoreDashboard = ({ onLogout }) => {
             ))}
           </div>
         )}
+
+        {/* Modal de Detalhes do Report */}
+        {showDetailModal && selectedProblem && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+          }}
+          onClick={() => {
+            setShowDetailModal(false);
+            setSelectedProblem(null);
+          }}
+          >
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: '12px',
+              padding: '24px',
+              maxWidth: '600px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+            >
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '20px' }}>
+                Detalhes do Report
+              </h2>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Tipo de Problema */}
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Tipo de Problema
+                  </label>
+                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                    {selectedProblem.problem_description}
+                  </p>
+                </div>
+
+                {/* Data do Pedido */}
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Data do Pedido
+                  </label>
+                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                    {new Date(selectedProblem.order_date).toLocaleDateString('pt-PT')}
+                  </p>
+                </div>
+
+                {/* Número do Pedido */}
+                {selectedProblem.supplier_order && (
+                  <div>
+                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                      Número do Pedido do Fornecedor
+                    </label>
+                    <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                      {selectedProblem.supplier_order}
+                    </p>
+                  </div>
+                )}
+
+                {/* Eurocode */}
+                {selectedProblem.eurocode && (
+                  <div>
+                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                      Eurocode
+                    </label>
+                    <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                      {selectedProblem.eurocode}
+                    </p>
+                  </div>
+                )}
+
+                {/* Status */}
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Status
+                  </label>
+                  {getStatusBadge(selectedProblem.status)}
+                </div>
+
+                {/* Observações (Editável) */}
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Observações
+                  </label>
+                  <textarea
+                    value={editedObservations}
+                    onChange={(e) => setEditedObservations(e.target.value)}
+                    style={{
+                      width: '100%',
+                      minHeight: '100px',
+                      padding: '12px',
+                      border: '1px solid #D1D5DB',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontFamily: 'inherit',
+                      resize: 'vertical'
+                    }}
+                    placeholder="Adicione observações..."
+                  />
+                </div>
+
+                {/* Resposta do Fornecedor */}
+                {selectedProblem.response_text && (
+                  <div style={{
+                    padding: '12px',
+                    background: '#F9FAFB',
+                    borderLeft: '3px solid #6366F1',
+                    borderRadius: '4px'
+                  }}>
+                    <p style={{ fontSize: '13px', fontWeight: '600', color: '#1F2937', margin: '0 0 4px 0' }}>
+                      Resposta do Fornecedor:
+                    </p>
+                    <p style={{ fontSize: '14px', color: '#374151', margin: 0 }}>
+                      {selectedProblem.response_text}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Botões de Ação */}
+              <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={async () => {
+                    try {
+                      const token = localStorage.getItem('token');
+                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}`, {
+                        method: 'PATCH',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                          observations: editedObservations
+                        })
+                      });
+
+                      if (response.ok) {
+                        alert('Alterações gravadas com sucesso!');
+                        fetchProblems();
+                        setShowDetailModal(false);
+                        setSelectedProblem(null);
+                      } else {
+                        alert('Erro ao gravar alterações');
+                      }
+                    } catch (error) {
+                      console.error('Erro:', error);
+                      alert('Erro ao gravar alterações');
+                    }
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    background: '#6366F1',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Gravar
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    setSelectedProblem(null);
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    background: '#E5E7EB',
+                    color: '#374151',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  onClick={async () => {
+                    if (!confirm('Tem certeza que deseja marcar este report como resolvido?')) return;
+                    
+                    try {
+                      const token = localStorage.getItem('token');
+                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}/resolve`, {
+                        method: 'PATCH',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${token}`
+                        }
+                      });
+
+                      if (response.ok) {
+                        alert('Report marcado como resolvido!');
+                        fetchProblems();
+                        setShowDetailModal(false);
+                        setSelectedProblem(null);
+                      } else {
+                        alert('Erro ao resolver report');
+                      }
+                    } catch (error) {
+                      console.error('Erro:', error);
+                      alert('Erro ao resolver report');
+                    }
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    background: '#10B981',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Resolvido
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -955,6 +1216,8 @@ const SupplierDashboard = ({ onLogout }) => {
   const [filteredProblems, setFilteredProblems] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [activeFilter, setActiveFilter] = useState({ type: null, value: null });
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [editedObservations, setEditedObservations] = useState('');
 
   useEffect(() => {
     fetchProblems();
@@ -1355,7 +1618,11 @@ const SupplierDashboard = ({ onLogout }) => {
             {(filteredProblems.length > 0 ? filteredProblems : problems).map((problem) => (
               <div
                 key={problem.id}
-                onClick={() => setSelectedProblem(problem.id)}
+                onClick={() => {
+                  setSelectedProblem(problem);
+                  setEditedObservations(problem.observations || '');
+                  setShowDetailModal(true);
+                }}
                 style={{
                   background: '#FFFFFF',
                   padding: '20px',
@@ -1637,6 +1904,251 @@ const SupplierDashboard = ({ onLogout }) => {
             zIndex: 999
           }}
         />
+      )}
+
+      {/* Modal de Detalhes do Report */}
+      {showDetailModal && selectedProblem && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}
+        onClick={() => {
+          setShowDetailModal(false);
+          setSelectedProblem(null);
+        }}
+        >
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: '12px',
+            padding: '24px',
+            maxWidth: '600px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'
+          }}
+          onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '20px' }}>
+              Detalhes do Report
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Tipo de Problema */}
+              <div>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  Tipo de Problema
+                </label>
+                <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                  {selectedProblem.problem_description}
+                </p>
+              </div>
+
+              {/* Data do Pedido */}
+              <div>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  Data do Pedido
+                </label>
+                <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                  {new Date(selectedProblem.order_date).toLocaleDateString('pt-PT')}
+                </p>
+              </div>
+
+              {/* Número do Pedido */}
+              {selectedProblem.supplier_order && (
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Número do Pedido do Fornecedor
+                  </label>
+                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                    {selectedProblem.supplier_order}
+                  </p>
+                </div>
+              )}
+
+              {/* Eurocode */}
+              {selectedProblem.eurocode && (
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Eurocode
+                  </label>
+                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                    {selectedProblem.eurocode}
+                  </p>
+                </div>
+              )}
+
+              {/* Status */}
+              <div>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  Status
+                </label>
+                {getStatusBadge(selectedProblem.status)}
+              </div>
+
+              {/* Observações (Editável) */}
+              <div>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  Observações
+                </label>
+                <textarea
+                  value={editedObservations}
+                  onChange={(e) => setEditedObservations(e.target.value)}
+                  style={{
+                    width: '100%',
+                    minHeight: '100px',
+                    padding: '12px',
+                    border: '1px solid #D1D5DB',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                    resize: 'vertical'
+                  }}
+                  placeholder="Adicione observações..."
+                />
+              </div>
+
+              {/* Resposta do Fornecedor (Editável para Fornecedor) */}
+              <div>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  Resposta do Fornecedor
+                </label>
+                <textarea
+                  value={responseText}
+                  onChange={(e) => setResponseText(e.target.value)}
+                  style={{
+                    width: '100%',
+                    minHeight: '100px',
+                    padding: '12px',
+                    border: '1px solid #D1D5DB',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                    resize: 'vertical'
+                  }}
+                  placeholder="Adicione uma resposta..."
+                />
+              </div>
+            </div>
+
+            {/* Botões de Ação */}
+            <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
+              <button
+                onClick={async () => {
+                  try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`${API_URL}/problems/${selectedProblem.id}`, {
+                      method: 'PATCH',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify({
+                        observations: editedObservations
+                      })
+                    });
+
+                    if (response.ok) {
+                      alert('Alterações gravadas com sucesso!');
+                      fetchProblems();
+                      setShowDetailModal(false);
+                      setSelectedProblem(null);
+                    } else {
+                      alert('Erro ao gravar alterações');
+                    }
+                  } catch (error) {
+                    console.error('Erro:', error);
+                    alert('Erro ao gravar alterações');
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  padding: '12px 24px',
+                  background: '#6366F1',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Gravar
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowDetailModal(false);
+                  setSelectedProblem(null);
+                }}
+                style={{
+                  flex: 1,
+                  padding: '12px 24px',
+                  background: '#E5E7EB',
+                  color: '#374151',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={async () => {
+                  if (!confirm('Tem certeza que deseja marcar este report como resolvido?')) return;
+                  
+                  try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`${API_URL}/problems/${selectedProblem.id}/resolve`, {
+                      method: 'PATCH',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      }
+                    });
+
+                    if (response.ok) {
+                      alert('Report marcado como resolvido!');
+                      fetchProblems();
+                      setShowDetailModal(false);
+                      setSelectedProblem(null);
+                    } else {
+                      alert('Erro ao resolver report');
+                    }
+                  } catch (error) {
+                    console.error('Erro:', error);
+                    alert('Erro ao resolver report');
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  padding: '12px 24px',
+                  background: '#10B981',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Resolvido
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -1945,6 +2457,246 @@ const AdminDashboard = ({ onLogout }) => {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* Modal de Detalhes do Report */}
+        {showDetailModal && selectedProblem && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+          }}
+          onClick={() => {
+            setShowDetailModal(false);
+            setSelectedProblem(null);
+          }}
+          >
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: '12px',
+              padding: '24px',
+              maxWidth: '600px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+            >
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '20px' }}>
+                Detalhes do Report
+              </h2>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Tipo de Problema */}
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Tipo de Problema
+                  </label>
+                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                    {selectedProblem.problem_description}
+                  </p>
+                </div>
+
+                {/* Data do Pedido */}
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Data do Pedido
+                  </label>
+                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                    {new Date(selectedProblem.order_date).toLocaleDateString('pt-PT')}
+                  </p>
+                </div>
+
+                {/* Número do Pedido */}
+                {selectedProblem.supplier_order && (
+                  <div>
+                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                      Número do Pedido do Fornecedor
+                    </label>
+                    <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                      {selectedProblem.supplier_order}
+                    </p>
+                  </div>
+                )}
+
+                {/* Eurocode */}
+                {selectedProblem.eurocode && (
+                  <div>
+                    <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                      Eurocode
+                    </label>
+                    <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
+                      {selectedProblem.eurocode}
+                    </p>
+                  </div>
+                )}
+
+                {/* Status */}
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Status
+                  </label>
+                  {getStatusBadge(selectedProblem.status)}
+                </div>
+
+                {/* Observações (Editável) */}
+                <div>
+                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                    Observações
+                  </label>
+                  <textarea
+                    value={editedObservations}
+                    onChange={(e) => setEditedObservations(e.target.value)}
+                    style={{
+                      width: '100%',
+                      minHeight: '100px',
+                      padding: '12px',
+                      border: '1px solid #D1D5DB',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontFamily: 'inherit',
+                      resize: 'vertical'
+                    }}
+                    placeholder="Adicione observações..."
+                  />
+                </div>
+
+                {/* Resposta do Fornecedor */}
+                {selectedProblem.response_text && (
+                  <div style={{
+                    padding: '12px',
+                    background: '#F9FAFB',
+                    borderLeft: '3px solid #6366F1',
+                    borderRadius: '4px'
+                  }}>
+                    <p style={{ fontSize: '13px', fontWeight: '600', color: '#1F2937', margin: '0 0 4px 0' }}>
+                      Resposta do Fornecedor:
+                    </p>
+                    <p style={{ fontSize: '14px', color: '#374151', margin: 0 }}>
+                      {selectedProblem.response_text}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Botões de Ação */}
+              <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={async () => {
+                    try {
+                      const token = localStorage.getItem('token');
+                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}`, {
+                        method: 'PATCH',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                          observations: editedObservations
+                        })
+                      });
+
+                      if (response.ok) {
+                        alert('Alterações gravadas com sucesso!');
+                        fetchProblems();
+                        setShowDetailModal(false);
+                        setSelectedProblem(null);
+                      } else {
+                        alert('Erro ao gravar alterações');
+                      }
+                    } catch (error) {
+                      console.error('Erro:', error);
+                      alert('Erro ao gravar alterações');
+                    }
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    background: '#6366F1',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Gravar
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    setSelectedProblem(null);
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    background: '#E5E7EB',
+                    color: '#374151',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  onClick={async () => {
+                    if (!confirm('Tem certeza que deseja marcar este report como resolvido?')) return;
+                    
+                    try {
+                      const token = localStorage.getItem('token');
+                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}/resolve`, {
+                        method: 'PATCH',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${token}`
+                        }
+                      });
+
+                      if (response.ok) {
+                        alert('Report marcado como resolvido!');
+                        fetchProblems();
+                        setShowDetailModal(false);
+                        setSelectedProblem(null);
+                      } else {
+                        alert('Erro ao resolver report');
+                      }
+                    } catch (error) {
+                      console.error('Erro:', error);
+                      alert('Erro ao resolver report');
+                    }
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    background: '#10B981',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Resolvido
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
