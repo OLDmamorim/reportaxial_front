@@ -362,6 +362,8 @@ const StoreDashboard = ({ onLogout }) => {
   const [editedObservations, setEditedObservations] = useState('');
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredProblems, setFilteredProblems] = useState([]);
   
   // Usar refs em vez de controlled components
   const problemTypeRef = useRef(null);
@@ -418,7 +420,24 @@ const StoreDashboard = ({ onLogout }) => {
     } finally {
       setLoading(false);
     }
-  };  const handleSubmit = async (e) => {
+  };
+
+  // Filtro de pesquisa - incluir TODOS os problemas quando há termo de pesquisa
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      // Quando há pesquisa, mostrar TODOS os problemas (incluindo resolvidos)
+      const filtered = problems.filter(p => 
+        (p.eurocode || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.problem_description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.supplier_order || '').toString().includes(searchTerm) ||
+        (p.observations || '').toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredProblems(filtered);
+    } else {
+      // Sem pesquisa, limpar filtro (mostrará apenas não-resolvidos por padrão)
+      setFilteredProblems([]);
+    }
+  }, [searchTerm, problems]);  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Pegar valores diretamente do DOM
@@ -730,6 +749,27 @@ const StoreDashboard = ({ onLogout }) => {
 
         </div>
 
+        {/* Caixa de Pesquisa */}
+        <div style={{ marginBottom: '24px' }}>
+          <input
+            type="text"
+            placeholder="🔍 Pesquisar por Eurocode..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '12px 16px',
+              background: '#1F2937',
+              border: '2px solid #374151',
+              borderRadius: '8px',
+              fontSize: '14px',
+              color: '#FFFFFF',
+              minWidth: '300px',
+              width: '100%',
+              maxWidth: '500px'
+            }}
+          />
+        </div>
+
         {/* Botão Novo Reporte */}
         <div style={{ marginBottom: '24px' }}>
           <button
@@ -899,7 +939,7 @@ const StoreDashboard = ({ onLogout }) => {
             gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', 
             gap: '16px' 
           }}>
-            {problems
+            {(filteredProblems.length > 0 ? filteredProblems : problems
               .filter(problem => {
               // Se filtro de status "resolved" está ativo, mostrar resolvidos
               if (activeFilter.type === 'status' && activeFilter.value === 'resolved') {
@@ -924,7 +964,7 @@ const StoreDashboard = ({ onLogout }) => {
               }
               
               return true;
-            })
+            }))
             .map((problem) => (
               <div 
                 key={problem.id} 
