@@ -467,10 +467,15 @@ const StoreDashboard = ({ onLogout }) => {
         ? Math.floor((resolvedDate - createdDate) / (1000 * 60 * 60 * 24))
         : '-';
       
-      // Pegar último comentário
-      const lastMessage = problem.messages && problem.messages.length > 0
-        ? problem.messages[problem.messages.length - 1].message
-        : '-';
+      // Pegar último comentário/resposta (priorizar mensagens, depois response_text, depois observations)
+      let lastMessage = '-';
+      if (problem.messages && problem.messages.length > 0) {
+        lastMessage = problem.messages[problem.messages.length - 1].message;
+      } else if (problem.response_text) {
+        lastMessage = problem.response_text;
+      } else if (problem.observations) {
+        lastMessage = problem.observations;
+      }
 
       return [
         createdDate.toLocaleDateString('pt-PT'),
@@ -478,7 +483,7 @@ const StoreDashboard = ({ onLogout }) => {
         days,
         problem.store_name || '-',
         problem.eurocode || '-',
-        problem.problem_type || problem.description || '-',
+        problem.problem_description || problem.problem_type || '-',
         lastMessage
       ];
     });
@@ -1736,10 +1741,15 @@ const SupplierDashboard = ({ onLogout }) => {
         ? Math.floor((resolvedDate - createdDate) / (1000 * 60 * 60 * 24))
         : '-';
       
-      // Pegar último comentário
-      const lastMessage = problem.messages && problem.messages.length > 0
-        ? problem.messages[problem.messages.length - 1].message
-        : '-';
+      // Pegar último comentário/resposta (priorizar mensagens, depois response_text, depois observations)
+      let lastMessage = '-';
+      if (problem.messages && problem.messages.length > 0) {
+        lastMessage = problem.messages[problem.messages.length - 1].message;
+      } else if (problem.response_text) {
+        lastMessage = problem.response_text;
+      } else if (problem.observations) {
+        lastMessage = problem.observations;
+      }
 
       return [
         createdDate.toLocaleDateString('pt-PT'),
@@ -1747,7 +1757,7 @@ const SupplierDashboard = ({ onLogout }) => {
         days,
         problem.store_name || '-',
         problem.eurocode || '-',
-        problem.problem_type || problem.description || '-',
+        problem.problem_description || problem.problem_type || '-',
         lastMessage
       ];
     });
