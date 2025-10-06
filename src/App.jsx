@@ -567,6 +567,23 @@ const StoreDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Loja" onLogout={onLogout} />
 
+      {/* Título REPORT AXIAL */}
+      <div style={{
+        background: '#1F2937',
+        padding: '24px',
+        textAlign: 'center'
+      }}>
+        <h1 style={{
+          fontSize: '36px',
+          fontWeight: 'bold',
+          color: '#FFFFFF',
+          margin: 0,
+          letterSpacing: '2px'
+        }}>
+          REPORT AXIAL
+        </h1>
+      </div>
+
       <div style={{ 
         padding: '20px', 
         width: '100%', 
@@ -1588,6 +1605,23 @@ const SupplierDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Fornecedor" onLogout={onLogout} />
 
+      {/* Título REPORT AXIAL */}
+      <div style={{
+        background: '#1F2937',
+        padding: '24px',
+        textAlign: 'center'
+      }}>
+        <h1 style={{
+          fontSize: '36px',
+          fontWeight: 'bold',
+          color: '#FFFFFF',
+          margin: 0,
+          letterSpacing: '2px'
+        }}>
+          REPORT AXIAL
+        </h1>
+      </div>
+
       <div style={{ 
         padding: '20px', 
         width: '100%', 
@@ -2542,6 +2576,23 @@ const AdminDashboard = ({ onLogout }) => {
       flexDirection: 'column'
     }}>
       <DashboardHeader title="Painel Admin" onLogout={onLogout} />
+
+      {/* Título REPORT AXIAL */}
+      <div style={{
+        background: '#1F2937',
+        padding: '24px',
+        textAlign: 'center'
+      }}>
+        <h1 style={{
+          fontSize: '36px',
+          fontWeight: 'bold',
+          color: '#FFFFFF',
+          margin: 0,
+          letterSpacing: '2px'
+        }}>
+          REPORT AXIAL
+        </h1>
+      </div>
 
       <div style={{ 
         padding: '20px', 
