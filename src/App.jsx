@@ -915,10 +915,27 @@ const StoreDashboard = ({ onLogout }) => {
             .map((problem) => (
               <div 
                 key={problem.id} 
-                onClick={() => {
+                onClick={async () => {
                   setSelectedProblem(problem);
                   setEditedObservations(problem.observations || '');
                   setShowDetailModal(true);
+                  
+                  // Marcar como visto pela loja
+                  try {
+                    const token = localStorage.getItem('token');
+                    await fetch(`${API_URL}/api/problems/${problem.id}/mark-viewed`, {
+                      method: 'PATCH',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify({ userType: 'store' })
+                    });
+                    // Recarregar problemas para atualizar o estado
+                    fetchProblems();
+                  } catch (error) {
+                    console.error('Erro ao marcar como visto:', error);
+                  }
                 }}
                 style={{
                   background: '#FFFFFF',
@@ -926,7 +943,11 @@ const StoreDashboard = ({ onLogout }) => {
                   borderRadius: '12px',
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
-                  transition: 'transform 0.2s, box-shadow 0.2s'
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  // Piscar amarelo se fornecedor respondeu mas loja ainda não viu
+                  animation: (problem.status === 'in_progress' && problem.response_text && !problem.viewed_by_store) 
+                    ? 'pulse-yellow 2s ease-in-out infinite' 
+                    : 'none'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
@@ -1656,10 +1677,27 @@ const SupplierDashboard = ({ onLogout }) => {
               .map((problem) => (
               <div
                 key={problem.id}
-                onClick={() => {
+                onClick={async () => {
                   setSelectedProblem(problem);
                   setEditedObservations(problem.observations || '');
                   setShowDetailModal(true);
+                  
+                  // Marcar como visto pelo fornecedor
+                  try {
+                    const token = localStorage.getItem('token');
+                    await fetch(`${API_URL}/api/problems/${problem.id}/mark-viewed`, {
+                      method: 'PATCH',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify({ userType: 'supplier' })
+                    });
+                    // Recarregar problemas para atualizar o estado
+                    fetchProblems();
+                  } catch (error) {
+                    console.error('Erro ao marcar como visto:', error);
+                  }
                 }}
                 style={{
                   background: '#FFFFFF',
@@ -1671,7 +1709,11 @@ const SupplierDashboard = ({ onLogout }) => {
                   border: selectedProblem === problem.id ? '2px solid #6366F1' : '2px solid transparent',
                   minHeight: '180px',
                   display: 'flex',
-                  flexDirection: 'column'
+                  flexDirection: 'column',
+                  // Piscar amarelo se fornecedor ainda não viu (problema pendente)
+                  animation: (problem.status === 'pending' && !problem.viewed_by_supplier) 
+                    ? 'pulse-yellow 2s ease-in-out infinite' 
+                    : 'none'
                 }}
                 onMouseEnter={(e) => {
                   if (selectedProblem !== problem.id) {
@@ -2788,15 +2830,27 @@ function App() {
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={
-          userType === 'admin' ? <AdminDashboard onLogout={handleLogout} /> :
-          userType === 'supplier' ? <SupplierDashboard onLogout={handleLogout} /> :
-          <StoreDashboard onLogout={handleLogout} />
-        } />
-      </Routes>
-    </Router>
+    <>
+      <style>{`
+        @keyframes pulse-yellow {
+          0%, 100% {
+            background-color: #FFFFFF;
+          }
+          50% {
+            background-color: #FEF3C7;
+          }
+        }
+      `}</style>
+      <Router>
+        <Routes>
+          <Route path="/" element={
+            userType === 'admin' ? <AdminDashboard onLogout={handleLogout} /> :
+            userType === 'supplier' ? <SupplierDashboard onLogout={handleLogout} /> :
+            <StoreDashboard onLogout={handleLogout} />
+          } />
+        </Routes>
+      </Router>
+    </>
   );
 }
 
