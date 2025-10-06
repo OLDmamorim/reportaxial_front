@@ -386,10 +386,10 @@ const StoreDashboard = ({ onLogout }) => {
   useEffect(() => {
     fetchProblems();
     
-    // Auto-refresh a cada 20 segundos
+    // Auto-refresh a cada 5 segundos
     const refreshInterval = setInterval(() => {
       fetchProblems();
-    }, 20000);
+    }, 5000);
     
     // Detectar mudanças no tamanho da tela
     const handleResize = () => {
@@ -1637,10 +1637,10 @@ const SupplierDashboard = ({ onLogout }) => {
   useEffect(() => {
     fetchProblems();
     
-    // Auto-refresh a cada 20 segundos
+    // Auto-refresh a cada 5 segundos
     const refreshInterval = setInterval(() => {
       fetchProblems();
-    }, 20000);
+    }, 5000);
     
     // Detectar mudanças no tamanho da tela
     const handleResize = () => {
