@@ -976,8 +976,8 @@ const StoreDashboard = ({ onLogout }) => {
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
-                  // Piscar amarelo se fornecedor respondeu mas loja ainda não viu
-                  animation: (problem.status === 'in_progress' && problem.response_text && !problem.viewed_by_store) 
+                  // Piscar amarelo se há mensagens não vistas pela loja
+                  animation: (!problem.viewed_by_store) 
                     ? 'pulse-yellow 2s ease-in-out infinite' 
                     : 'none'
                 }}
@@ -1818,8 +1818,8 @@ const SupplierDashboard = ({ onLogout }) => {
                   minHeight: '180px',
                   display: 'flex',
                   flexDirection: 'column',
-                  // Piscar amarelo se fornecedor ainda não viu (problema pendente)
-                  animation: (problem.status === 'pending' && !problem.viewed_by_supplier) 
+                  // Piscar amarelo se há mensagens não vistas pelo fornecedor
+                  animation: (!problem.viewed_by_supplier) 
                     ? 'pulse-yellow 2s ease-in-out infinite' 
                     : 'none'
                 }}
