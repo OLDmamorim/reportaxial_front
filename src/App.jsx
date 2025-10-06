@@ -374,6 +374,7 @@ const StoreDashboard = ({ onLogout }) => {
   const [showForm, setShowForm] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [activeFilter, setActiveFilter] = useState({ type: null, value: null });
+  const [loading, setLoading] = useState(true);
   
   // Usar refs em vez de controlled components
   const problemTypeRef = useRef(null);
