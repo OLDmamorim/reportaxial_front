@@ -804,7 +804,7 @@ const StoreDashboard = ({ onLogout }) => {
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '8px' }}>
                   Problema a Reportar *
                 </label>
                 <select
@@ -830,7 +830,7 @@ const StoreDashboard = ({ onLogout }) => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '8px' }}>
                   Data Encomenda *
                 </label>
                 <input
@@ -849,7 +849,7 @@ const StoreDashboard = ({ onLogout }) => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '8px' }}>
                   Enc Fornecedor *
                 </label>
                 <input
@@ -869,7 +869,7 @@ const StoreDashboard = ({ onLogout }) => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '8px' }}>
                   Referência/Eurocode *
                 </label>
                 <input
@@ -888,7 +888,7 @@ const StoreDashboard = ({ onLogout }) => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '8px' }}>
                   Observações
                 </label>
                 <textarea
@@ -2055,7 +2055,7 @@ const SupplierDashboard = ({ onLogout }) => {
             {/* Campo de Resposta */}
             {selectedProblemData.status !== 'resolved' && (
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#FFFFFF', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '8px' }}>
                   {selectedProblemData.response_text ? 'Atualizar Resposta' : 'Responder'}
                 </label>
                 <textarea
@@ -2618,7 +2618,7 @@ const AdminDashboard = ({ onLogout }) => {
             <form onSubmit={handleCreateSupplier} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#FFFFFF', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
                     Nome do Fornecedor *
                   </label>
                   <input
@@ -2637,7 +2637,7 @@ const AdminDashboard = ({ onLogout }) => {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#FFFFFF', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
                     Pessoa de Contacto
                   </label>
                   <input
@@ -2657,7 +2657,7 @@ const AdminDashboard = ({ onLogout }) => {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#FFFFFF', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
                     Email *
                   </label>
                   <input
@@ -2676,7 +2676,7 @@ const AdminDashboard = ({ onLogout }) => {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#FFFFFF', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
                     Password *
                   </label>
                   <input
