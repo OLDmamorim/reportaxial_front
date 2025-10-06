@@ -810,12 +810,13 @@ const StoreDashboard = ({ onLogout }) => {
 
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
-                  Enc Fornecedor (opcional)
+                  Enc Fornecedor *
                 </label>
                 <input
                   type="number"
                   ref={supplierOrderRef}
                   placeholder="Apenas números"
+                  required
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -829,11 +830,12 @@ const StoreDashboard = ({ onLogout }) => {
 
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
-                  Referência/Eurocode (opcional)
+                  Referência/Eurocode *
                 </label>
                 <input
                   type="text"
                   ref={eurocodeRef}
+                  required
                   style={{
                     width: '100%',
                     padding: '12px',
