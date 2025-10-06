@@ -2467,7 +2467,6 @@ const SupplierDashboard = ({ onLogout }) => {
                   color: '#065F46',
                   borderRadius: '8px',
                   textAlign: 'center',
-        textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
                   fontWeight: '600'
                 }}>
                   ✓ Problema Resolvido
