@@ -898,8 +898,8 @@ const StoreDashboard = ({ onLogout }) => {
           />
         </div>
 
-        {/* Botão Novo Reporte */}
-        <div style={{ marginBottom: '24px' }}>
+        {/* Botões Novo Reporte e Exportar Excel */}
+        <div style={{ marginBottom: '24px', display: 'flex', gap: '12px' }}>
           <button
             onClick={() => setShowForm(!showForm)}
             style={{
@@ -914,6 +914,25 @@ const StoreDashboard = ({ onLogout }) => {
             }}
           >
             {showForm ? '✕ Cancelar' : '+ Novo Reporte'}
+          </button>
+          
+          <button
+            onClick={() => setShowExportModal(true)}
+            style={{
+              padding: '12px 24px',
+              background: '#10B981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+          >
+            📊 Exportar Excel
           </button>
         </div>
 
@@ -2126,8 +2145,8 @@ const SupplierDashboard = ({ onLogout }) => {
 
         </div>
 
-        {/* Caixa de Pesquisa */}
-        <div style={{ marginBottom: '24px' }}>
+        {/* Caixa de Pesquisa e Botão Excel */}
+        <div style={{ marginBottom: '24px', display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
           <input
             type="text"
             placeholder="🔍 Pesquisar por Eurocode..."
@@ -2141,10 +2160,30 @@ const SupplierDashboard = ({ onLogout }) => {
               fontSize: '14px',
               color: '#FFFFFF',
               minWidth: '300px',
-              width: '100%',
+              flex: '1',
               maxWidth: '500px'
             }}
           />
+          
+          <button
+            onClick={() => setShowExportModal(true)}
+            style={{
+              padding: '12px 24px',
+              background: '#10B981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            📊 Exportar Excel
+          </button>
         </div>
 
         {/* Grid de Cards */}
