@@ -1501,7 +1501,7 @@ const StoreDashboard = ({ onLogout }) => {
           </div>
         )}
       </div>
-    </div>
+
       {/* Modal de Exportação Excel */}
       {showExportModal && (
         <div style={{
