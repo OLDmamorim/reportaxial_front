@@ -1703,40 +1703,6 @@ const SupplierDashboard = ({ onLogout }) => {
 
         </div>
 
-        {/* Filtros */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <input
-            type="text"
-            placeholder="🔍 Pesquisar..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              padding: '10px 16px',
-              border: '2px solid #E5E7EB',
-              borderRadius: '8px',
-              fontSize: '14px',
-              minWidth: '250px'
-            }}
-          />
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            style={{
-              padding: '10px 16px',
-              border: '2px solid #E5E7EB',
-              borderRadius: '8px',
-              fontSize: '14px',
-              background: '#FFFFFF'
-            }}
-          >
-            <option value="all">Todos os Status</option>
-            <option value="pending">Pendente</option>
-            <option value="in_progress">Em Análise</option>
-            <option value="resolved">Resolvido</option>
-          </select>
-
-        </div>
-
         {/* Grid de Cards */}
         {loading ? (
           <p>Carregando...</p>
