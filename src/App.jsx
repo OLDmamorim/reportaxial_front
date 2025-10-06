@@ -513,9 +513,9 @@ const StoreDashboard = ({ onLogout }) => {
     }
   };  const getStatusBadge = (status) => {
     const colors = {
-      pending: { bg: '#FEF3C7', text: '#92400E', label: 'Pendente' },
-      in_progress: { bg: '#DBEAFE', text: '#1E40AF', label: 'Em Progresso' },
-      resolved: { bg: '#D1FAE5', text: '#065F46', label: 'Resolvido' }
+      pending: { bg: '#FEE2E2', text: '#991B1B', label: 'Pendente' },      // Vermelho suave
+      in_progress: { bg: '#FEF3C7', text: '#92400E', label: 'Em Progresso' }, // Amarelo suave
+      resolved: { bg: '#D1FAE5', text: '#065F46', label: 'Resolvido' }     // Verde suave
     };
     const style = colors[status] || colors.pending;
     return (
@@ -910,7 +910,9 @@ const StoreDashboard = ({ onLogout }) => {
               }
               
               return true;
-            }).map((problem) => (
+            })
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // Ordenar por antiguidade (mais antigos primeiro)
+            .map((problem) => (
               <div 
                 key={problem.id} 
                 onClick={() => {
@@ -940,9 +942,24 @@ const StoreDashboard = ({ onLogout }) => {
                     <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1F2937', margin: '0 0 8px 0' }}>
                       {problem.problem_description}
                     </h3>
-                    <p style={{ fontSize: '14px', color: '#6B7280', margin: 0 }}>
-                      {new Date(problem.created_at).toLocaleDateString('pt-PT')}
-                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
+                      <p style={{ fontSize: '14px', color: '#6B7280', margin: 0 }}>
+                        {new Date(problem.created_at).toLocaleDateString('pt-PT')}
+                      </p>
+                      {problem.eurocode && (
+                        <span style={{
+                          padding: '4px 10px',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontWeight: '700',
+                          background: '#EEF2FF',
+                          color: '#4F46E5',
+                          border: '1px solid #C7D2FE'
+                        }}>
+                          {problem.eurocode}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   {getStatusBadge(problem.status)}
                 </div>
@@ -1332,9 +1349,9 @@ const SupplierDashboard = ({ onLogout }) => {
 
   const getStatusBadge = (status) => {
     const colors = {
-      pending: { bg: '#FEF3C7', text: '#92400E', label: 'Pendente' },
-      in_progress: { bg: '#DBEAFE', text: '#1E40AF', label: 'Em Progresso' },
-      resolved: { bg: '#D1FAE5', text: '#065F46', label: 'Resolvido' }
+      pending: { bg: '#FEE2E2', text: '#991B1B', label: 'Pendente' },      // Vermelho suave
+      in_progress: { bg: '#FEF3C7', text: '#92400E', label: 'Em Progresso' }, // Amarelo suave
+      resolved: { bg: '#D1FAE5', text: '#065F46', label: 'Resolvido' }     // Verde suave
     };
     const style = colors[status] || colors.pending;
     return (
@@ -1634,7 +1651,9 @@ const SupplierDashboard = ({ onLogout }) => {
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '20px'
           }}>
-            {(filteredProblems.length > 0 ? filteredProblems : problems).map((problem) => (
+            {(filteredProblems.length > 0 ? filteredProblems : problems)
+              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // Ordenar por antiguidade (mais antigos primeiro)
+              .map((problem) => (
               <div
                 key={problem.id}
                 onClick={() => {
@@ -1690,6 +1709,19 @@ const SupplierDashboard = ({ onLogout }) => {
                 <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexWrap: 'wrap' }}>
                   {getStatusBadge(problem.status)}
                   {getPriorityBadge(problem.priority)}
+                  {problem.eurocode && (
+                    <span style={{
+                      padding: '4px 10px',
+                      borderRadius: '8px',
+                      fontSize: '11px',
+                      fontWeight: '700',
+                      background: '#EEF2FF',
+                      color: '#4F46E5',
+                      border: '1px solid #C7D2FE'
+                    }}>
+                      {problem.eurocode}
+                    </span>
+                  )}
                 </div>
                 
                 <p style={{ fontSize: '12px', color: '#9CA3AF', margin: 0 }}>
