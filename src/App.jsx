@@ -876,13 +876,17 @@ const StoreDashboard = ({ onLogout }) => {
                   type="text"
                   ref={eurocodeRef}
                   required
+                  onChange={(e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                  }}
                   style={{
                     width: '100%',
                     padding: '12px',
                     border: '2px solid #E5E7EB',
                     borderRadius: '8px',
                     fontSize: '15px',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    textTransform: 'uppercase'
                   }}
                 />
               </div>
