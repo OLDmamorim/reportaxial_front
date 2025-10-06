@@ -166,7 +166,7 @@ const Login = ({ onLogin }) => {
           <h1 style={{
             fontSize: '36px',
             fontWeight: 'bold',
-            color: '#1F2937',
+            color: '#FFFFFF',
             marginBottom: '12px',
             margin: '0 0 12px 0'
           }}>
@@ -191,7 +191,7 @@ const Login = ({ onLogin }) => {
               display: 'block',
               fontSize: '16px',
               fontWeight: '600',
-              color: '#1F2937',
+              color: '#FFFFFF',
               marginBottom: '10px'
             }}>
               Username
@@ -208,7 +208,7 @@ const Login = ({ onLogin }) => {
                 border: '2px solid #E5E7EB',
                 borderRadius: '12px',
                 fontSize: '15px',
-                color: '#1F2937',
+                color: '#FFFFFF',
                 outline: 'none',
                 transition: 'all 0.2s',
                 boxSizing: 'border-box'
@@ -230,7 +230,7 @@ const Login = ({ onLogin }) => {
               display: 'block',
               fontSize: '16px',
               fontWeight: '600',
-              color: '#1F2937',
+              color: '#FFFFFF',
               marginBottom: '10px'
             }}>
               Password
@@ -247,7 +247,7 @@ const Login = ({ onLogin }) => {
                 border: '2px solid #E5E7EB',
                 borderRadius: '12px',
                 fontSize: '15px',
-                color: '#1F2937',
+                color: '#FFFFFF',
                 outline: 'none',
                 transition: 'all 0.2s',
                 boxSizing: 'border-box'
@@ -569,13 +569,14 @@ const StoreDashboard = ({ onLogout }) => {
 
       {/* Título REPORT AXIAL */}
       <div style={{
-        padding: '16px 20px 0',
-        textAlign: 'center'
+        padding: '16px 20px',
+        textAlign: 'center',
+        background: '#374151'
       }}>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
-          color: '#1F2937',
+          color: '#FFFFFF',
           margin: 0,
           letterSpacing: '1px'
         }}>
@@ -1606,13 +1607,14 @@ const SupplierDashboard = ({ onLogout }) => {
 
       {/* Título REPORT AXIAL */}
       <div style={{
-        padding: '16px 20px 0',
-        textAlign: 'center'
+        padding: '16px 20px',
+        textAlign: 'center',
+        background: '#374151'
       }}>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
-          color: '#1F2937',
+          color: '#FFFFFF',
           margin: 0,
           letterSpacing: '1px'
         }}>
@@ -1919,7 +1921,7 @@ const SupplierDashboard = ({ onLogout }) => {
                 <h3 style={{
                   fontSize: '18px',
                   fontWeight: 'bold',
-                  color: '#1F2937',
+                  color: '#FFFFFF',
                   margin: '0 0 8px 0',
                   lineHeight: '1.3'
                 }}>
@@ -2577,13 +2579,14 @@ const AdminDashboard = ({ onLogout }) => {
 
       {/* Título REPORT AXIAL */}
       <div style={{
-        padding: '16px 20px 0',
-        textAlign: 'center'
+        padding: '16px 20px',
+        textAlign: 'center',
+        background: '#374151'
       }}>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
-          color: '#1F2937',
+          color: '#FFFFFF',
           margin: 0,
           letterSpacing: '1px'
         }}>
