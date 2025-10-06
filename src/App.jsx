@@ -485,11 +485,16 @@ const StoreDashboard = ({ onLogout }) => {
 
     // Criar workbook e worksheet
     const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(excelData);
-
-    // Adicionar título
-    XLSX.utils.sheet_add_aoa(ws, [['REPORT AXIAL']], { origin: 'A1' });
-    XLSX.utils.sheet_add_aoa(ws, [[]], { origin: 'A2' }); // Linha vazia
+    
+    // Criar worksheet com título primeiro
+    const ws = XLSX.utils.aoa_to_sheet([
+      ['REPORT AXIAL'], // Linha 1: Título
+      [], // Linha 2: Vazia
+      ['DATA REGISTO', 'DATA RESOLUÇÃO', 'DIAS', 'LOJA', 'EUROCODE', 'PROBLEMA A REPORTAR', 'RESOLUÇÃO'] // Linha 3: Cabeçalhos
+    ]);
+    
+    // Adicionar dados a partir da linha 4
+    XLSX.utils.sheet_add_json(ws, excelData, { origin: 'A4', skipHeader: true });
     
     // Ajustar largura das colunas
     ws['!cols'] = [
@@ -1751,11 +1756,16 @@ const SupplierDashboard = ({ onLogout }) => {
 
     // Criar workbook e worksheet
     const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(excelData);
-
-    // Adicionar título
-    XLSX.utils.sheet_add_aoa(ws, [['REPORT AXIAL']], { origin: 'A1' });
-    XLSX.utils.sheet_add_aoa(ws, [[]], { origin: 'A2' }); // Linha vazia
+    
+    // Criar worksheet com título primeiro
+    const ws = XLSX.utils.aoa_to_sheet([
+      ['REPORT AXIAL'], // Linha 1: Título
+      [], // Linha 2: Vazia
+      ['DATA REGISTO', 'DATA RESOLUÇÃO', 'DIAS', 'LOJA', 'EUROCODE', 'PROBLEMA A REPORTAR', 'RESOLUÇÃO'] // Linha 3: Cabeçalhos
+    ]);
+    
+    // Adicionar dados a partir da linha 4
+    XLSX.utils.sheet_add_json(ws, excelData, { origin: 'A4', skipHeader: true });
     
     // Ajustar largura das colunas
     ws['!cols'] = [
