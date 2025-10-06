@@ -175,8 +175,9 @@ const Login = ({ onLogin }) => {
         borderRadius: '24px',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         padding: '48px 60px',
-        maxWidth: '800px',
-        width: '100%'
+        maxWidth: '500px',
+        width: '100%',
+        margin: '0 auto'
       }}>
         <ExpressGlassLogo />
 
@@ -554,7 +555,7 @@ const StoreDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Loja" onLogout={onLogout} />
 
-      <div style={{ padding: '20px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+      <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
         
         {/* Layout Desktop: 2 linhas horizontais | Layout Mobile: 2 colunas verticais */}
         <div style={{
@@ -1389,7 +1390,7 @@ const SupplierDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Fornecedor" onLogout={onLogout} />
 
-      <div style={{ padding: '20px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+      <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
         
         {/* Layout Desktop: 2 linhas horizontais | Layout Mobile: 2 colunas verticais */}
         <div style={{
@@ -2246,7 +2247,7 @@ const AdminDashboard = ({ onLogout }) => {
     }}>
       <DashboardHeader title="Painel Admin" onLogout={onLogout} />
 
-      <div style={{ padding: '20px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+      <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
                 {/* Controles e Filtros */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap' }}>
