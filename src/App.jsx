@@ -86,6 +86,7 @@ const ExpressGlassLogo = () => (
     borderRadius: '16px',
     marginBottom: '32px',
     textAlign: 'center',
+        textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
@@ -570,15 +571,15 @@ const StoreDashboard = ({ onLogout }) => {
       {/* Título REPORT AXIAL */}
       <div style={{
         padding: '16px 20px',
-        textAlign: 'center',
-        background: '#374151'
+        textAlign: 'center'
       }}>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
           color: '#FFFFFF',
           margin: 0,
-          letterSpacing: '1px'
+          letterSpacing: '1px',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
         }}>
           REPORT AXIAL
         </h1>
@@ -1608,15 +1609,15 @@ const SupplierDashboard = ({ onLogout }) => {
       {/* Título REPORT AXIAL */}
       <div style={{
         padding: '16px 20px',
-        textAlign: 'center',
-        background: '#374151'
+        textAlign: 'center'
       }}>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
           color: '#FFFFFF',
           margin: 0,
-          letterSpacing: '1px'
+          letterSpacing: '1px',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
         }}>
           REPORT AXIAL
         </h1>
@@ -2161,6 +2162,7 @@ const SupplierDashboard = ({ onLogout }) => {
                   color: '#065F46',
                   borderRadius: '8px',
                   textAlign: 'center',
+        textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
                   fontWeight: '600'
                 }}>
                   ✓ Problema Resolvido
@@ -2580,15 +2582,15 @@ const AdminDashboard = ({ onLogout }) => {
       {/* Título REPORT AXIAL */}
       <div style={{
         padding: '16px 20px',
-        textAlign: 'center',
-        background: '#374151'
+        textAlign: 'center'
       }}>
         <h1 style={{
           fontSize: '20px',
           fontWeight: 'bold',
           color: '#FFFFFF',
           margin: 0,
-          letterSpacing: '1px'
+          letterSpacing: '1px',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
         }}>
           REPORT AXIAL
         </h1>
