@@ -2236,11 +2236,12 @@ const SupplierDashboard = ({ onLogout }) => {
                 }}
               >
                 <h3 style={{
-                  fontSize: '18px',
+                  fontSize: '22px',
                   fontWeight: 'bold',
-                  color: '#FFFFFF',
+                  color: '#000000',
                   margin: '0 0 8px 0',
-                  lineHeight: '1.3'
+                  lineHeight: '1.3',
+                  textTransform: 'uppercase'
                 }}>
                   {problem.store_name}
                 </h3>
