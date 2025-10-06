@@ -1379,6 +1379,23 @@ const SupplierDashboard = ({ onLogout }) => {
     };
   }, []);
 
+  // Filtro de pesquisa - incluir TODOS os problemas quando há termo de pesquisa
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      // Quando há pesquisa, mostrar TODOS os problemas (incluindo resolvidos)
+      const filtered = problems.filter(p => 
+        (p.eurocode || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.problem_description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.supplier_order || '').toString().includes(searchTerm) ||
+        (p.observations || '').toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredProblems(filtered);
+    } else {
+      // Sem pesquisa, limpar filtro (mostrará apenas não-resolvidos por padrão)
+      setFilteredProblems([]);
+    }
+  }, [searchTerm, problems]);
+
   const fetchProblems = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -1450,20 +1467,26 @@ const SupplierDashboard = ({ onLogout }) => {
     let filtered = [...problems];
     
     if (searchTerm) {
+      // Quando há pesquisa, incluir TODOS os problemas (incluindo resolvidos)
       filtered = filtered.filter(p => 
+        (p.eurocode || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (p.problem_description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (p.product || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.store_name || '').toLowerCase().includes(searchTerm.toLowerCase())
+        (p.store_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.supplier_order || '').toString().includes(searchTerm) ||
+        (p.observations || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
-    }
-    
-    // Excluir resolvidos por padrão, exceto se filtro "resolved" está ativo
-    if (filterStatus === 'resolved') {
-      filtered = filtered.filter(p => p.status === 'resolved');
+      // Não aplicar filtro de status quando há pesquisa - mostrar todos os resultados
     } else {
-      filtered = filtered.filter(p => p.status !== 'resolved');
-      if (filterStatus !== 'all') {
-        filtered = filtered.filter(p => p.status === filterStatus);
+      // Sem pesquisa, aplicar filtros de status normalmente
+      // Excluir resolvidos por padrão, exceto se filtro "resolved" está ativo
+      if (filterStatus === 'resolved') {
+        filtered = filtered.filter(p => p.status === 'resolved');
+      } else {
+        filtered = filtered.filter(p => p.status !== 'resolved');
+        if (filterStatus !== 'all') {
+          filtered = filtered.filter(p => p.status === filterStatus);
+        }
       }
     }
     
@@ -1701,6 +1724,27 @@ const SupplierDashboard = ({ onLogout }) => {
             </div>
           </div>
 
+        </div>
+
+        {/* Caixa de Pesquisa */}
+        <div style={{ marginBottom: '24px' }}>
+          <input
+            type="text"
+            placeholder="🔍 Pesquisar por Eurocode..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '12px 16px',
+              background: '#1F2937',
+              border: '2px solid #374151',
+              borderRadius: '8px',
+              fontSize: '14px',
+              color: '#FFFFFF',
+              minWidth: '300px',
+              width: '100%',
+              maxWidth: '500px'
+            }}
+          />
         </div>
 
         {/* Grid de Cards */}
