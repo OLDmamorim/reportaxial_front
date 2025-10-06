@@ -547,15 +547,24 @@ const StoreDashboard = ({ onLogout }) => {
     'Outro': problems.filter(p => p.problem_description === 'Outro').length
   };
 
-  return (
+   return (
     <div style={{
       minHeight: '100vh',
       background: '#F3F4F6',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
       <DashboardHeader title="Painel Loja" onLogout={onLogout} />
 
-      <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ 
+        padding: '20px', 
+        maxWidth: '1200px', 
+        margin: '0 auto', 
+        width: '100%', 
+        boxSizing: 'border-box',
+        flex: 1
+      }}>
         
         {/* Layout Desktop: 2 linhas horizontais | Layout Mobile: 2 colunas verticais */}
         <div style={{
@@ -1381,16 +1390,25 @@ const SupplierDashboard = ({ onLogout }) => {
 
   const selectedProblemData = problems.find(p => p.id === selectedProblem);
 
-  return (
+   return (
     <div style={{
       minHeight: '100vh',
       background: '#F3F4F6',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      position: 'relative'
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
       <DashboardHeader title="Painel Fornecedor" onLogout={onLogout} />
 
-      <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ 
+        padding: '20px', 
+        maxWidth: '1200px', 
+        margin: '0 auto', 
+        width: '100%', 
+        boxSizing: 'border-box',
+        flex: 1
+      }}>
         
         {/* Layout Desktop: 2 linhas horizontais | Layout Mobile: 2 colunas verticais */}
         <div style={{
@@ -2239,15 +2257,24 @@ const AdminDashboard = ({ onLogout }) => {
     );
   };
 
-  return (
+   return (
     <div style={{
       minHeight: '100vh',
       background: '#F3F4F6',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
       <DashboardHeader title="Painel Admin" onLogout={onLogout} />
 
-      <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ 
+        padding: '20px', 
+        maxWidth: '1200px', 
+        margin: '0 auto', 
+        width: '100%', 
+        boxSizing: 'border-box',
+        flex: 1
+      }}>
                 {/* Controles e Filtros */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap' }}>
