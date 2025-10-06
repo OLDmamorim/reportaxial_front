@@ -541,7 +541,7 @@ const StoreDashboard = ({ onLogout }) => {
    return (
     <div style={{
       minHeight: '100vh',
-      background: '#E5E7EB',
+      background: '#D1D5DB',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       display: 'flex',
       flexDirection: 'column'
@@ -1505,7 +1505,7 @@ const SupplierDashboard = ({ onLogout }) => {
    return (
     <div style={{
       minHeight: '100vh',
-      background: '#E5E7EB',
+      background: '#D1D5DB',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       position: 'relative',
       display: 'flex',
@@ -2470,7 +2470,7 @@ const AdminDashboard = ({ onLogout }) => {
    return (
     <div style={{
       minHeight: '100vh',
-      background: '#E5E7EB',
+      background: '#D1D5DB',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       display: 'flex',
       flexDirection: 'column'
