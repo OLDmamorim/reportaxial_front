@@ -525,6 +525,14 @@ const StoreDashboard = ({ onLogout }) => {
     resolved: problems.filter(p => p.status === 'resolved').length
   };
 
+  // Contabilização por tipo de problema
+  const problemTypes = {
+    'Material não chegou': problems.filter(p => p.problem_description === 'Material não chegou').length,
+    'Material danificado': problems.filter(p => p.problem_description === 'Material danificado').length,
+    'Material errado': problems.filter(p => p.problem_description === 'Material errado').length,
+    'Outro': problems.filter(p => p.problem_description === 'Outro').length
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -535,28 +543,53 @@ const StoreDashboard = ({ onLogout }) => {
 
       <div style={{ padding: '20px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
         
-        {/* Estatísticas */}
+        {/* Estatísticas - Linha 1: Status */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '20px',
+          gap: '16px',
+          marginBottom: '16px'
+        }}>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>TOTAL</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>PENDENTES</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>EM PROGRESSO</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>RESOLVIDOS</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
+          </div>
+        </div>
+
+        {/* Estatísticas - Linha 2: Tipos de Problemas */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '16px',
           marginBottom: '24px'
         }}>
-          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>TOTAL</p>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL NÃO CHEGOU</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypes['Material não chegou']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>PENDENTES</p>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL DANIFICADO</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypes['Material danificado']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>EM PROGRESSO</p>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL ERRADO</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypes['Material errado']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>RESOLVIDOS</p>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>OUTRO</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypes['Outro']}</p>
           </div>
         </div>
 
@@ -923,6 +956,14 @@ const SupplierDashboard = ({ onLogout }) => {
     resolved: problems.filter(p => p.status === 'resolved').length
   };
 
+  // Contabilização por tipo de problema
+  const problemTypes = {
+    'Material não chegou': problems.filter(p => p.problem_description === 'Material não chegou').length,
+    'Material danificado': problems.filter(p => p.problem_description === 'Material danificado').length,
+    'Material errado': problems.filter(p => p.problem_description === 'Material errado').length,
+    'Outro': problems.filter(p => p.problem_description === 'Outro').length
+  };
+
   const selectedProblemData = problems.find(p => p.id === selectedProblem);
 
   return (
@@ -936,28 +977,53 @@ const SupplierDashboard = ({ onLogout }) => {
 
       <div style={{ padding: '20px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
         
-        {/* Estatísticas */}
+        {/* Estatísticas - Linha 1: Status */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '20px',
+          gap: '16px',
+          marginBottom: '16px'
+        }}>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>TOTAL</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>PENDENTES</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>EM PROGRESSO</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
+          </div>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>RESOLVIDOS</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
+          </div>
+        </div>
+
+        {/* Estatísticas - Linha 2: Tipos de Problemas */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '16px',
           marginBottom: '24px'
         }}>
-          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>TOTAL</p>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL NÃO CHEGOU</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypes['Material não chegou']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>PENDENTES</p>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL DANIFICADO</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypes['Material danificado']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>EM PROGRESSO</p>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL ERRADO</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypes['Material errado']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 8px 0' }}>RESOLVIDOS</p>
-            <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
+          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>OUTRO</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypes['Outro']}</p>
           </div>
         </div>
 
