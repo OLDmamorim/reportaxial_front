@@ -550,8 +550,6 @@ const StoreDashboard = ({ onLogout }) => {
 
       <div style={{ 
         padding: '20px', 
-        maxWidth: isMobile ? '100%' : '1600px', 
-        margin: '0 auto', 
         width: '100%', 
         boxSizing: 'border-box',
         flex: 1
@@ -1517,8 +1515,6 @@ const SupplierDashboard = ({ onLogout }) => {
 
       <div style={{ 
         padding: '20px', 
-        maxWidth: isMobile ? '100%' : '1600px', 
-        margin: '0 auto', 
         width: '100%', 
         boxSizing: 'border-box',
         flex: 1
@@ -2483,8 +2479,6 @@ const AdminDashboard = ({ onLogout }) => {
 
       <div style={{ 
         padding: '20px', 
-        maxWidth: isMobile ? '100%' : '1600px', 
-        margin: '0 auto', 
         width: '100%', 
         boxSizing: 'border-box',
         flex: 1
