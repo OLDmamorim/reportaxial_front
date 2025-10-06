@@ -604,7 +604,10 @@ const StoreDashboard = ({ onLogout }) => {
               marginBottom: isMobile ? '0' : '16px'
             }}>
               <div 
-                onClick={() => setActiveFilter({ type: 'status', value: 'all' })}
+                onClick={() => {
+                  setActiveFilter({ type: 'status', value: 'all' });
+                  setFilterStatus('all');
+                }}
                 style={{ 
                   background: '#EEF2FF', 
                   padding: isMobile ? '12px' : '16px', 
@@ -618,7 +621,10 @@ const StoreDashboard = ({ onLogout }) => {
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
               </div>
               <div 
-                onClick={() => setActiveFilter({ type: 'status', value: 'pending' })}
+                onClick={() => {
+                  setActiveFilter({ type: 'status', value: 'pending' });
+                  setFilterStatus('pending');
+                }}
                 style={{ 
                   background: '#FEE2E2', 
                   padding: isMobile ? '12px' : '16px', 
@@ -632,7 +638,10 @@ const StoreDashboard = ({ onLogout }) => {
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#DC2626', margin: 0 }}>{stats.pending}</p>
               </div>
               <div 
-                onClick={() => setActiveFilter({ type: 'status', value: 'in_progress' })}
+                onClick={() => {
+                  setActiveFilter({ type: 'status', value: 'in_progress' });
+                  setFilterStatus('in_progress');
+                }}
                 style={{ 
                   background: '#FEF3C7', 
                   padding: isMobile ? '12px' : '16px', 
@@ -646,7 +655,10 @@ const StoreDashboard = ({ onLogout }) => {
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#D97706', margin: 0 }}>{stats.in_progress}</p>
               </div>
               <div 
-                onClick={() => setActiveFilter({ type: 'status', value: 'resolved' })}
+                onClick={() => {
+                  setActiveFilter({ type: 'status', value: 'resolved' });
+                  setFilterStatus('resolved');
+                }}
                 style={{ 
                   background: '#D1FAE5', 
                   padding: isMobile ? '12px' : '16px', 
@@ -1578,7 +1590,10 @@ const SupplierDashboard = ({ onLogout }) => {
               marginBottom: isMobile ? '0' : '16px'
             }}>
               <div 
-                onClick={() => setActiveFilter({ type: 'status', value: 'all' })}
+                onClick={() => {
+                  setActiveFilter({ type: 'status', value: 'all' });
+                  setFilterStatus('all');
+                }}
                 style={{ 
                   background: '#EEF2FF', 
                   padding: isMobile ? '12px' : '16px', 
@@ -1592,7 +1607,10 @@ const SupplierDashboard = ({ onLogout }) => {
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
               </div>
               <div 
-                onClick={() => setActiveFilter({ type: 'status', value: 'pending' })}
+                onClick={() => {
+                  setActiveFilter({ type: 'status', value: 'pending' });
+                  setFilterStatus('pending');
+                }}
                 style={{ 
                   background: '#FEE2E2', 
                   padding: isMobile ? '12px' : '16px', 
@@ -1606,7 +1624,10 @@ const SupplierDashboard = ({ onLogout }) => {
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#DC2626', margin: 0 }}>{stats.pending}</p>
               </div>
               <div 
-                onClick={() => setActiveFilter({ type: 'status', value: 'in_progress' })}
+                onClick={() => {
+                  setActiveFilter({ type: 'status', value: 'in_progress' });
+                  setFilterStatus('in_progress');
+                }}
                 style={{ 
                   background: '#FEF3C7', 
                   padding: isMobile ? '12px' : '16px', 
@@ -1620,7 +1641,10 @@ const SupplierDashboard = ({ onLogout }) => {
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#D97706', margin: 0 }}>{stats.in_progress}</p>
               </div>
               <div 
-                onClick={() => setActiveFilter({ type: 'status', value: 'resolved' })}
+                onClick={() => {
+                  setActiveFilter({ type: 'status', value: 'resolved' });
+                  setFilterStatus('resolved');
+                }}
                 style={{ 
                   background: '#D1FAE5', 
                   padding: isMobile ? '12px' : '16px', 
