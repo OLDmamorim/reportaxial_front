@@ -373,6 +373,7 @@ const StoreDashboard = ({ onLogout }) => {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   
   // Usar refs em vez de controlled components
   const problemTypeRef = useRef(null);
@@ -390,6 +391,14 @@ const StoreDashboard = ({ onLogout }) => {
 
   useEffect(() => {
     fetchProblems();
+    
+    // Detectar mudanças no tamanho da tela
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const fetchProblems = async () => {
@@ -546,50 +555,50 @@ const StoreDashboard = ({ onLogout }) => {
         {/* Estatísticas - Linha 1: Status */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '16px',
-          marginBottom: '16px'
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+          gap: isMobile ? '12px' : '16px',
+          marginBottom: isMobile ? '12px' : '16px'
         }}>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>TOTAL</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>TOTAL</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>PENDENTES</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>PENDENTES</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>EM PROGRESSO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>EM PROGRESSO</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>RESOLVIDOS</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>RESOLVIDOS</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
           </div>
         </div>
 
         {/* Estatísticas - Linha 2: Tipos de Problemas */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '16px',
-          marginBottom: '24px'
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+          gap: isMobile ? '12px' : '16px',
+          marginBottom: isMobile ? '20px' : '24px'
         }}>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL NÃO CHEGOU</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypeStats['Material não chegou']}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL NÃO CHEGOU</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypeStats['Material não chegou']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL DANIFICADO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypeStats['Material danificado']}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL DANIFICADO</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypeStats['Material danificado']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL ERRADO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypeStats['Material errado']}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL ERRADO</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypeStats['Material errado']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>OUTRO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypeStats['Outro']}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>OUTRO</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypeStats['Outro']}</p>
           </div>
         </div>
 
@@ -812,9 +821,18 @@ const SupplierDashboard = ({ onLogout }) => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
   const [filteredProblems, setFilteredProblems] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     fetchProblems();
+    
+    // Detectar mudanças no tamanho da tela
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const fetchProblems = async () => {
@@ -980,50 +998,50 @@ const SupplierDashboard = ({ onLogout }) => {
         {/* Estatísticas - Linha 1: Status */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '16px',
-          marginBottom: '16px'
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+          gap: isMobile ? '12px' : '16px',
+          marginBottom: isMobile ? '12px' : '16px'
         }}>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>TOTAL</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>TOTAL</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>PENDENTES</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>PENDENTES</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>EM PROGRESSO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>EM PROGRESSO</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>RESOLVIDOS</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>RESOLVIDOS</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
           </div>
         </div>
 
         {/* Estatísticas - Linha 2: Tipos de Problemas */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '16px',
-          marginBottom: '24px'
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+          gap: isMobile ? '12px' : '16px',
+          marginBottom: isMobile ? '20px' : '24px'
         }}>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL NÃO CHEGOU</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypeStats['Material não chegou']}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL NÃO CHEGOU</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypeStats['Material não chegou']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL DANIFICADO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypeStats['Material danificado']}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL DANIFICADO</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypeStats['Material danificado']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL ERRADO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypeStats['Material errado']}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL ERRADO</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypeStats['Material errado']}</p>
           </div>
-          <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>OUTRO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypeStats['Outro']}</p>
+          <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>OUTRO</p>
+            <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypeStats['Outro']}</p>
           </div>
         </div>
 
