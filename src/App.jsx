@@ -418,25 +418,30 @@ const StoreDashboard = ({ onLogout }) => {
     
     // Pegar valores diretamente do DOM
     const problemType = problemTypeRef.current.value;
-    let orderDate = orderDateRef.current.value;
     const supplierOrder = supplierOrderRef.current.value;
     const eurocode = eurocodeRef.current.value;
     const observations = observationsRef.current.value;
     
-    // Validar e formatar data
+    // Obter data usando valueAsDate para garantir formato correto
+    const dateInput = orderDateRef.current;
+    let orderDate = '';
+    
+    if (dateInput.valueAsDate) {
+      // Usar valueAsDate e formatar manualmente para YYYY-MM-DD
+      const date = dateInput.valueAsDate;
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      orderDate = `${year}-${month}-${day}`;
+    } else if (dateInput.value) {
+      // Fallback: tentar usar o value diretamente
+      orderDate = dateInput.value;
+    }
+    
+    // Validar data
     if (!orderDate) {
       alert('Por favor preencha a data');
       return;
-    }
-    
-    // Garantir formato YYYY-MM-DD
-    // Se a data vier em formato diferente, converter
-    if (orderDate.includes('/')) {
-      // Converter de DD/MM/YYYY para YYYY-MM-DD
-      const parts = orderDate.split('/');
-      if (parts.length === 3) {
-        orderDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-      }
     }
     
     // Validar formato final
