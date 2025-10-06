@@ -418,20 +418,39 @@ const StoreDashboard = ({ onLogout }) => {
     
     // Pegar valores diretamente do DOM
     const problemType = problemTypeRef.current.value;
-    const orderDate = orderDateRef.current.value;
+    let orderDate = orderDateRef.current.value;
     const supplierOrder = supplierOrderRef.current.value;
     const eurocode = eurocodeRef.current.value;
     const observations = observationsRef.current.value;
+    
+    // Validar e formatar data
+    if (!orderDate) {
+      alert('Por favor preencha a data');
+      return;
+    }
+    
+    // Garantir formato YYYY-MM-DD
+    // Se a data vier em formato diferente, converter
+    if (orderDate.includes('/')) {
+      // Converter de DD/MM/YYYY para YYYY-MM-DD
+      const parts = orderDate.split('/');
+      if (parts.length === 3) {
+        orderDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+      }
+    }
+    
+    // Validar formato final
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(orderDate)) {
+      alert('Formato de data inválido. Use o formato YYYY-MM-DD');
+      console.error('Data inválida:', orderDate);
+      return;
+    }
     
     console.log('Submit values:', { problemType, orderDate, supplierOrder, eurocode, observations });
     
     if (!problemType) {
       alert('Por favor selecione o tipo de problema');
-      return;
-    }
-    
-    if (!orderDate) {
-      alert('Por favor preencha a data');
       return;
     }
     
