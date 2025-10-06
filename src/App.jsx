@@ -569,16 +569,15 @@ const StoreDashboard = ({ onLogout }) => {
 
       {/* Título REPORT AXIAL */}
       <div style={{
-        background: '#1F2937',
-        padding: '24px',
+        padding: '16px 20px 0',
         textAlign: 'center'
       }}>
         <h1 style={{
-          fontSize: '36px',
+          fontSize: '20px',
           fontWeight: 'bold',
-          color: '#FFFFFF',
+          color: '#1F2937',
           margin: 0,
-          letterSpacing: '2px'
+          letterSpacing: '1px'
         }}>
           REPORT AXIAL
         </h1>
@@ -1607,16 +1606,15 @@ const SupplierDashboard = ({ onLogout }) => {
 
       {/* Título REPORT AXIAL */}
       <div style={{
-        background: '#1F2937',
-        padding: '24px',
+        padding: '16px 20px 0',
         textAlign: 'center'
       }}>
         <h1 style={{
-          fontSize: '36px',
+          fontSize: '20px',
           fontWeight: 'bold',
-          color: '#FFFFFF',
+          color: '#1F2937',
           margin: 0,
-          letterSpacing: '2px'
+          letterSpacing: '1px'
         }}>
           REPORT AXIAL
         </h1>
@@ -2579,16 +2577,15 @@ const AdminDashboard = ({ onLogout }) => {
 
       {/* Título REPORT AXIAL */}
       <div style={{
-        background: '#1F2937',
-        padding: '24px',
+        padding: '16px 20px 0',
         textAlign: 'center'
       }}>
         <h1 style={{
-          fontSize: '36px',
+          fontSize: '20px',
           fontWeight: 'bold',
-          color: '#FFFFFF',
+          color: '#1F2937',
           margin: 0,
-          letterSpacing: '2px'
+          letterSpacing: '1px'
         }}>
           REPORT AXIAL
         </h1>
