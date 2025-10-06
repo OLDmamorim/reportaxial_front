@@ -904,7 +904,9 @@ const StoreDashboard = ({ onLogout }) => {
           <p>Carregando...</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {problems.filter(problem => {
+            {problems
+              .filter(problem => problem.status !== 'resolved') // Excluir resolvidos
+              .filter(problem => {
               // Se não há filtro ativo, mostrar todos
               if (!activeFilter.type) return true;
               
@@ -1229,6 +1231,7 @@ const StoreDashboard = ({ onLogout }) => {
                         }
                         setNewMessage('');
                         fetchProblems(); // Atualizar lista para refletir mudanças de visualização
+                        setShowDetailModal(false); // Fechar modal
                         alert('Mensagem enviada com sucesso!');
                       } else {
                         const errorData = await response.json();
@@ -1759,6 +1762,7 @@ const SupplierDashboard = ({ onLogout }) => {
             gap: '20px'
           }}>
             {(filteredProblems.length > 0 ? filteredProblems : problems)
+              .filter(problem => problem.status !== 'resolved') // Excluir resolvidos
               .map((problem) => (
               <div
                 key={problem.id}
@@ -2304,6 +2308,7 @@ const SupplierDashboard = ({ onLogout }) => {
                       }
                       setNewMessage('');
                       fetchProblems(); // Atualizar lista para refletir mudanças de visualização
+                      setShowDetailModal(false); // Fechar modal
                       alert('Mensagem enviada com sucesso!');
                     } else {
                       alert('Erro ao enviar mensagem');
@@ -2905,6 +2910,7 @@ const AdminDashboard = ({ onLogout }) => {
                         }
                         setNewMessage('');
                         fetchProblems(); // Atualizar lista para refletir mudanças de visualização
+                        setShowDetailModal(false); // Fechar modal
                         alert('Mensagem enviada com sucesso!');
                       } else {
                         const errorData = await response.json();
