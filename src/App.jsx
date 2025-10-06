@@ -16,7 +16,7 @@ const exportToPDF = (problems, storeName) => {
     return labels[priority] || 'Normal';
   };
   const getStatusLabel = (status) => {
-    const labels = { pending: 'Pendente', in_progress: 'Em Progresso', resolved: 'Resolvido', closed: 'Fechado' };
+    const labels = { pending: 'Pendente', in_progress: 'Em Análise', resolved: 'Resolvido', closed: 'Fechado' };
     return labels[status] || 'Pendente';
   };
   
@@ -505,7 +505,7 @@ const StoreDashboard = ({ onLogout }) => {
   };  const getStatusBadge = (status) => {
     const colors = {
       pending: { bg: '#FEE2E2', text: '#991B1B', label: 'Pendente' },      // Vermelho suave
-      in_progress: { bg: '#FEF3C7', text: '#92400E', label: 'Em Progresso' }, // Amarelo suave
+      in_progress: { bg: '#FEF3C7', text: '#92400E', label: 'Em Análise' }, // Amarelo suave
       resolved: { bg: '#D1FAE5', text: '#065F46', label: 'Resolvido' }     // Verde suave
     };
     const style = colors[status] || colors.pending;
@@ -630,7 +630,7 @@ const StoreDashboard = ({ onLogout }) => {
                   border: activeFilter.type === 'status' && activeFilter.value === 'in_progress' ? '3px solid #D97706' : '3px solid transparent',
                   transition: 'all 0.2s'
                 }}>
-                <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>EM PROGRESSO</p>
+                <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>EM ANÁLISE</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#D97706', margin: 0 }}>{stats.in_progress}</p>
               </div>
               <div 
@@ -974,10 +974,16 @@ const StoreDashboard = ({ onLogout }) => {
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
-                  // Piscar amarelo se há mensagens não vistas pela loja
-                  animation: (!problem.viewed_by_store) 
-                    ? 'pulse-yellow 2s ease-in-out infinite' 
-                    : 'none'
+                  // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
+                  animation: (() => {
+                    const daysSinceUpdate = Math.floor((new Date() - new Date(problem.updated_at)) / (1000 * 60 * 60 * 24));
+                    if (daysSinceUpdate >= 5 && problem.status !== 'resolved') {
+                      return 'pulse-red 2s ease-in-out infinite';
+                    } else if (!problem.viewed_by_store) {
+                      return 'pulse-yellow 2s ease-in-out infinite';
+                    }
+                    return 'none';
+                  })()
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
@@ -1457,7 +1463,7 @@ const SupplierDashboard = ({ onLogout }) => {
   const getStatusBadge = (status) => {
     const colors = {
       pending: { bg: '#FEE2E2', text: '#991B1B', label: 'Pendente' },      // Vermelho suave
-      in_progress: { bg: '#FEF3C7', text: '#92400E', label: 'Em Progresso' }, // Amarelo suave
+      in_progress: { bg: '#FEF3C7', text: '#92400E', label: 'Em Análise' }, // Amarelo suave
       resolved: { bg: '#D1FAE5', text: '#065F46', label: 'Resolvido' }     // Verde suave
     };
     const style = colors[status] || colors.pending;
@@ -1587,7 +1593,7 @@ const SupplierDashboard = ({ onLogout }) => {
                   border: activeFilter.type === 'status' && activeFilter.value === 'in_progress' ? '3px solid #D97706' : '3px solid transparent',
                   transition: 'all 0.2s'
                 }}>
-                <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>EM PROGRESSO</p>
+                <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>EM ANÁLISE</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#D97706', margin: 0 }}>{stats.in_progress}</p>
               </div>
               <div 
@@ -1715,7 +1721,7 @@ const SupplierDashboard = ({ onLogout }) => {
           >
             <option value="all">Todos os Status</option>
             <option value="pending">Pendente</option>
-            <option value="in_progress">Em Progresso</option>
+            <option value="in_progress">Em Análise</option>
             <option value="resolved">Resolvido</option>
           </select>
 
@@ -1790,10 +1796,16 @@ const SupplierDashboard = ({ onLogout }) => {
                   minHeight: '180px',
                   display: 'flex',
                   flexDirection: 'column',
-                  // Piscar amarelo se há mensagens não vistas pelo fornecedor
-                  animation: (!problem.viewed_by_supplier) 
-                    ? 'pulse-yellow 2s ease-in-out infinite' 
-                    : 'none'
+                  // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
+                  animation: (() => {
+                    const daysSinceUpdate = Math.floor((new Date() - new Date(problem.updated_at)) / (1000 * 60 * 60 * 24));
+                    if (daysSinceUpdate >= 5 && problem.status !== 'resolved') {
+                      return 'pulse-red 2s ease-in-out infinite';
+                    } else if (!problem.viewed_by_supplier) {
+                      return 'pulse-yellow 2s ease-in-out infinite';
+                    }
+                    return 'none';
+                  })()
                 }}
                 onMouseEnter={(e) => {
                   if (selectedProblem !== problem.id) {
@@ -2491,7 +2503,7 @@ const AdminDashboard = ({ onLogout }) => {
             >
               <option value="all">Todos os Status</option>
               <option value="pending">Pendente</option>
-              <option value="in_progress">Em Progresso</option>
+              <option value="in_progress">Em Análise</option>
               <option value="resolved">Resolvido</option>
             </select>
             <select
@@ -3005,6 +3017,14 @@ function App() {
           }
           50% {
             background-color: #FEF3C7;
+          }
+        }
+        @keyframes pulse-red {
+          0%, 100% {
+            background-color: #FFFFFF;
+          }
+          50% {
+            background-color: #FEE2E2;
           }
         }
       `}</style>
