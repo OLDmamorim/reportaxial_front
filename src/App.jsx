@@ -394,11 +394,17 @@ const StoreDashboard = ({ onLogout }) => {
 
   const fetchProblems = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
+      console.log('[Frontend] Buscando problemas com token:', token ? 'presente' : 'ausente');
+      
       const response = await fetch(`${API_URL}/problems/store`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
+      console.log('[Frontend] Response status:', response.status);
       const data = await response.json();
+      console.log('[Frontend] Dados recebidos:', data);
+      
       // Garantir que data é sempre um array
       setProblems(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -756,11 +762,17 @@ const SupplierDashboard = ({ onLogout }) => {
 
   const fetchProblems = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
+      console.log('[Frontend Supplier] Buscando problemas com token:', token ? 'presente' : 'ausente');
+      
       const response = await fetch(`${API_URL}/problems/supplier`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
+      console.log('[Frontend Supplier] Response status:', response.status);
       const data = await response.json();
+      console.log('[Frontend Supplier] Dados recebidos:', data);
+      
       // Garantir que data é sempre um array
       setProblems(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -773,9 +785,9 @@ const SupplierDashboard = ({ onLogout }) => {
 
   const handleResolve = async (problemId) => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/problems/${problemId}/resolve`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -795,7 +807,7 @@ const SupplierDashboard = ({ onLogout }) => {
     if (!responseText.trim()) return;
     
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/problems/${problemId}/respond`, {
         method: 'POST',
         headers: {
