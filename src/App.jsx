@@ -596,7 +596,7 @@ const StoreDashboard = ({ onLogout }) => {
               <div 
                 onClick={() => setActiveFilter({ type: 'status', value: 'all' })}
                 style={{ 
-                  background: '#FFFFFF', 
+                  background: '#EEF2FF', 
                   padding: isMobile ? '12px' : '16px', 
                   borderRadius: '10px', 
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
@@ -610,35 +610,35 @@ const StoreDashboard = ({ onLogout }) => {
               <div 
                 onClick={() => setActiveFilter({ type: 'status', value: 'pending' })}
                 style={{ 
-                  background: '#FFFFFF', 
+                  background: '#FEE2E2', 
                   padding: isMobile ? '12px' : '16px', 
                   borderRadius: '10px', 
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
-                  border: activeFilter.type === 'status' && activeFilter.value === 'pending' ? '3px solid #F59E0B' : '3px solid transparent',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'pending' ? '3px solid #DC2626' : '3px solid transparent',
                   transition: 'all 0.2s'
                 }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>PENDENTES</p>
-                <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
+                <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#DC2626', margin: 0 }}>{stats.pending}</p>
               </div>
               <div 
                 onClick={() => setActiveFilter({ type: 'status', value: 'in_progress' })}
                 style={{ 
-                  background: '#FFFFFF', 
+                  background: '#FEF3C7', 
                   padding: isMobile ? '12px' : '16px', 
                   borderRadius: '10px', 
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
-                  border: activeFilter.type === 'status' && activeFilter.value === 'in_progress' ? '3px solid #3B82F6' : '3px solid transparent',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'in_progress' ? '3px solid #D97706' : '3px solid transparent',
                   transition: 'all 0.2s'
                 }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>EM PROGRESSO</p>
-                <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
+                <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#D97706', margin: 0 }}>{stats.in_progress}</p>
               </div>
               <div 
                 onClick={() => setActiveFilter({ type: 'status', value: 'resolved' })}
                 style={{ 
-                  background: '#FFFFFF', 
+                  background: '#D1FAE5', 
                   padding: isMobile ? '12px' : '16px', 
                   borderRadius: '10px', 
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
@@ -1457,7 +1457,7 @@ const SupplierDashboard = ({ onLogout }) => {
               <div 
                 onClick={() => setActiveFilter({ type: 'status', value: 'all' })}
                 style={{ 
-                  background: '#FFFFFF', 
+                  background: '#EEF2FF', 
                   padding: isMobile ? '12px' : '16px', 
                   borderRadius: '10px', 
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
@@ -1471,35 +1471,35 @@ const SupplierDashboard = ({ onLogout }) => {
               <div 
                 onClick={() => setActiveFilter({ type: 'status', value: 'pending' })}
                 style={{ 
-                  background: '#FFFFFF', 
+                  background: '#FEE2E2', 
                   padding: isMobile ? '12px' : '16px', 
                   borderRadius: '10px', 
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
-                  border: activeFilter.type === 'status' && activeFilter.value === 'pending' ? '3px solid #F59E0B' : '3px solid transparent',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'pending' ? '3px solid #DC2626' : '3px solid transparent',
                   transition: 'all 0.2s'
                 }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>PENDENTES</p>
-                <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
+                <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#DC2626', margin: 0 }}>{stats.pending}</p>
               </div>
               <div 
                 onClick={() => setActiveFilter({ type: 'status', value: 'in_progress' })}
                 style={{ 
-                  background: '#FFFFFF', 
+                  background: '#FEF3C7', 
                   padding: isMobile ? '12px' : '16px', 
                   borderRadius: '10px', 
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
-                  border: activeFilter.type === 'status' && activeFilter.value === 'in_progress' ? '3px solid #3B82F6' : '3px solid transparent',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'in_progress' ? '3px solid #D97706' : '3px solid transparent',
                   transition: 'all 0.2s'
                 }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>EM PROGRESSO</p>
-                <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
+                <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#D97706', margin: 0 }}>{stats.in_progress}</p>
               </div>
               <div 
                 onClick={() => setActiveFilter({ type: 'status', value: 'resolved' })}
                 style={{ 
-                  background: '#FFFFFF', 
+                  background: '#D1FAE5', 
                   padding: isMobile ? '12px' : '16px', 
                   borderRadius: '10px', 
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
