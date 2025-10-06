@@ -371,9 +371,9 @@ const DashboardHeader = ({ title, onLogout }) => (
 
 const StoreDashboard = ({ onLogout }) => {
   const [problems, setProblems] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [activeFilter, setActiveFilter] = useState({ type: null, value: null });
   
   // Usar refs em vez de controlled components
   const problemTypeRef = useRef(null);
@@ -579,19 +579,59 @@ const StoreDashboard = ({ onLogout }) => {
               gap: isMobile ? '10px' : '16px',
               marginBottom: isMobile ? '0' : '16px'
             }}>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'status', value: 'all' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'all' ? '3px solid #6366F1' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>TOTAL</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'status', value: 'pending' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'pending' ? '3px solid #F59E0B' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>PENDENTES</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'status', value: 'in_progress' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'in_progress' ? '3px solid #3B82F6' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>EM PROGRESSO</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'status', value: 'resolved' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'resolved' ? '3px solid #10B981' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>RESOLVIDOS</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
               </div>
@@ -616,19 +656,59 @@ const StoreDashboard = ({ onLogout }) => {
               gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
               gap: isMobile ? '10px' : '16px'
             }}>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'problemType', value: 'Material não chegou' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'problemType' && activeFilter.value === 'Material não chegou' ? '3px solid #EF4444' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL NÃO CHEGOU</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypeStats['Material não chegou']}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'problemType', value: 'Material danificado' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'problemType' && activeFilter.value === 'Material danificado' ? '3px solid #F97316' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL DANIFICADO</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypeStats['Material danificado']}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'problemType', value: 'Material errado' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'problemType' && activeFilter.value === 'Material errado' ? '3px solid #8B5CF6' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL ERRADO</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypeStats['Material errado']}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'problemType', value: 'Outro' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'problemType' && activeFilter.value === 'Outro' ? '3px solid #64748B' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>OUTRO</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypeStats['Outro']}</p>
               </div>
@@ -800,7 +880,23 @@ const StoreDashboard = ({ onLogout }) => {
           <p>Carregando...</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {problems.map((problem) => (
+            {problems.filter(problem => {
+              // Se não há filtro ativo, mostrar todos
+              if (!activeFilter.type) return true;
+              
+              // Filtrar por status
+              if (activeFilter.type === 'status') {
+                if (activeFilter.value === 'all') return true;
+                return problem.status === activeFilter.value;
+              }
+              
+              // Filtrar por tipo de problema
+              if (activeFilter.type === 'problemType') {
+                return problem.problem_description === activeFilter.value;
+              }
+              
+              return true;
+            }).map((problem) => (
               <div key={problem.id} style={{
                 background: '#FFFFFF',
                 padding: '20px',
@@ -857,6 +953,7 @@ const SupplierDashboard = ({ onLogout }) => {
   const [filterPriority, setFilterPriority] = useState('all');
   const [filteredProblems, setFilteredProblems] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [activeFilter, setActiveFilter] = useState({ type: null, value: null });
 
   useEffect(() => {
     fetchProblems();
@@ -1057,19 +1154,59 @@ const SupplierDashboard = ({ onLogout }) => {
               gap: isMobile ? '10px' : '16px',
               marginBottom: isMobile ? '0' : '16px'
             }}>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'status', value: 'all' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'all' ? '3px solid #6366F1' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>TOTAL</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#6366F1', margin: 0 }}>{stats.total}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'status', value: 'pending' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'pending' ? '3px solid #F59E0B' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>PENDENTES</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#F59E0B', margin: 0 }}>{stats.pending}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'status', value: 'in_progress' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'in_progress' ? '3px solid #3B82F6' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>EM PROGRESSO</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#3B82F6', margin: 0 }}>{stats.in_progress}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'status', value: 'resolved' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'status' && activeFilter.value === 'resolved' ? '3px solid #10B981' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>RESOLVIDOS</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#10B981', margin: 0 }}>{stats.resolved}</p>
               </div>
@@ -1094,19 +1231,59 @@ const SupplierDashboard = ({ onLogout }) => {
               gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
               gap: isMobile ? '10px' : '16px'
             }}>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'problemType', value: 'Material não chegou' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'problemType' && activeFilter.value === 'Material não chegou' ? '3px solid #EF4444' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL NÃO CHEGOU</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypeStats['Material não chegou']}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'problemType', value: 'Material danificado' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'problemType' && activeFilter.value === 'Material danificado' ? '3px solid #F97316' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL DANIFICADO</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypeStats['Material danificado']}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'problemType', value: 'Material errado' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'problemType' && activeFilter.value === 'Material errado' ? '3px solid #8B5CF6' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>MATERIAL ERRADO</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypeStats['Material errado']}</p>
               </div>
-              <div style={{ background: '#FFFFFF', padding: isMobile ? '12px' : '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div 
+                onClick={() => setActiveFilter({ type: 'problemType', value: 'Outro' })}
+                style={{ 
+                  background: '#FFFFFF', 
+                  padding: isMobile ? '12px' : '16px', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  border: activeFilter.type === 'problemType' && activeFilter.value === 'Outro' ? '3px solid #64748B' : '3px solid transparent',
+                  transition: 'all 0.2s'
+                }}>
                 <p style={{ fontSize: isMobile ? '10px' : '12px', color: '#6B7280', margin: '0 0 4px 0', fontWeight: '600' }}>OUTRO</p>
                 <p style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypeStats['Outro']}</p>
               </div>
