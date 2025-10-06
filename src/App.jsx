@@ -460,7 +460,7 @@ const StoreDashboard = ({ onLogout }) => {
     }
 
     // Preparar dados para Excel
-    const excelData = problemsToExport.map(problem => {
+    const excelDataRows = problemsToExport.map(problem => {
       const createdDate = new Date(problem.created_at);
       const resolvedDate = problem.resolved_at ? new Date(problem.resolved_at) : null;
       const days = resolvedDate 
@@ -472,29 +472,27 @@ const StoreDashboard = ({ onLogout }) => {
         ? problem.messages[problem.messages.length - 1].message
         : '-';
 
-      return {
-        'DATA REGISTO': createdDate.toLocaleDateString('pt-PT'),
-        'DATA RESOLUÇÃO': resolvedDate ? resolvedDate.toLocaleDateString('pt-PT') : '-',
-        'DIAS': days,
-        'LOJA': problem.store_name || '-',
-        'EUROCODE': problem.eurocode || '-',
-        'PROBLEMA A REPORTAR': problem.problem_type || problem.description || '-',
-        'RESOLUÇÃO': lastMessage
-      };
+      return [
+        createdDate.toLocaleDateString('pt-PT'),
+        resolvedDate ? resolvedDate.toLocaleDateString('pt-PT') : '-',
+        days,
+        problem.store_name || '-',
+        problem.eurocode || '-',
+        problem.problem_type || problem.description || '-',
+        lastMessage
+      ];
     });
 
     // Criar workbook e worksheet
     const wb = XLSX.utils.book_new();
     
-    // Criar worksheet com título primeiro
+    // Criar worksheet com título, linha vazia, cabeçalhos e dados
     const ws = XLSX.utils.aoa_to_sheet([
       ['REPORT AXIAL'], // Linha 1: Título
       [], // Linha 2: Vazia
-      ['DATA REGISTO', 'DATA RESOLUÇÃO', 'DIAS', 'LOJA', 'EUROCODE', 'PROBLEMA A REPORTAR', 'RESOLUÇÃO'] // Linha 3: Cabeçalhos
+      ['DATA REGISTO', 'DATA RESOLUÇÃO', 'DIAS', 'LOJA', 'EUROCODE', 'PROBLEMA A REPORTAR', 'RESOLUÇÃO'], // Linha 3: Cabeçalhos
+      ...excelDataRows // Linha 4+: Dados
     ]);
-    
-    // Adicionar dados a partir da linha 4
-    XLSX.utils.sheet_add_json(ws, excelData, { origin: 'A4', skipHeader: true });
     
     // Ajustar largura das colunas
     ws['!cols'] = [
@@ -1731,7 +1729,7 @@ const SupplierDashboard = ({ onLogout }) => {
     }
 
     // Preparar dados para Excel
-    const excelData = problemsToExport.map(problem => {
+    const excelDataRows = problemsToExport.map(problem => {
       const createdDate = new Date(problem.created_at);
       const resolvedDate = problem.resolved_at ? new Date(problem.resolved_at) : null;
       const days = resolvedDate 
@@ -1743,29 +1741,27 @@ const SupplierDashboard = ({ onLogout }) => {
         ? problem.messages[problem.messages.length - 1].message
         : '-';
 
-      return {
-        'DATA REGISTO': createdDate.toLocaleDateString('pt-PT'),
-        'DATA RESOLUÇÃO': resolvedDate ? resolvedDate.toLocaleDateString('pt-PT') : '-',
-        'DIAS': days,
-        'LOJA': problem.store_name || '-',
-        'EUROCODE': problem.eurocode || '-',
-        'PROBLEMA A REPORTAR': problem.problem_type || problem.description || '-',
-        'RESOLUÇÃO': lastMessage
-      };
+      return [
+        createdDate.toLocaleDateString('pt-PT'),
+        resolvedDate ? resolvedDate.toLocaleDateString('pt-PT') : '-',
+        days,
+        problem.store_name || '-',
+        problem.eurocode || '-',
+        problem.problem_type || problem.description || '-',
+        lastMessage
+      ];
     });
 
     // Criar workbook e worksheet
     const wb = XLSX.utils.book_new();
     
-    // Criar worksheet com título primeiro
+    // Criar worksheet com título, linha vazia, cabeçalhos e dados
     const ws = XLSX.utils.aoa_to_sheet([
       ['REPORT AXIAL'], // Linha 1: Título
       [], // Linha 2: Vazia
-      ['DATA REGISTO', 'DATA RESOLUÇÃO', 'DIAS', 'LOJA', 'EUROCODE', 'PROBLEMA A REPORTAR', 'RESOLUÇÃO'] // Linha 3: Cabeçalhos
+      ['DATA REGISTO', 'DATA RESOLUÇÃO', 'DIAS', 'LOJA', 'EUROCODE', 'PROBLEMA A REPORTAR', 'RESOLUÇÃO'], // Linha 3: Cabeçalhos
+      ...excelDataRows // Linha 4+: Dados
     ]);
-    
-    // Adicionar dados a partir da linha 4
-    XLSX.utils.sheet_add_json(ws, excelData, { origin: 'A4', skipHeader: true });
     
     // Ajustar largura das colunas
     ws['!cols'] = [
