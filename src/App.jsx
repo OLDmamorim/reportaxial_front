@@ -730,37 +730,6 @@ const StoreDashboard = ({ onLogout }) => {
 
         </div>
 
-        {/* Dropdown de Filtro de Status */}
-        <div style={{ marginBottom: '24px' }}>
-          <select
-            value={activeFilter.type === 'status' ? activeFilter.value : 'all'}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value === 'all') {
-                setActiveFilter({ type: null, value: null });
-              } else {
-                setActiveFilter({ type: 'status', value: value });
-              }
-            }}
-            style={{
-              padding: '12px 16px',
-              background: '#1F2937',
-              border: '2px solid #374151',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#FFFFFF',
-              cursor: 'pointer',
-              minWidth: '200px'
-            }}
-          >
-            <option value="all">Todos os Status</option>
-            <option value="pending">Pendentes</option>
-            <option value="in_progress">Em Análise</option>
-            <option value="resolved">Resolvidos</option>
-          </select>
-        </div>
-
         {/* Botão Novo Reporte */}
         <div style={{ marginBottom: '24px' }}>
           <button
