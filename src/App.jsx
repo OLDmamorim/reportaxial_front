@@ -1178,6 +1178,10 @@ const StoreDashboard = ({ onLogout }) => {
               <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
                 <button
                   onClick={async () => {
+                    console.log('[Store] Botão Enviar Mensagem clicado');
+                    console.log('[Store] newMessage:', newMessage);
+                    console.log('[Store] selectedProblem:', selectedProblem);
+                    
                     if (!newMessage.trim()) {
                       alert('Por favor, escreva uma mensagem');
                       return;
@@ -1185,6 +1189,7 @@ const StoreDashboard = ({ onLogout }) => {
                     
                     try {
                       const token = localStorage.getItem('token');
+                      console.log('[Store] Enviando mensagem para problema ID:', selectedProblem.id);
                       const response = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
                         method: 'POST',
                         headers: {
@@ -1195,6 +1200,7 @@ const StoreDashboard = ({ onLogout }) => {
                           message: newMessage
                         })
                       });
+                      console.log('[Store] Response status:', response.status);
 
                       if (response.ok) {
                         // Recarregar mensagens
@@ -2832,6 +2838,10 @@ const AdminDashboard = ({ onLogout }) => {
               <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
                 <button
                   onClick={async () => {
+                    console.log('[Store] Botão Enviar Mensagem clicado');
+                    console.log('[Store] newMessage:', newMessage);
+                    console.log('[Store] selectedProblem:', selectedProblem);
+                    
                     if (!newMessage.trim()) {
                       alert('Por favor, escreva uma mensagem');
                       return;
@@ -2839,6 +2849,7 @@ const AdminDashboard = ({ onLogout }) => {
                     
                     try {
                       const token = localStorage.getItem('token');
+                      console.log('[Store] Enviando mensagem para problema ID:', selectedProblem.id);
                       const response = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
                         method: 'POST',
                         headers: {
@@ -2849,6 +2860,7 @@ const AdminDashboard = ({ onLogout }) => {
                           message: newMessage
                         })
                       });
+                      console.log('[Store] Response status:', response.status);
 
                       if (response.ok) {
                         // Recarregar mensagens
