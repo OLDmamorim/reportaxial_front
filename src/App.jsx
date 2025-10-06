@@ -2,7 +2,7 @@
 // App.jsx - CÓDIGO COMPLETO com Dashboards Funcionais
 // Portal Reportaxial - EXPRESSGLASS
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const API_URL = 'https://reportaxialback-production.up.railway.app/api';
@@ -373,13 +373,13 @@ const StoreDashboard = ({ onLogout }) => {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    problem_type: '',
-    order_date: '',
-    supplier_order: '',
-    eurocode: '',
-    observations: ''
-  });
+  
+  // Usar refs em vez de controlled components
+  const problemTypeRef = useRef(null);
+  const orderDateRef = useRef(null);
+  const supplierOrderRef = useRef(null);
+  const eurocodeRef = useRef(null);
+  const observationsRef = useRef(null);
 
   const problemTypes = [
     'Material não chegou',
@@ -391,10 +391,6 @@ const StoreDashboard = ({ onLogout }) => {
   useEffect(() => {
     fetchProblems();
   }, []);
-
-  useEffect(() => {
-    console.log('formData changed:', formData);
-  }, [formData]);
 
   const fetchProblems = async () => {
     try {
@@ -411,12 +407,31 @@ const StoreDashboard = ({ onLogout }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSubmit = async (e) => {
+  };  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Pegar valores diretamente do DOM
+    const problemType = problemTypeRef.current.value;
+    const orderDate = orderDateRef.current.value;
+    const supplierOrder = supplierOrderRef.current.value;
+    const eurocode = eurocodeRef.current.value;
+    const observations = observationsRef.current.value;
+    
+    console.log('Submit values:', { problemType, orderDate, supplierOrder, eurocode, observations });
+    
+    if (!problemType) {
+      alert('Por favor selecione o tipo de problema');
+      return;
+    }
+    
+    if (!orderDate) {
+      alert('Por favor preencha a data');
+      return;
+    }
+    
+    const token = localStorage.getItem('token');
+    
     try {
-      const token = localStorage.getItem('authToken');
       const response = await fetch(`${API_URL}/problems`, {
         method: 'POST',
         headers: {
@@ -424,34 +439,35 @@ const StoreDashboard = ({ onLogout }) => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          problem_description: formData.problem_type,
-          order_date: formData.order_date || null,
-          supplier_order: formData.supplier_order || null,
+          problem_description: problemType,
+          order_date: orderDate || null,
+          supplier_order: supplierOrder || null,
           product: null,
-          eurocode: formData.eurocode || null,
-          observations: formData.observations || null,
+          eurocode: eurocode || null,
+          observations: observations || null,
           priority: 'normal'
         })
       });
 
       if (response.ok) {
-        alert('Problema reportado com sucesso!');
-        setFormData({
-          problem_type: '',
-          order_date: '',
-          supplier_order: '',
-          eurocode: '',
-          observations: ''
-        });
+        alert('✓ Problema reportado com sucesso!');
+        // Limpar formulário
+        problemTypeRef.current.value = '';
+        orderDateRef.current.value = '';
+        supplierOrderRef.current.value = '';
+        eurocodeRef.current.value = '';
+        observationsRef.current.value = '';
         setShowForm(false);
         fetchProblems();
+      } else {
+        const errorData = await response.json();
+        alert(`Erro ao reportar: ${errorData.message || 'Erro desconhecido'}`);
       }
     } catch (error) {
-      alert('Erro ao reportar problema');
+      console.error('Error:', error);
+      alert('Erro ao reportar problema: ' + error.message);
     }
-  };
-
-  const getStatusBadge = (status) => {
+  };  const getStatusBadge = (status) => {
     const colors = {
       pending: { bg: '#FEF3C7', text: '#92400E', label: 'Pendente' },
       in_progress: { bg: '#DBEAFE', text: '#1E40AF', label: 'Em Progresso' },
@@ -552,19 +568,9 @@ const StoreDashboard = ({ onLogout }) => {
                   Problema a Reportar *
                 </label>
                 <select
-                  value={formData.problem_type}
-                  onChange={(e) => {
-                    console.log('Select onChange:', e.target.value);
-                    const newFormData = {...formData, problem_type: e.target.value};
-                    console.log('New formData:', newFormData);
-                    setFormData(newFormData);
-                  }}
-                  onInput={(e) => {
-                    console.log('Select onInput:', e.target.value);
-                    setFormData({...formData, problem_type: e.target.value});
-                  }}
+                  ref={problemTypeRef}
+                  defaultValue=""
                   required
-                  autoComplete="off"
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -589,11 +595,7 @@ const StoreDashboard = ({ onLogout }) => {
                 </label>
                 <input
                   type="date"
-                  value={formData.order_date}
-                  onChange={(e) => {
-                    console.log('Date changed to:', e.target.value, 'Current formData:', formData);
-                    setFormData({...formData, order_date: e.target.value});
-                  }}
+                  ref={orderDateRef}
                   required
                   style={{
                     width: '100%',
@@ -612,8 +614,7 @@ const StoreDashboard = ({ onLogout }) => {
                 </label>
                 <input
                   type="number"
-                  value={formData.supplier_order}
-                  onChange={(e) => setFormData({...formData, supplier_order: e.target.value})}
+                  ref={supplierOrderRef}
                   placeholder="Apenas números"
                   style={{
                     width: '100%',
@@ -632,8 +633,7 @@ const StoreDashboard = ({ onLogout }) => {
                 </label>
                 <input
                   type="text"
-                  value={formData.eurocode}
-                  onChange={(e) => setFormData({...formData, eurocode: e.target.value})}
+                  ref={eurocodeRef}
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -650,8 +650,7 @@ const StoreDashboard = ({ onLogout }) => {
                   Observações
                 </label>
                 <textarea
-                  value={formData.observations}
-                  onChange={(e) => setFormData({...formData, observations: e.target.value})}
+                  ref={observationsRef}
                   rows="4"
                   placeholder="Descreva detalhes adicionais..."
                   style={{
@@ -754,10 +753,6 @@ const SupplierDashboard = ({ onLogout }) => {
   useEffect(() => {
     fetchProblems();
   }, []);
-
-  useEffect(() => {
-    console.log('formData changed:', formData);
-  }, [formData]);
 
   const fetchProblems = async () => {
     try {
