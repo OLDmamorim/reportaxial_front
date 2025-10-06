@@ -567,17 +567,15 @@ const StoreDashboard = ({ onLogout }) => {
           
           {/* Coluna/Linha STATUS */}
           <div>
-            {isMobile && (
-              <h3 style={{ 
-                fontSize: '14px', 
-                fontWeight: '700', 
-                color: '#374151', 
-                marginBottom: '12px',
-                textAlign: 'center'
-              }}>
-                STATUS
-              </h3>
-            )}
+            <h3 style={{ 
+              fontSize: '14px', 
+              fontWeight: '700', 
+              color: '#374151', 
+              marginBottom: '12px',
+              textAlign: 'center'
+            }}>
+              STATUS
+            </h3>
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
@@ -657,17 +655,15 @@ const StoreDashboard = ({ onLogout }) => {
 
           {/* Coluna/Linha MOTIVOS */}
           <div>
-            {isMobile && (
-              <h3 style={{ 
-                fontSize: '14px', 
-                fontWeight: '700', 
-                color: '#374151', 
-                marginBottom: '12px',
-                textAlign: 'center'
-              }}>
-                MOTIVOS
-              </h3>
-            )}
+            <h3 style={{ 
+              fontSize: '14px', 
+              fontWeight: '700', 
+              color: '#374151', 
+              marginBottom: '12px',
+              textAlign: 'center'
+            }}>
+              MOTIVOS
+            </h3>
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
@@ -1528,17 +1524,15 @@ const SupplierDashboard = ({ onLogout }) => {
           
           {/* Coluna/Linha STATUS */}
           <div>
-            {isMobile && (
-              <h3 style={{ 
-                fontSize: '14px', 
-                fontWeight: '700', 
-                color: '#374151', 
-                marginBottom: '12px',
-                textAlign: 'center'
-              }}>
-                STATUS
-              </h3>
-            )}
+            <h3 style={{ 
+              fontSize: '14px', 
+              fontWeight: '700', 
+              color: '#374151', 
+              marginBottom: '12px',
+              textAlign: 'center'
+            }}>
+              STATUS
+            </h3>
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
@@ -1618,17 +1612,15 @@ const SupplierDashboard = ({ onLogout }) => {
 
           {/* Coluna/Linha MOTIVOS */}
           <div>
-            {isMobile && (
-              <h3 style={{ 
-                fontSize: '14px', 
-                fontWeight: '700', 
-                color: '#374151', 
-                marginBottom: '12px',
-                textAlign: 'center'
-              }}>
-                MOTIVOS
-              </h3>
-            )}
+            <h3 style={{ 
+              fontSize: '14px', 
+              fontWeight: '700', 
+              color: '#374151', 
+              marginBottom: '12px',
+              textAlign: 'center'
+            }}>
+              MOTIVOS
+            </h3>
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
