@@ -925,7 +925,7 @@ const StoreDashboard = ({ onLogout }) => {
                   // Carregar mensagens do histórico
                   try {
                     const token = localStorage.getItem('token');
-                    const messagesResponse = await fetch(`${API_URL}/api/problems/${problem.id}/messages`, {
+                    const messagesResponse = await fetch(`${API_URL}/problems/${problem.id}/messages`, {
                       headers: {
                         'Authorization': `Bearer ${token}`
                       }
@@ -941,7 +941,7 @@ const StoreDashboard = ({ onLogout }) => {
                   // Marcar como visto pela loja
                   try {
                     const token = localStorage.getItem('token');
-                    await fetch(`${API_URL}/api/problems/${problem.id}/mark-viewed`, {
+                    await fetch(`${API_URL}/problems/${problem.id}/mark-viewed`, {
                       method: 'PATCH',
                       headers: {
                         'Content-Type': 'application/json',
@@ -1190,7 +1190,7 @@ const StoreDashboard = ({ onLogout }) => {
                     try {
                       const token = localStorage.getItem('token');
                       console.log('[Store] Enviando mensagem para problema ID:', selectedProblem.id);
-                      const response = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}/messages`, {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
@@ -1204,7 +1204,7 @@ const StoreDashboard = ({ onLogout }) => {
 
                       if (response.ok) {
                         // Recarregar mensagens
-                        const messagesResponse = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                        const messagesResponse = await fetch(`${API_URL}/problems/${selectedProblem.id}/messages`, {
                           headers: {
                             'Authorization': `Bearer ${token}`
                           }
@@ -1749,7 +1749,7 @@ const SupplierDashboard = ({ onLogout }) => {
                   // Carregar mensagens do histórico
                   try {
                     const token = localStorage.getItem('token');
-                    const messagesResponse = await fetch(`${API_URL}/api/problems/${problem.id}/messages`, {
+                    const messagesResponse = await fetch(`${API_URL}/problems/${problem.id}/messages`, {
                       headers: {
                         'Authorization': `Bearer ${token}`
                       }
@@ -1765,7 +1765,7 @@ const SupplierDashboard = ({ onLogout }) => {
                   // Marcar como visto pelo fornecedor
                   try {
                     const token = localStorage.getItem('token');
-                    await fetch(`${API_URL}/api/problems/${problem.id}/mark-viewed`, {
+                    await fetch(`${API_URL}/problems/${problem.id}/mark-viewed`, {
                       method: 'PATCH',
                       headers: {
                         'Content-Type': 'application/json',
@@ -2252,7 +2252,7 @@ const SupplierDashboard = ({ onLogout }) => {
                   
                   try {
                     const token = localStorage.getItem('token');
-                    const response = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                    const response = await fetch(`${API_URL}/problems/${selectedProblem.id}/messages`, {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
@@ -2265,7 +2265,7 @@ const SupplierDashboard = ({ onLogout }) => {
 
                     if (response.ok) {
                       // Recarregar mensagens
-                      const messagesResponse = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                      const messagesResponse = await fetch(`${API_URL}/problems/${selectedProblem.id}/messages`, {
                         headers: {
                           'Authorization': `Bearer ${token}`
                         }
@@ -2852,7 +2852,7 @@ const AdminDashboard = ({ onLogout }) => {
                     try {
                       const token = localStorage.getItem('token');
                       console.log('[Store] Enviando mensagem para problema ID:', selectedProblem.id);
-                      const response = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}/messages`, {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
@@ -2866,7 +2866,7 @@ const AdminDashboard = ({ onLogout }) => {
 
                       if (response.ok) {
                         // Recarregar mensagens
-                        const messagesResponse = await fetch(`${API_URL}/api/problems/${selectedProblem.id}/messages`, {
+                        const messagesResponse = await fetch(`${API_URL}/problems/${selectedProblem.id}/messages`, {
                           headers: {
                             'Authorization': `Bearer ${token}`
                           }
