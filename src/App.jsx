@@ -381,7 +381,7 @@ const StoreDashboard = ({ onLogout }) => {
   const eurocodeRef = useRef(null);
   const observationsRef = useRef(null);
 
-  const problemTypes = [
+  const problemTypeOptions = [
     'Material não chegou',
     'Material danificado',
     'Material errado',
@@ -526,7 +526,7 @@ const StoreDashboard = ({ onLogout }) => {
   };
 
   // Contabilização por tipo de problema
-  const problemTypes = {
+  const problemTypeStats = {
     'Material não chegou': problems.filter(p => p.problem_description === 'Material não chegou').length,
     'Material danificado': problems.filter(p => p.problem_description === 'Material danificado').length,
     'Material errado': problems.filter(p => p.problem_description === 'Material errado').length,
@@ -577,19 +577,19 @@ const StoreDashboard = ({ onLogout }) => {
         }}>
           <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL NÃO CHEGOU</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypes['Material não chegou']}</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypeStats['Material não chegou']}</p>
           </div>
           <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL DANIFICADO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypes['Material danificado']}</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypeStats['Material danificado']}</p>
           </div>
           <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL ERRADO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypes['Material errado']}</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypeStats['Material errado']}</p>
           </div>
           <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>OUTRO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypes['Outro']}</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypeStats['Outro']}</p>
           </div>
         </div>
 
@@ -646,7 +646,7 @@ const StoreDashboard = ({ onLogout }) => {
                   }}
                 >
                   <option value="">Selecione o tipo de problema</option>
-                  {problemTypes.map(type => (
+                  {problemTypeOptions.map(type => (
                     <option key={type} value={type}>{type}</option>
                   ))}
                 </select>
@@ -957,7 +957,7 @@ const SupplierDashboard = ({ onLogout }) => {
   };
 
   // Contabilização por tipo de problema
-  const problemTypes = {
+  const problemTypeStats = {
     'Material não chegou': problems.filter(p => p.problem_description === 'Material não chegou').length,
     'Material danificado': problems.filter(p => p.problem_description === 'Material danificado').length,
     'Material errado': problems.filter(p => p.problem_description === 'Material errado').length,
@@ -1011,19 +1011,19 @@ const SupplierDashboard = ({ onLogout }) => {
         }}>
           <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL NÃO CHEGOU</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypes['Material não chegou']}</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#EF4444', margin: 0 }}>{problemTypeStats['Material não chegou']}</p>
           </div>
           <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL DANIFICADO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypes['Material danificado']}</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#F97316', margin: 0 }}>{problemTypeStats['Material danificado']}</p>
           </div>
           <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>MATERIAL ERRADO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypes['Material errado']}</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#8B5CF6', margin: 0 }}>{problemTypeStats['Material errado']}</p>
           </div>
           <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <p style={{ fontSize: '12px', color: '#6B7280', margin: '0 0 6px 0', fontWeight: '600' }}>OUTRO</p>
-            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypes['Outro']}</p>
+            <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#64748B', margin: 0 }}>{problemTypeStats['Outro']}</p>
           </div>
         </div>
 
