@@ -76,25 +76,6 @@ const exportToPDF = (problems, storeName) => {
   printWindow.document.close();
 };
 
-const getPriorityBadge = (priority) => {
-  const colors = {
-    low: { bg: '#F3F4F6', text: '#6B7280', label: 'Baixa' },
-    normal: { bg: '#DBEAFE', text: '#1E40AF', label: 'Normal' },
-    high: { bg: '#FED7AA', text: '#9A3412', label: 'Alta' },
-    urgent: { bg: '#FEE2E2', text: '#991B1B', label: 'Urgente' }
-  };
-  const style = colors[priority] || colors.normal;
-  return (
-    <span style={{
-      padding: '4px 12px', borderRadius: '12px', fontSize: '12px',
-      fontWeight: '600', background: style.bg, color: style.text
-    }}>
-      {style.label}
-    </span>
-  );
-};
-
-
 
 // ============ COMPONENTE LOGO ============
 
@@ -1358,7 +1339,6 @@ const SupplierDashboard = ({ onLogout }) => {
   const [responseText, setResponseText] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [filterPriority, setFilterPriority] = useState('all');
   const [filteredProblems, setFilteredProblems] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [activeFilter, setActiveFilter] = useState({ type: null, value: null });
@@ -1475,12 +1455,8 @@ const SupplierDashboard = ({ onLogout }) => {
       }
     }
     
-    if (filterPriority !== 'all') {
-      filtered = filtered.filter(p => p.priority === filterPriority);
-    }
-    
     setFilteredProblems(filtered);
-  }, [problems, searchTerm, filterStatus, filterPriority]);
+  }, [problems, searchTerm, filterStatus]);
 
   const getStatusBadge = (status) => {
     const colors = {
@@ -1503,27 +1479,7 @@ const SupplierDashboard = ({ onLogout }) => {
     );
   };
 
-  const getPriorityBadge = (priority) => {
-    const colors = {
-      low: { bg: '#F3F4F6', text: '#6B7280', label: 'Baixa' },
-      normal: { bg: '#DBEAFE', text: '#1E40AF', label: 'Normal' },
-      high: { bg: '#FED7AA', text: '#9A3412', label: 'Alta' },
-      urgent: { bg: '#FECACA', text: '#991B1B', label: 'Urgente' }
-    };
-    const style = colors[priority] || colors.normal;
-    return (
-      <span style={{
-        padding: '4px 10px',
-        borderRadius: '12px',
-        fontSize: '11px',
-        fontWeight: '600',
-        background: style.bg,
-        color: style.text
-      }}>
-        {style.label}
-      </span>
-    );
-  };
+
 
   const stats = {
     total: problems.length,
@@ -1770,23 +1726,7 @@ const SupplierDashboard = ({ onLogout }) => {
             <option value="in_progress">Em Progresso</option>
             <option value="resolved">Resolvido</option>
           </select>
-          <select
-            value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value)}
-            style={{
-              padding: '10px 16px',
-              border: '2px solid #E5E7EB',
-              borderRadius: '8px',
-              fontSize: '14px',
-              background: '#FFFFFF'
-            }}
-          >
-            <option value="all">Todas as Prioridades</option>
-            <option value="low">Baixa</option>
-            <option value="normal">Normal</option>
-            <option value="high">Alta</option>
-            <option value="urgent">Urgente</option>
-          </select>
+
         </div>
 
         {/* Grid de Cards */}
@@ -1898,7 +1838,6 @@ const SupplierDashboard = ({ onLogout }) => {
                 
                 <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexWrap: 'wrap' }}>
                   {getStatusBadge(problem.status)}
-                  {getPriorityBadge(problem.priority)}
                   {problem.eurocode && (
                     <span style={{
                       padding: '4px 10px',
@@ -1978,7 +1917,6 @@ const SupplierDashboard = ({ onLogout }) => {
             {/* Badges */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
               {getStatusBadge(selectedProblemData.status)}
-              {getPriorityBadge(selectedProblemData.priority)}
             </div>
 
             {/* Informações */}
@@ -2448,7 +2386,6 @@ const AdminDashboard = ({ onLogout }) => {
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [filterPriority, setFilterPriority] = useState('all');
   const [filteredProblems, setFilteredProblems] = useState([]);
   const [formData, setFormData] = useState({
     email: '',
