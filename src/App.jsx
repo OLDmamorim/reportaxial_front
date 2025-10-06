@@ -905,9 +905,16 @@ const StoreDashboard = ({ onLogout }) => {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {problems
-              .filter(problem => problem.status !== 'resolved') // Excluir resolvidos
               .filter(problem => {
-              // Se não há filtro ativo, mostrar todos
+              // Se filtro de status "resolved" está ativo, mostrar resolvidos
+              if (activeFilter.type === 'status' && activeFilter.value === 'resolved') {
+                return problem.status === 'resolved';
+              }
+              
+              // Caso contrário, excluir resolvidos
+              if (problem.status === 'resolved') return false;
+              
+              // Se não há filtro ativo, mostrar todos (exceto resolvidos)
               if (!activeFilter.type) return true;
               
               // Filtrar por status
@@ -1446,8 +1453,14 @@ const SupplierDashboard = ({ onLogout }) => {
       );
     }
     
-    if (filterStatus !== 'all') {
-      filtered = filtered.filter(p => p.status === filterStatus);
+    // Excluir resolvidos por padrão, exceto se filtro "resolved" está ativo
+    if (filterStatus === 'resolved') {
+      filtered = filtered.filter(p => p.status === 'resolved');
+    } else {
+      filtered = filtered.filter(p => p.status !== 'resolved');
+      if (filterStatus !== 'all') {
+        filtered = filtered.filter(p => p.status === filterStatus);
+      }
     }
     
     if (filterPriority !== 'all') {
@@ -1761,8 +1774,7 @@ const SupplierDashboard = ({ onLogout }) => {
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '20px'
           }}>
-            {(filteredProblems.length > 0 ? filteredProblems : problems)
-              .filter(problem => problem.status !== 'resolved') // Excluir resolvidos
+            {(filteredProblems.length > 0 ? filteredProblems : problems.filter(p => p.status !== 'resolved'))
               .map((problem) => (
               <div
                 key={problem.id}
