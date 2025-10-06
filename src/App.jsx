@@ -146,7 +146,7 @@ const Login = ({ onLogin }) => {
       const data = await response.json();
       
       if (response.ok) {
-        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('token', data.token);
         localStorage.setItem('userType', data.user.user_type);
         localStorage.setItem('userId', data.user.id);
         onLogin(data.user.user_type);
