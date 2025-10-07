@@ -2166,9 +2166,9 @@ const SupplierDashboard = ({ onLogout }) => {
                 PENDENTES
               </h3>
               <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px'
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '12px'
               }}>
                 {(filteredProblems.length > 0 
                   ? filteredProblems.filter(p => p.status === 'pending')
@@ -2317,9 +2317,9 @@ const SupplierDashboard = ({ onLogout }) => {
                 EM ANÁLISE
               </h3>
               <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px'
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '12px'
               }}>
                 {(filteredProblems.length > 0 
                   ? filteredProblems.filter(p => p.status === 'in_progress')
