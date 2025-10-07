@@ -3927,84 +3927,25 @@ const AdminDashboard = ({ onLogout }) => {
 
               {/* Campos específicos para Loja */}
               {formType === 'store' && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
-                      Nome da Loja *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.storeName}
-                      onChange={(e) => setFormData({...formData, storeName: e.target.value})}
-                      placeholder="Ex: Loja Braga, Loja Paredes..."
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '1px solid #E5E7EB',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
-                      Pessoa de Contacto
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.contactPerson}
-                      onChange={(e) => setFormData({...formData, contactPerson: e.target.value})}
-                      placeholder="Nome do responsável"
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '1px solid #E5E7EB',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
-                      Telefone
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      placeholder="Ex: 253 123 456"
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '1px solid #E5E7EB',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
-                      Morada
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.address}
-                      onChange={(e) => setFormData({...formData, address: e.target.value})}
-                      placeholder="Morada completa"
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '1px solid #E5E7EB',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+                    Nome da Loja *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.storeName}
+                    onChange={(e) => setFormData({...formData, storeName: e.target.value})}
+                    placeholder="Ex: Loja Braga, Loja Paredes..."
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      boxSizing: 'border-box'
+                    }}
+                  />
                 </div>
               )}
 
