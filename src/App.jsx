@@ -3545,6 +3545,9 @@ const AdminDashboard = ({ onLogout }) => {
   const [showResetModal, setShowResetModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newPassword, setNewPassword] = useState('');
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [importing, setImporting] = useState(false);
   
   const [formData, setFormData] = useState({
     username: '',
@@ -3832,6 +3835,21 @@ const AdminDashboard = ({ onLogout }) => {
               }}
             >
               + Admin
+            </button>
+            <button
+              onClick={() => setShowImportModal(true)}
+              style={{
+                padding: '12px 20px',
+                background: '#10B981',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600'
+              }}
+            >
+              📊 Importar Excel
             </button>
           </div>
         </div>
@@ -4224,6 +4242,153 @@ const AdminDashboard = ({ onLogout }) => {
                     border: 'none',
                     borderRadius: '8px',
                     cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '600'
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de Importação Excel */}
+        {showImportModal && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}>
+            <div style={{
+              background: 'white',
+              padding: '32px',
+              borderRadius: '12px',
+              maxWidth: '500px',
+              width: '90%'
+            }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', color: '#1F2937' }}>
+                Importar Lojas via Excel
+              </h3>
+              
+              <div style={{ marginBottom: '20px', padding: '16px', background: '#F3F4F6', borderRadius: '8px' }}>
+                <p style={{ fontSize: '14px', color: '#374151', marginBottom: '8px' }}>
+                  <strong>Formato do ficheiro:</strong>
+                </p>
+                <ul style={{ fontSize: '13px', color: '#6B7280', marginLeft: '20px' }}>
+                  <li>Coluna A: Username</li>
+                  <li>Coluna B: Password</li>
+                  <li>Coluna C: Nome da Loja</li>
+                </ul>
+                <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '8px' }}>
+                  A primeira linha será ignorada (cabeçalho)
+                </p>
+              </div>
+
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={(e) => setImportFile(e.target.files[0])}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '2px dashed #D1D5DB',
+                  borderRadius: '8px',
+                  marginBottom: '20px',
+                  cursor: 'pointer'
+                }}
+              />
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  onClick={async () => {
+                    if (!importFile) {
+                      alert('Por favor, selecione um ficheiro');
+                      return;
+                    }
+
+                    setImporting(true);
+                    try {
+                      const formData = new FormData();
+                      formData.append('file', importFile);
+
+                      const token = localStorage.getItem('token');
+                      const response = await fetch(`${API_URL}/api/admin/import-stores`, {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                      });
+
+                      const data = await response.json();
+
+                      if (response.ok) {
+                        let message = data.message + '\n\n';
+                        
+                        if (data.success.length > 0) {
+                          message += `✅ Criadas com sucesso:\n`;
+                          data.success.forEach(s => {
+                            message += `  - ${s.username} (${s.storeName})\n`;
+                          });
+                        }
+                        
+                        if (data.errors.length > 0) {
+                          message += `\n❌ Erros:\n`;
+                          data.errors.forEach(e => {
+                            message += `  - Linha ${e.row}: ${e.username} - ${e.error}\n`;
+                          });
+                        }
+
+                        alert(message);
+                        setShowImportModal(false);
+                        setImportFile(null);
+                        fetchUsers(); // Recarregar lista
+                      } else {
+                        alert(data.message || 'Erro ao importar ficheiro');
+                      }
+                    } catch (error) {
+                      alert('Erro ao importar ficheiro: ' + error.message);
+                    } finally {
+                      setImporting(false);
+                    }
+                  }}
+                  disabled={importing}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    background: importing ? '#9CA3AF' : '#10B981',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: importing ? 'not-allowed' : 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '600'
+                  }}
+                >
+                  {importing ? 'A importar...' : 'Importar'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowImportModal(false);
+                    setImportFile(null);
+                  }}
+                  disabled={importing}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    background: '#E5E7EB',
+                    color: '#374151',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: importing ? 'not-allowed' : 'pointer',
                     fontSize: '14px',
                     fontWeight: '600'
                   }}
