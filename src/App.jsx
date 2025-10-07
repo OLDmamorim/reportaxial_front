@@ -4103,24 +4103,65 @@ const AdminDashboard = ({ onLogout }) => {
                           })}
                         </td>
                         <td style={{ padding: '16px', textAlign: 'center' }}>
-                          <button
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setShowResetModal(true);
-                            }}
-                            style={{
-                              padding: '8px 16px',
-                              background: '#F59E0B',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              fontSize: '13px',
-                              fontWeight: '600'
-                            }}
-                          >
-                            🔑 Reset Password
-                          </button>
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                            <button
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setShowResetModal(true);
+                              }}
+                              style={{
+                                padding: '8px 16px',
+                                background: '#F59E0B',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '600'
+                              }}
+                            >
+                              🔑 Reset Password
+                            </button>
+                            {(user.user_type === 'store' || user.user_type === 'supplier') && (
+                              <button
+                                onClick={async () => {
+                                  if (window.confirm(`Tem a certeza que deseja resetar a base de dados de ${user.email}?\n\n${user.user_type === 'store' ? 'Todos os reportes criados por esta loja serão apagados permanentemente!' : 'Todas as mensagens e intervenções deste fornecedor serão apagadas!'}`)) {
+                                    try {
+                                      const token = localStorage.getItem('token');
+                                      const response = await fetch(`${API_URL}/admin/reset-database/${user.id}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                          'Authorization': `Bearer ${token}`
+                                        }
+                                      });
+                                      const data = await response.json();
+                                      if (response.ok) {
+                                        alert(data.message);
+                                        fetchUsers(); // Recarregar lista
+                                      } else {
+                                        alert(data.message || 'Erro ao resetar base de dados');
+                                      }
+                                    } catch (error) {
+                                      console.error('Erro:', error);
+                                      alert('Erro ao resetar base de dados');
+                                    }
+                                  }
+                                }}
+                                style={{
+                                  padding: '8px 16px',
+                                  background: '#EF4444',
+                                  color: 'white',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  fontSize: '13px',
+                                  fontWeight: '600'
+                                }}
+                              >
+                                🗑️ Reset Database
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))
