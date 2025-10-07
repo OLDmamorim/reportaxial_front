@@ -1149,7 +1149,7 @@ const StoreDashboard = ({ onLogout }) => {
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
-                  minHeight: '130px',
+                  minHeight: '100px',
                   display: 'flex',
                   flexDirection: 'column',
                   // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
@@ -1301,7 +1301,7 @@ const StoreDashboard = ({ onLogout }) => {
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
-                  minHeight: '130px',
+                  minHeight: '100px',
                   display: 'flex',
                   flexDirection: 'column',
                   // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
@@ -1449,7 +1449,7 @@ const StoreDashboard = ({ onLogout }) => {
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
-                  minHeight: '130px',
+                  minHeight: '100px',
                   display: 'flex',
                   flexDirection: 'column',
                   // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
