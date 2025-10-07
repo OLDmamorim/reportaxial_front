@@ -161,6 +161,20 @@ const Login = ({ onLogin }) => {
         width: '100%',
         margin: '0 auto'
       }}>
+        {/* Título REPORT AXIAL */}
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <h1 style={{
+            fontSize: '28px',
+            fontWeight: 'bold',
+            color: '#6366F1',
+            margin: 0,
+            letterSpacing: '2px',
+            textTransform: 'uppercase'
+          }}>
+            REPORT AXIAL
+          </h1>
+        </div>
+
         <ExpressGlassLogo />
 
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
