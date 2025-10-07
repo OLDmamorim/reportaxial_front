@@ -4135,6 +4135,45 @@ const AdminDashboard = ({ onLogout }) => {
                                 🗑️ Reset Database
                               </button>
                             )}
+                            {user.user_type !== 'admin' && (
+                              <button
+                                onClick={async () => {
+                                  if (window.confirm(`⚠️ ATENÇÃO: Tem a certeza que deseja ELIMINAR PERMANENTEMENTE o utilizador ${user.email}?\n\n${user.user_type === 'store' ? 'A loja e TODOS os seus reportes serão eliminados!' : 'O fornecedor e TODAS as suas mensagens serão eliminadas!'}\n\nEsta ação NÃO PODE ser desfeita!`)) {
+                                    try {
+                                      const token = localStorage.getItem('token');
+                                      const response = await fetch(`${API_URL}/api/admin/delete-user/${user.id}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                          'Authorization': `Bearer ${token}`
+                                        }
+                                      });
+                                      const data = await response.json();
+                                      if (response.ok) {
+                                        alert(data.message);
+                                        fetchUsers(); // Recarregar lista
+                                      } else {
+                                        alert(data.message || 'Erro ao eliminar utilizador');
+                                      }
+                                    } catch (error) {
+                                      console.error('Erro:', error);
+                                      alert('Erro ao eliminar utilizador');
+                                    }
+                                  }
+                                }}
+                                style={{
+                                  padding: '8px 16px',
+                                  background: '#991B1B',
+                                  color: 'white',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  fontSize: '13px',
+                                  fontWeight: '600'
+                                }}
+                              >
+                                ❌ Eliminar
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
