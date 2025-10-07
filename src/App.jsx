@@ -2911,14 +2911,20 @@ const AdminDashboard = ({ onLogout }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [formType, setFormType] = useState(''); // 'supplier', 'store', 'admin'
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filteredProblems, setFilteredProblems] = useState([]);
+  const [filterType, setFilterType] = useState('all');
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
+  
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
-    supplierName: '',
-    contactPerson: ''
+    storeName: '',
+    contactPerson: '',
+    phone: '',
+    address: ''
   });
 
   useEffect(() => {
@@ -2940,30 +2946,101 @@ const AdminDashboard = ({ onLogout }) => {
     }
   };
 
-  const handleCreateSupplier = async (e) => {
+  const handleCreateUser = async (e) => {
     e.preventDefault();
+    
+    let endpoint = '';
+    let body = {};
+    
+    if (formType === 'supplier') {
+      endpoint = '/admin/create-supplier-user';
+      body = {
+        username: formData.username,
+        password: formData.password
+      };
+    } else if (formType === 'store') {
+      endpoint = '/admin/create-store';
+      body = {
+        username: formData.username,
+        password: formData.password,
+        storeName: formData.storeName,
+        contactPerson: formData.contactPerson,
+        phone: formData.phone,
+        address: formData.address
+      };
+    } else if (formType === 'admin') {
+      endpoint = '/admin/create-admin';
+      body = {
+        username: formData.username,
+        password: formData.password
+      };
+    }
+
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`${API_URL}/admin/create-supplier`, {
+      const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(body)
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        alert('Fornecedor criado com sucesso!');
+        alert(data.message || 'Utilizador criado com sucesso!');
         setShowForm(false);
-        setFormData({ email: '', password: '', supplierName: '', contactPerson: '' });
+        setFormType('');
+        setFormData({
+          username: '',
+          password: '',
+          storeName: '',
+          contactPerson: '',
+          phone: '',
+          address: ''
+        });
         fetchUsers();
       } else {
-        const data = await response.json();
-        alert(data.message || 'Erro ao criar fornecedor');
+        alert(data.message || 'Erro ao criar utilizador');
       }
     } catch (error) {
-      alert('Erro ao criar fornecedor');
+      console.error('Erro:', error);
+      alert('Erro ao criar utilizador');
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      alert('Password deve ter pelo menos 6 caracteres');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${API_URL}/admin/reset-password/${selectedUser.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ newPassword })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.message || 'Password resetada com sucesso!');
+        setShowResetModal(false);
+        setSelectedUser(null);
+        setNewPassword('');
+      } else {
+        alert(data.message || 'Erro ao resetar password');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao resetar password');
     }
   };
 
@@ -2988,7 +3065,13 @@ const AdminDashboard = ({ onLogout }) => {
     );
   };
 
-   return (
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === 'all' || user.user_type === filterType;
+    return matchesSearch && matchesType;
+  });
+
+  return (
     <div style={{
       minHeight: '100vh',
       background: '#5A5A5A',
@@ -3021,68 +3104,111 @@ const AdminDashboard = ({ onLogout }) => {
       <div style={{ 
         padding: '20px', 
         width: '100%', 
+        maxWidth: '1400px',
+        margin: '0 auto',
         boxSizing: 'border-box',
         flex: 1
       }}>
-                {/* Controles e Filtros */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
+        {/* Controles e Filtros */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginBottom: '24px', 
+          gap: '16px', 
+          flexWrap: 'wrap' 
+        }}>
           <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap' }}>
             <input
               type="text"
-              placeholder="🔍 Pesquisar..."
+              placeholder="🔍 Pesquisar por username..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
-                padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
-                fontSize: '14px', flex: '1', minWidth: '200px'
+                padding: '10px 16px',
+                border: '1px solid #E5E7EB',
+                borderRadius: '8px',
+                fontSize: '14px',
+                flex: '1',
+                minWidth: '200px'
               }}
             />
             <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              style={{
+                padding: '10px 16px',
+                border: '1px solid #E5E7EB',
+                borderRadius: '8px',
+                fontSize: '14px'
+              }}
             >
-              <option value="all">Todos os Status</option>
-              <option value="pending">Pendente</option>
-              <option value="in_progress">Em Análise</option>
-              <option value="resolved">Resolvido</option>
-            </select>
-            <select
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
-              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
-            >
-              <option value="all">Todas as Prioridades</option>
-              <option value="low">Baixa</option>
-              <option value="normal">Normal</option>
-              <option value="high">Alta</option>
-              <option value="urgent">Urgente</option>
+              <option value="all">Todos os Tipos</option>
+              <option value="admin">Admin</option>
+              <option value="store">Loja</option>
+              <option value="supplier">Fornecedor</option>
             </select>
           </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <button
-              onClick={() => exportToPDF(filteredProblems.length > 0 ? filteredProblems : problems, localStorage.getItem('userName'))}
+              onClick={() => {
+                setFormType('supplier');
+                setShowForm(true);
+              }}
               style={{
-                padding: '12px 24px', background: '#10B981', color: 'white', border: 'none',
-                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
+                padding: '12px 20px',
+                background: '#10B981',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600'
               }}
             >
-              📄 Exportar PDF
+              + Fornecedor
             </button>
             <button
-              onClick={() => setShowForm(!showForm)}
+              onClick={() => {
+                setFormType('store');
+                setShowForm(true);
+              }}
               style={{
-                padding: '12px 24px', background: '#6366F1', color: 'white', border: 'none',
-                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
+                padding: '12px 20px',
+                background: '#3B82F6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600'
               }}
             >
-              {showForm ? 'Cancelar' : '+ Novo Reporte'}
+              + Loja
+            </button>
+            <button
+              onClick={() => {
+                setFormType('admin');
+                setShowForm(true);
+              }}
+              style={{
+                padding: '12px 20px',
+                background: '#EF4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600'
+              }}
+            >
+              + Admin
             </button>
           </div>
         </div>
 
-
-
+        {/* Formulário de Criação */}
         {showForm && (
           <div style={{
             background: '#FFFFFF',
@@ -3091,23 +3217,56 @@ const AdminDashboard = ({ onLogout }) => {
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
             marginBottom: '24px'
           }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1F2937', marginBottom: '20px' }}>
-              Criar Novo Fornecedor
-            </h2>
-            <form onSubmit={handleCreateSupplier} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1F2937', margin: 0 }}>
+                {formType === 'supplier' && 'Criar Novo Utilizador Fornecedor'}
+                {formType === 'store' && 'Criar Nova Loja'}
+                {formType === 'admin' && 'Criar Novo Admin'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowForm(false);
+                  setFormType('');
+                  setFormData({
+                    username: '',
+                    password: '',
+                    storeName: '',
+                    contactPerson: '',
+                    phone: '',
+                    address: ''
+                  });
+                }}
+                style={{
+                  padding: '8px 16px',
+                  background: '#E5E7EB',
+                  color: '#374151',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '600'
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateUser} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Campos comuns */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
-                    Nome do Fornecedor *
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+                    Username *
                   </label>
                   <input
                     type="text"
-                    value={formData.supplierName}
-                    onChange={(e) => setFormData({...formData, supplierName: e.target.value})}
+                    value={formData.username}
+                    onChange={(e) => setFormData({...formData, username: e.target.value})}
+                    placeholder="Ex: braga, paredes, fornecedor1..."
                     required
                     style={{
                       width: '100%',
-                      padding: '12px',
+                      padding: '10px 12px',
                       border: '1px solid #E5E7EB',
                       borderRadius: '8px',
                       fontSize: '14px',
@@ -3116,56 +3275,19 @@ const AdminDashboard = ({ onLogout }) => {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
-                    Pessoa de Contacto
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.contactPerson}
-                    onChange={(e) => setFormData({...formData, contactPerson: e.target.value})}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
                     Password *
                   </label>
                   <input
                     type="password"
                     value={formData.password}
                     onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    placeholder="Mínimo 6 caracteres"
                     required
+                    minLength="6"
                     style={{
                       width: '100%',
-                      padding: '12px',
+                      padding: '10px 12px',
                       border: '1px solid #E5E7EB',
                       borderRadius: '8px',
                       fontSize: '14px',
@@ -3174,6 +3296,90 @@ const AdminDashboard = ({ onLogout }) => {
                   />
                 </div>
               </div>
+
+              {/* Campos específicos para Loja */}
+              {formType === 'store' && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+                      Nome da Loja *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.storeName}
+                      onChange={(e) => setFormData({...formData, storeName: e.target.value})}
+                      placeholder="Ex: Loja Braga, Loja Paredes..."
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+                      Pessoa de Contacto
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.contactPerson}
+                      onChange={(e) => setFormData({...formData, contactPerson: e.target.value})}
+                      placeholder="Nome do responsável"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+                      Telefone
+                    </label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      placeholder="Ex: 253 123 456"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+                      Morada
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.address}
+                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                      placeholder="Morada completa"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
               <button
                 type="submit"
                 style={{
@@ -3184,18 +3390,26 @@ const AdminDashboard = ({ onLogout }) => {
                   borderRadius: '8px',
                   cursor: 'pointer',
                   fontSize: '14px',
-                  fontWeight: '600'
+                  fontWeight: '600',
+                  marginTop: '8px'
                 }}
               >
-                Criar Fornecedor
+                Criar {formType === 'supplier' ? 'Fornecedor' : formType === 'store' ? 'Loja' : 'Admin'}
               </button>
             </form>
           </div>
         )}
 
+        {/* Lista de Utilizadores */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6B7280' }}>
-            A carregar...
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '40px', 
+            color: '#FFFFFF',
+            background: '#FFFFFF',
+            borderRadius: '12px'
+          }}>
+            <p style={{ color: '#6B7280' }}>A carregar utilizadores...</p>
           </div>
         ) : (
           <div style={{
@@ -3204,41 +3418,108 @@ const AdminDashboard = ({ onLogout }) => {
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
             overflow: 'hidden'
           }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase' }}>
-                    Email
-                  </th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase' }}>
-                    Tipo
-                  </th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase' }}>
-                    Data de Criação
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id} style={{ borderBottom: '1px solid #E5E7EB' }}>
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#1F2937' }}>
-                      {user.email}
-                    </td>
-                    <td style={{ padding: '16px' }}>
-                      {getUserTypeBadge(user.user_type)}
-                    </td>
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280' }}>
-                      {new Date(user.created_at).toLocaleDateString('pt-PT')}
-                    </td>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+                <thead>
+                  <tr style={{ background: '#F9FAFB', borderBottom: '2px solid #E5E7EB' }}>
+                    <th style={{ 
+                      padding: '12px 16px', 
+                      textAlign: 'left', 
+                      fontSize: '12px', 
+                      fontWeight: '600', 
+                      color: '#6B7280', 
+                      textTransform: 'uppercase' 
+                    }}>
+                      Username
+                    </th>
+                    <th style={{ 
+                      padding: '12px 16px', 
+                      textAlign: 'left', 
+                      fontSize: '12px', 
+                      fontWeight: '600', 
+                      color: '#6B7280', 
+                      textTransform: 'uppercase' 
+                    }}>
+                      Tipo
+                    </th>
+                    <th style={{ 
+                      padding: '12px 16px', 
+                      textAlign: 'left', 
+                      fontSize: '12px', 
+                      fontWeight: '600', 
+                      color: '#6B7280', 
+                      textTransform: 'uppercase' 
+                    }}>
+                      Data de Criação
+                    </th>
+                    <th style={{ 
+                      padding: '12px 16px', 
+                      textAlign: 'center', 
+                      fontSize: '12px', 
+                      fontWeight: '600', 
+                      color: '#6B7280', 
+                      textTransform: 'uppercase' 
+                    }}>
+                      Ações
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" style={{ padding: '40px', textAlign: 'center', color: '#6B7280' }}>
+                        Nenhum utilizador encontrado
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredUsers.map((user) => (
+                      <tr key={user.id} style={{ borderBottom: '1px solid #E5E7EB' }}>
+                        <td style={{ padding: '16px', fontSize: '14px', color: '#1F2937', fontWeight: '500' }}>
+                          {user.email}
+                        </td>
+                        <td style={{ padding: '16px' }}>
+                          {getUserTypeBadge(user.user_type)}
+                        </td>
+                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280' }}>
+                          {new Date(user.created_at).toLocaleDateString('pt-PT', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </td>
+                        <td style={{ padding: '16px', textAlign: 'center' }}>
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowResetModal(true);
+                            }}
+                            style={{
+                              padding: '8px 16px',
+                              background: '#F59E0B',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              fontSize: '13px',
+                              fontWeight: '600'
+                            }}
+                          >
+                            🔑 Reset Password
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
-        {/* Modal de Detalhes do Report */}
-        {showDetailModal && selectedProblem && (
+        {/* Modal de Reset Password */}
+        {showResetModal && selectedUser && (
           <div style={{
             position: 'fixed',
             top: 0,
@@ -3253,273 +3534,91 @@ const AdminDashboard = ({ onLogout }) => {
             padding: '20px'
           }}
           onClick={() => {
-            setShowDetailModal(false);
-            setSelectedProblem(null);
+            setShowResetModal(false);
+            setSelectedUser(null);
+            setNewPassword('');
           }}
           >
             <div style={{
               background: '#FFFFFF',
               borderRadius: '12px',
               padding: '24px',
-              maxWidth: '600px',
+              maxWidth: '500px',
               width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
               boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'
             }}
             onClick={(e) => e.stopPropagation()}
             >
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '20px' }}>
-                Detalhes do Report
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1F2937', marginBottom: '16px' }}>
+                Reset Password
               </h2>
-
-              <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', 
-            gap: '16px' 
-          }}>
-                {/* Tipo de Problema */}
-                <div>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                    Tipo de Problema *
-                  </label>
-                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
-                    {selectedProblem.problem_description}
-                  </p>
-                </div>
-
-                {/* Data da Encomenda */}
-                <div>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                    Data da Encomenda *
-                  </label>
-                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
-                    {new Date(selectedProblem.order_date).toLocaleDateString('pt-PT')}
-                  </p>
-                </div>
-
-                {/* Número do Pedido */}
-                {selectedProblem.supplier_order && (
-                  <div>
-                    <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                      Número do Pedido do Fornecedor *
-                    </label>
-                    <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
-                      {selectedProblem.supplier_order}
-                    </p>
-                  </div>
-                )}
-
-                {/* Eurocode */}
-                {selectedProblem.eurocode && (
-                  <div>
-                    <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                      Eurocode *
-                    </label>
-                    <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
-                      {selectedProblem.eurocode}
-                    </p>
-                  </div>
-                )}
-
-                {/* Status */}
-                <div>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                    Status
-                  </label>
-                  {getStatusBadge(selectedProblem.status)}
-                </div>
-
-                {/* Histórico de Conversação */}
-                <div>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '8px' }}>
-                    Histórico de Conversação
-                  </label>
-                  <div style={{
-                    maxHeight: '300px',
-                    overflowY: 'auto',
-                    border: '1px solid #D1D5DB',
-                    borderRadius: '8px',
-                    padding: '12px',
-                    background: '#F9FAFB'
-                  }}>
-                    {messages.length === 0 ? (
-                      <p style={{ fontSize: '14px', color: '#9CA3AF', textAlign: 'center', margin: 0 }}>
-                        Nenhuma mensagem ainda
-                      </p>
-                    ) : (
-                      messages.map((msg, index) => (
-                        <div key={index} style={{
-                          marginBottom: '12px',
-                          padding: '10px',
-                          background: msg.user_type === 'store' ? '#EEF2FF' : '#FEF3C7',
-                          borderRadius: '8px',
-                          borderLeft: `3px solid ${msg.user_type === 'store' ? '#6366F1' : '#F59E0B'}`
-                        }}>
-                          <p style={{ fontSize: '12px', fontWeight: '600', color: '#6B7280', margin: '0 0 4px 0' }}>
-                            {msg.user_type === 'store' ? '🏪 Loja' : '📦 Fornecedor'} • {new Date(msg.created_at).toLocaleString('pt-PT')}
-                          </p>
-                          <p style={{ fontSize: '14px', color: '#1F2937', margin: 0 }}>
-                            {msg.message}
-                          </p>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Nova Mensagem */}
-                <div>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                    Nova Mensagem
-                  </label>
-                  <textarea
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    style={{
-                      width: '100%',
-                      minHeight: '80px',
-                      padding: '12px',
-                      border: '1px solid #D1D5DB',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      fontFamily: 'inherit',
-                      resize: 'vertical'
-                    }}
-                    placeholder="Escreva sua mensagem..."
-                  />
-                </div>
+              
+              <div style={{ marginBottom: '20px' }}>
+                <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 4px 0' }}>
+                  <strong>Username:</strong> {selectedUser.email}
+                </p>
+                <p style={{ fontSize: '14px', color: '#6B7280', margin: 0 }}>
+                  <strong>Tipo:</strong> {selectedUser.user_type}
+                </p>
               </div>
 
-              {/* Botões de Ação */}
-              <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
-                <button
-                  onClick={async () => {
-                    console.log('[Store] Botão Enviar Mensagem clicado');
-                    console.log('[Store] newMessage:', newMessage);
-                    console.log('[Store] selectedProblem:', selectedProblem);
-                    
-                    if (!newMessage.trim()) {
-                      alert('Por favor, escreva uma mensagem');
-                      return;
-                    }
-                    
-                    try {
-                      const token = localStorage.getItem('token');
-                      console.log('[Store] Enviando mensagem para problema ID:', selectedProblem.id);
-                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}/messages`, {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                          message: newMessage
-                        })
-                      });
-                      console.log('[Store] Response status:', response.status);
-
-                      if (response.ok) {
-                        // Recarregar mensagens
-                        const messagesResponse = await fetch(`${API_URL}/problems/${selectedProblem.id}/messages`, {
-                          headers: {
-                            'Authorization': `Bearer ${token}`
-                          }
-                        });
-                        if (messagesResponse.ok) {
-                          const messagesData = await messagesResponse.json();
-                          setMessages(messagesData);
-                        }
-                        setNewMessage('');
-                        fetchProblems(); // Atualizar lista para refletir mudanças de visualização
-                        setShowDetailModal(false); // Fechar modal
-                        alert('Mensagem enviada com sucesso!');
-                      } else {
-                        const errorData = await response.json();
-                        console.log('[Store] Erro do servidor:', errorData);
-                        alert(`Erro ao enviar mensagem: ${errorData.message || 'Erro desconhecido'}`);
-                      }
-                    } catch (error) {
-                      console.error('Erro:', error);
-                      alert('Erro ao enviar mensagem');
-                    }
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                  Nova Password *
+                </label>
+                <input
+                  type="text"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Digite a nova password (mín. 6 caracteres)"
+                  minLength="6"
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    boxSizing: 'border-box'
                   }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  onClick={handleResetPassword}
                   style={{
                     flex: 1,
-                    padding: '12px 24px',
-                    background: '#6366F1',
-                    color: '#FFFFFF',
+                    padding: '12px',
+                    background: '#EF4444',
+                    color: 'white',
                     border: 'none',
                     borderRadius: '8px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '600'
                   }}
                 >
-                  Enviar Mensagem
+                  Confirmar Reset
                 </button>
-
                 <button
                   onClick={() => {
-                    setShowDetailModal(false);
-                    setSelectedProblem(null);
-                    setNewMessage('');
+                    setShowResetModal(false);
+                    setSelectedUser(null);
+                    setNewPassword('');
                   }}
                   style={{
                     flex: 1,
-                    padding: '12px 24px',
+                    padding: '12px',
                     background: '#E5E7EB',
-                    color: '#FFFFFF',
+                    color: '#374151',
                     border: 'none',
                     borderRadius: '8px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '600'
                   }}
                 >
-                  Fechar
-                </button>
-
-                <button
-                  onClick={async () => {
-                    if (!confirm('Tem certeza que deseja marcar este report como resolvido?')) return;
-                    
-                    try {
-                      const token = localStorage.getItem('token');
-                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}/resolve`, {
-                        method: 'PATCH',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'Authorization': `Bearer ${token}`
-                        }
-                      });
-
-                      if (response.ok) {
-                        alert('Report marcado como resolvido!');
-                        fetchProblems();
-                        setShowDetailModal(false);
-                        setSelectedProblem(null);
-                      } else {
-                        alert('Erro ao resolver report');
-                      }
-                    } catch (error) {
-                      console.error('Erro:', error);
-                      alert('Erro ao resolver report');
-                    }
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '12px 24px',
-                    background: '#10B981',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Resolvido
+                  Cancelar
                 </button>
               </div>
             </div>
@@ -3529,7 +3628,6 @@ const AdminDashboard = ({ onLogout }) => {
     </div>
   );
 };
-
 // ============ APP PRINCIPAL ============
 
 function App() {
