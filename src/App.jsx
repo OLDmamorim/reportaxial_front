@@ -164,14 +164,15 @@ const Login = ({ onLogin }) => {
         <ExpressGlassLogo />
 
         {/* Título REPORT AXIAL */}
-        <div style={{ textAlign: 'center', marginTop: '24px', marginBottom: '24px' }}>
+        <div style={{ textAlign: 'center', marginTop: '16px', marginBottom: '24px' }}>
           <h1 style={{
-            fontSize: '28px',
+            fontSize: '18px',
             fontWeight: 'bold',
             color: '#6366F1',
             margin: 0,
-            letterSpacing: '2px',
-            textTransform: 'uppercase'
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap'
           }}>
             REPORT AXIAL
           </h1>
