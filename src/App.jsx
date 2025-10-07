@@ -1055,17 +1055,17 @@ const StoreDashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* Lista de Reportes */}
+        {/* Lista de Reportes em 2 Colunas */}
         <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#FFFFFF', marginBottom: '16px' }}>
           Meus Reportes
         </h2>
 
         {loading ? (
           <p>Carregando...</p>
-        ) : (
+        ) : isMobile ? (
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', 
+            gridTemplateColumns: '1fr', 
             gap: '16px' 
           }}>
             {(filteredProblems.length > 0 ? filteredProblems : problems
@@ -1214,6 +1214,302 @@ const StoreDashboard = ({ onLogout }) => {
                 )}
               </div>
             ))}
+          </div>
+        ) : (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '20px'
+          }}>
+            {/* Coluna Esquerda - PENDENTES */}
+            <div>
+              <h3 style={{
+                fontSize: '16px',
+                fontWeight: 'bold',
+                color: '#DC2626',
+                marginBottom: '16px',
+                padding: '8px 12px',
+                background: '#FEE2E2',
+                borderRadius: '8px',
+                textAlign: 'center'
+              }}>
+                PENDENTES
+              </h3>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '12px'
+              }}>
+                {(filteredProblems.length > 0 
+                  ? filteredProblems.filter(p => p.status === 'pending')
+                  : problems.filter(p => p.status === 'pending')
+                ).map((problem) => (
+              <div 
+                key={problem.id} 
+                onClick={async () => {
+                  // Atualizar estado local imediatamente para parar de piscar
+                  setProblems(prevProblems => 
+                    prevProblems.map(p => 
+                      p.id === problem.id ? { ...p, viewed_by_store: true } : p
+                    )
+                  );
+                  
+                  setSelectedProblem(problem);
+                  setEditedObservations(problem.observations || '');
+                  setShowDetailModal(true);
+                  
+                  // Carregar mensagens do histórico
+                  try {
+                    const token = localStorage.getItem('token');
+                    const messagesResponse = await fetch(`${API_URL}/problems/${problem.id}/messages`, {
+                      headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                    });
+                    if (messagesResponse.ok) {
+                      const messagesData = await messagesResponse.json();
+                      setMessages(messagesData);
+                    }
+                  } catch (error) {
+                    console.error('Erro ao carregar mensagens:', error);
+                  }
+                  
+                  // Marcar como visto pela loja no servidor
+                  try {
+                    const token = localStorage.getItem('token');
+                    await fetch(`${API_URL}/problems/${problem.id}/mark-viewed`, {
+                      method: 'PATCH',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify({ userType: 'store' })
+                    });
+                    // Recarregar problemas para atualizar o estado
+                    fetchProblems();
+                  } catch (error) {
+                    console.error('Erro ao marcar como visto:', error);
+                  }
+                }}
+                style={{
+                  background: '#FFFFFF',
+                  padding: '12px',
+                  borderRadius: '12px',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
+                  animation: (() => {
+                    const daysSinceUpdate = Math.floor((new Date() - new Date(problem.updated_at)) / (1000 * 60 * 60 * 24));
+                    if (daysSinceUpdate >= 5 && problem.status !== 'resolved') {
+                      return 'pulse-red 2s ease-in-out infinite';
+                    } else if (!problem.viewed_by_store) {
+                      return 'pulse-yellow 2s ease-in-out infinite';
+                    }
+                    return 'none';
+                  })()
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#1F2937', margin: '0 0 6px 0' }}>
+                      {problem.problem_description}
+                    </h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                      <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
+                        {new Date(problem.created_at).toLocaleDateString('pt-PT')}
+                      </p>
+                      {problem.eurocode && (
+                        <span style={{
+                          padding: '3px 8px',
+                          borderRadius: '8px',
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          background: '#EEF2FF',
+                          color: '#4F46E5',
+                          border: '1px solid #C7D2FE'
+                        }}>
+                          {problem.eurocode}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {getStatusBadge(problem.status)}
+                </div>
+
+                {problem.response_text && (
+                  <div style={{
+                    marginTop: '8px',
+                    padding: '8px',
+                    background: '#F9FAFB',
+                    borderLeft: '3px solid #6366F1',
+                    borderRadius: '4px'
+                  }}>
+                    <p style={{ fontSize: '11px', fontWeight: '600', color: '#1F2937', margin: '0 0 1px 0' }}>
+                      Resposta do Fornecedor:
+                    </p>
+                    <p style={{ fontSize: '12px', color: '#1F2937', margin: 0 }}>
+                      {problem.response_text}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+              </div>
+            </div>
+
+            {/* Coluna Direita - EM ANÁLISE */}
+            <div>
+              <h3 style={{
+                fontSize: '16px',
+                fontWeight: 'bold',
+                color: '#D97706',
+                marginBottom: '16px',
+                padding: '8px 12px',
+                background: '#FEF3C7',
+                borderRadius: '8px',
+                textAlign: 'center'
+              }}>
+                EM ANÁLISE
+              </h3>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '12px'
+              }}>
+                {(filteredProblems.length > 0 
+                  ? filteredProblems.filter(p => p.status === 'in_progress')
+                  : problems.filter(p => p.status === 'in_progress')
+                ).map((problem) => (
+              <div 
+                key={problem.id} 
+                onClick={async () => {
+                  // Atualizar estado local imediatamente para parar de piscar
+                  setProblems(prevProblems => 
+                    prevProblems.map(p => 
+                      p.id === problem.id ? { ...p, viewed_by_store: true } : p
+                    )
+                  );
+                  
+                  setSelectedProblem(problem);
+                  setEditedObservations(problem.observations || '');
+                  setShowDetailModal(true);
+                  
+                  // Carregar mensagens do histórico
+                  try {
+                    const token = localStorage.getItem('token');
+                    const messagesResponse = await fetch(`${API_URL}/problems/${problem.id}/messages`, {
+                      headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                    });
+                    if (messagesResponse.ok) {
+                      const messagesData = await messagesResponse.json();
+                      setMessages(messagesData);
+                    }
+                  } catch (error) {
+                    console.error('Erro ao carregar mensagens:', error);
+                  }
+                  
+                  // Marcar como visto pela loja no servidor
+                  try {
+                    const token = localStorage.getItem('token');
+                    await fetch(`${API_URL}/problems/${problem.id}/mark-viewed`, {
+                      method: 'PATCH',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify({ userType: 'store' })
+                    });
+                    // Recarregar problemas para atualizar o estado
+                    fetchProblems();
+                  } catch (error) {
+                    console.error('Erro ao marcar como visto:', error);
+                  }
+                }}
+                style={{
+                  background: '#FFFFFF',
+                  padding: '12px',
+                  borderRadius: '12px',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
+                  animation: (() => {
+                    const daysSinceUpdate = Math.floor((new Date() - new Date(problem.updated_at)) / (1000 * 60 * 60 * 24));
+                    if (daysSinceUpdate >= 5 && problem.status !== 'resolved') {
+                      return 'pulse-red 2s ease-in-out infinite';
+                    } else if (!problem.viewed_by_store) {
+                      return 'pulse-yellow 2s ease-in-out infinite';
+                    }
+                    return 'none';
+                  })()
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#1F2937', margin: '0 0 6px 0' }}>
+                      {problem.problem_description}
+                    </h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                      <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
+                        {new Date(problem.created_at).toLocaleDateString('pt-PT')}
+                      </p>
+                      {problem.eurocode && (
+                        <span style={{
+                          padding: '3px 8px',
+                          borderRadius: '8px',
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          background: '#EEF2FF',
+                          color: '#4F46E5',
+                          border: '1px solid #C7D2FE'
+                        }}>
+                          {problem.eurocode}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {getStatusBadge(problem.status)}
+                </div>
+
+                {problem.response_text && (
+                  <div style={{
+                    marginTop: '8px',
+                    padding: '8px',
+                    background: '#F9FAFB',
+                    borderLeft: '3px solid #6366F1',
+                    borderRadius: '4px'
+                  }}>
+                    <p style={{ fontSize: '11px', fontWeight: '600', color: '#1F2937', margin: '0 0 1px 0' }}>
+                      Resposta do Fornecedor:
+                    </p>
+                    <p style={{ fontSize: '12px', color: '#1F2937', margin: 0 }}>
+                      {problem.response_text}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+              </div>
+            </div>
           </div>
         )}
 
