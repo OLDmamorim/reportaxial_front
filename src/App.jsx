@@ -2933,7 +2933,7 @@ const AdminDashboard = ({ onLogout }) => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/admin/users`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -2977,7 +2977,7 @@ const AdminDashboard = ({ onLogout }) => {
     }
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
         headers: {
@@ -3018,7 +3018,7 @@ const AdminDashboard = ({ onLogout }) => {
     }
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/admin/reset-password/${selectedUser.id}`, {
         method: 'PATCH',
         headers: {
