@@ -2913,6 +2913,8 @@ const AdminDashboard = ({ onLogout }) => {
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [filterPriority, setFilterPriority] = useState('all');
+  const [problems, setProblems] = useState([]);
   const [filteredProblems, setFilteredProblems] = useState([]);
   const [formData, setFormData] = useState({
     email: '',
@@ -2927,7 +2929,7 @@ const AdminDashboard = ({ onLogout }) => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/admin/users`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -2943,7 +2945,7 @@ const AdminDashboard = ({ onLogout }) => {
   const handleCreateSupplier = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/admin/create-supplier`, {
         method: 'POST',
         headers: {
