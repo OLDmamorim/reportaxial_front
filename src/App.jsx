@@ -863,15 +863,15 @@ const StoreDashboard = ({ onLogout }) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
-              padding: '12px 16px',
+              padding: isMobile ? '8px 12px' : '12px 16px',
               background: '#1F2937',
               border: '2px solid #374151',
               borderRadius: '8px',
-              fontSize: '14px',
+              fontSize: isMobile ? '12px' : '14px',
               color: '#FFFFFF',
-              minWidth: '300px',
+              minWidth: isMobile ? '200px' : '300px',
               width: '100%',
-              maxWidth: '500px'
+              maxWidth: isMobile ? '100%' : '500px'
             }}
           />
         </div>
@@ -2405,15 +2405,15 @@ const SupplierDashboard = ({ onLogout }) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
-              padding: '12px 16px',
+              padding: isMobile ? '8px 12px' : '12px 16px',
               background: '#1F2937',
               border: '2px solid #374151',
               borderRadius: '8px',
-              fontSize: '14px',
+              fontSize: isMobile ? '12px' : '14px',
               color: '#FFFFFF',
-              minWidth: '300px',
+              minWidth: isMobile ? '200px' : '300px',
               flex: '1',
-              maxWidth: '500px'
+              maxWidth: isMobile ? '100%' : '500px'
             }}
           />
           
@@ -2441,6 +2441,140 @@ const SupplierDashboard = ({ onLogout }) => {
         {/* Grid de Cards em 2 Colunas */}
         {loading ? (
           <p>Carregando...</p>
+        ) : isMobile ? (
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '1fr', 
+            gap: '16px' 
+          }}>
+            {(filteredProblems.length > 0 ? filteredProblems : problems.filter(p => p.status !== 'resolved'))
+              .map((problem) => (
+              <div
+                key={problem.id}
+                onClick={async () => {
+                  // Atualizar estado local imediatamente para parar de piscar
+                  setProblems(prevProblems => 
+                    prevProblems.map(p => 
+                      p.id === problem.id ? { ...p, viewed_by_supplier: true } : p
+                    )
+                  );
+                  
+                  setSelectedProblem(problem);
+                  setEditedObservations(problem.observations || '');
+                  setShowDetailModal(true);
+                  
+                  // Carregar mensagens do histórico
+                  try {
+                    const token = localStorage.getItem('token');
+                    const messagesResponse = await fetch(`${API_URL}/problems/${problem.id}/messages`, {
+                      headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                    });
+                    if (messagesResponse.ok) {
+                      const messagesData = await messagesResponse.json();
+                      setMessages(messagesData);
+                    }
+                  } catch (error) {
+                    console.error('Erro ao carregar mensagens:', error);
+                  }
+                  
+                  // Marcar como visto pelo fornecedor no servidor
+                  try {
+                    const token = localStorage.getItem('token');
+                    await fetch(`${API_URL}/problems/${problem.id}/mark-viewed`, {
+                      method: 'PATCH',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify({ userType: 'supplier' })
+                    });
+                    // Recarregar problemas para atualizar o estado
+                    fetchProblems();
+                  } catch (error) {
+                    console.error('Erro ao marcar como visto:', error);
+                  }
+                }}
+                style={{
+                  background: '#FFFFFF',
+                  padding: '12px',
+                  borderRadius: '12px',
+                  boxShadow: selectedProblem === problem.id ? '0 4px 12px rgba(99, 102, 241, 0.3)' : '0 2px 4px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  border: selectedProblem === problem.id ? '2px solid #6366F1' : '2px solid transparent',
+                  minHeight: '140px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
+                  animation: (() => {
+                    const daysSinceUpdate = Math.floor((new Date() - new Date(problem.updated_at)) / (1000 * 60 * 60 * 24));
+                    if (daysSinceUpdate >= 5 && problem.status !== 'resolved') {
+                      return 'pulse-red 2s ease-in-out infinite';
+                    } else if (!problem.viewed_by_supplier) {
+                      return 'pulse-yellow 2s ease-in-out infinite';
+                    }
+                    return 'none';
+                  })()
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedProblem !== problem.id) {
+                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedProblem !== problem.id) {
+                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }
+                }}
+              >
+                <h3 style={{
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  color: '#000000',
+                  margin: '0 0 6px 0',
+                  lineHeight: '1.3',
+                  textTransform: 'uppercase'
+                }}>
+                  {problem.store_name}
+                </h3>
+                
+                <p style={{
+                  fontSize: '13px',
+                  color: '#6B7280',
+                  margin: '0 0 10px 0',
+                  flex: 1,
+                  lineHeight: '1.4'
+                }}>
+                  {problem.problem_description}
+                </p>
+                
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                  {getStatusBadge(problem.status)}
+                  {problem.eurocode && (
+                    <span style={{
+                      padding: '3px 8px',
+                      borderRadius: '8px',
+                      fontSize: '10px',
+                      fontWeight: '700',
+                      background: '#EEF2FF',
+                      color: '#4F46E5',
+                      border: '1px solid #C7D2FE'
+                    }}>
+                      {problem.eurocode}
+                    </span>
+                  )}
+                </div>
+                
+                <p style={{ fontSize: '11px', color: '#9CA3AF', margin: 0 }}>
+                  {new Date(problem.created_at).toLocaleDateString('pt-PT')}
+                </p>
+              </div>
+            ))}
+          </div>
         ) : (
           <div style={{
             display: 'grid',
