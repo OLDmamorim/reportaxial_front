@@ -2907,15 +2907,13 @@ const SupplierDashboard = ({ onLogout }) => {
 
 // ============ VISTA ADMIN ============
 
+
+// ============ VISTA ADMIN - VERSÃO CORRIGIDA ============
+
 const AdminDashboard = ({ onLogout }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterPriority, setFilterPriority] = useState('all');
-  const [problems, setProblems] = useState([]);
-  const [filteredProblems, setFilteredProblems] = useState([]);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -2990,100 +2988,35 @@ const AdminDashboard = ({ onLogout }) => {
     );
   };
 
-   return (
+  return (
     <div style={{
       minHeight: '100vh',
-      background: '#5A5A5A',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      display: 'flex',
-      flexDirection: 'column'
+      background: '#F3F4F6',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       <DashboardHeader title="Painel Admin" onLogout={onLogout} />
 
-      {/* Título REPORT AXIAL */}
-      <div style={{
-        padding: '16px 20px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <h1 style={{
-          fontSize: '20px',
-          fontWeight: 'bold',
-          color: '#FFFFFF',
-          margin: 0,
-          letterSpacing: '1px',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-          textAlign: 'center'
-        }}>
-          REPORT AXIAL
-        </h1>
-      </div>
-
-      <div style={{ 
-        padding: '20px', 
-        width: '100%', 
-        boxSizing: 'border-box',
-        flex: 1
-      }}>
-                {/* Controles e Filtros */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', gap: '12px', flex: 1, flexWrap: 'wrap' }}>
-            <input
-              type="text"
-              placeholder="🔍 Pesquisar..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px',
-                fontSize: '14px', flex: '1', minWidth: '200px'
-              }}
-            />
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
-            >
-              <option value="all">Todos os Status</option>
-              <option value="pending">Pendente</option>
-              <option value="in_progress">Em Análise</option>
-              <option value="resolved">Resolvido</option>
-            </select>
-            <select
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
-              style={{ padding: '10px 16px', border: '1px solid #E5E7EB', borderRadius: '8px', fontSize: '14px' }}
-            >
-              <option value="all">Todas as Prioridades</option>
-              <option value="low">Baixa</option>
-              <option value="normal">Normal</option>
-              <option value="high">Alta</option>
-              <option value="urgent">Urgente</option>
-            </select>
-          </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button
-              onClick={() => exportToPDF(filteredProblems.length > 0 ? filteredProblems : problems, localStorage.getItem('userName'))}
-              style={{
-                padding: '12px 24px', background: '#10B981', color: 'white', border: 'none',
-                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
-              }}
-            >
-              📄 Exportar PDF
-            </button>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              style={{
-                padding: '12px 24px', background: '#6366F1', color: 'white', border: 'none',
-                borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600'
-              }}
-            >
-              {showForm ? 'Cancelar' : '+ Novo Reporte'}
-            </button>
-          </div>
+      <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1F2937', margin: 0 }}>
+            Gestão de Utilizadores
+          </h1>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            style={{
+              padding: '12px 24px',
+              background: '#6366F1',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '600'
+            }}
+          >
+            {showForm ? 'Cancelar' : '+ Novo Fornecedor'}
+          </button>
         </div>
-
-
 
         {showForm && (
           <div style={{
@@ -3099,7 +3032,7 @@ const AdminDashboard = ({ onLogout }) => {
             <form onSubmit={handleCreateSupplier} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
                     Nome do Fornecedor *
                   </label>
                   <input
@@ -3118,7 +3051,7 @@ const AdminDashboard = ({ onLogout }) => {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
                     Pessoa de Contacto
                   </label>
                   <input
@@ -3138,7 +3071,7 @@ const AdminDashboard = ({ onLogout }) => {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
                     Email *
                   </label>
                   <input
@@ -3157,7 +3090,7 @@ const AdminDashboard = ({ onLogout }) => {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#000000', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
                     Password *
                   </label>
                   <input
@@ -3238,301 +3171,10 @@ const AdminDashboard = ({ onLogout }) => {
             </table>
           </div>
         )}
-
-        {/* Modal de Detalhes do Report */}
-        {showDetailModal && selectedProblem && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px'
-          }}
-          onClick={() => {
-            setShowDetailModal(false);
-            setSelectedProblem(null);
-          }}
-          >
-            <div style={{
-              background: '#FFFFFF',
-              borderRadius: '12px',
-              padding: '24px',
-              maxWidth: '600px',
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'
-            }}
-            onClick={(e) => e.stopPropagation()}
-            >
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '20px' }}>
-                Detalhes do Report
-              </h2>
-
-              <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', 
-            gap: '16px' 
-          }}>
-                {/* Tipo de Problema */}
-                <div>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                    Tipo de Problema *
-                  </label>
-                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
-                    {selectedProblem.problem_description}
-                  </p>
-                </div>
-
-                {/* Data da Encomenda */}
-                <div>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                    Data da Encomenda *
-                  </label>
-                  <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
-                    {new Date(selectedProblem.order_date).toLocaleDateString('pt-PT')}
-                  </p>
-                </div>
-
-                {/* Número do Pedido */}
-                {selectedProblem.supplier_order && (
-                  <div>
-                    <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                      Número do Pedido do Fornecedor *
-                    </label>
-                    <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
-                      {selectedProblem.supplier_order}
-                    </p>
-                  </div>
-                )}
-
-                {/* Eurocode */}
-                {selectedProblem.eurocode && (
-                  <div>
-                    <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                      Eurocode *
-                    </label>
-                    <p style={{ fontSize: '16px', color: '#1F2937', margin: 0 }}>
-                      {selectedProblem.eurocode}
-                    </p>
-                  </div>
-                )}
-
-                {/* Status */}
-                <div>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                    Status
-                  </label>
-                  {getStatusBadge(selectedProblem.status)}
-                </div>
-
-                {/* Histórico de Conversação */}
-                <div>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '8px' }}>
-                    Histórico de Conversação
-                  </label>
-                  <div style={{
-                    maxHeight: '300px',
-                    overflowY: 'auto',
-                    border: '1px solid #D1D5DB',
-                    borderRadius: '8px',
-                    padding: '12px',
-                    background: '#F9FAFB'
-                  }}>
-                    {messages.length === 0 ? (
-                      <p style={{ fontSize: '14px', color: '#9CA3AF', textAlign: 'center', margin: 0 }}>
-                        Nenhuma mensagem ainda
-                      </p>
-                    ) : (
-                      messages.map((msg, index) => (
-                        <div key={index} style={{
-                          marginBottom: '12px',
-                          padding: '10px',
-                          background: msg.user_type === 'store' ? '#EEF2FF' : '#FEF3C7',
-                          borderRadius: '8px',
-                          borderLeft: `3px solid ${msg.user_type === 'store' ? '#6366F1' : '#F59E0B'}`
-                        }}>
-                          <p style={{ fontSize: '12px', fontWeight: '600', color: '#6B7280', margin: '0 0 4px 0' }}>
-                            {msg.user_type === 'store' ? '🏪 Loja' : '📦 Fornecedor'} • {new Date(msg.created_at).toLocaleString('pt-PT')}
-                          </p>
-                          <p style={{ fontSize: '14px', color: '#1F2937', margin: 0 }}>
-                            {msg.message}
-                          </p>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Nova Mensagem */}
-                <div>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#000000', display: 'block', marginBottom: '4px' }}>
-                    Nova Mensagem
-                  </label>
-                  <textarea
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    style={{
-                      width: '100%',
-                      minHeight: '80px',
-                      padding: '12px',
-                      border: '1px solid #D1D5DB',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      fontFamily: 'inherit',
-                      resize: 'vertical'
-                    }}
-                    placeholder="Escreva sua mensagem..."
-                  />
-                </div>
-              </div>
-
-              {/* Botões de Ação */}
-              <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
-                <button
-                  onClick={async () => {
-                    console.log('[Store] Botão Enviar Mensagem clicado');
-                    console.log('[Store] newMessage:', newMessage);
-                    console.log('[Store] selectedProblem:', selectedProblem);
-                    
-                    if (!newMessage.trim()) {
-                      alert('Por favor, escreva uma mensagem');
-                      return;
-                    }
-                    
-                    try {
-                      const token = localStorage.getItem('token');
-                      console.log('[Store] Enviando mensagem para problema ID:', selectedProblem.id);
-                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}/messages`, {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                          message: newMessage
-                        })
-                      });
-                      console.log('[Store] Response status:', response.status);
-
-                      if (response.ok) {
-                        // Recarregar mensagens
-                        const messagesResponse = await fetch(`${API_URL}/problems/${selectedProblem.id}/messages`, {
-                          headers: {
-                            'Authorization': `Bearer ${token}`
-                          }
-                        });
-                        if (messagesResponse.ok) {
-                          const messagesData = await messagesResponse.json();
-                          setMessages(messagesData);
-                        }
-                        setNewMessage('');
-                        fetchProblems(); // Atualizar lista para refletir mudanças de visualização
-                        setShowDetailModal(false); // Fechar modal
-                        alert('Mensagem enviada com sucesso!');
-                      } else {
-                        const errorData = await response.json();
-                        console.log('[Store] Erro do servidor:', errorData);
-                        alert(`Erro ao enviar mensagem: ${errorData.message || 'Erro desconhecido'}`);
-                      }
-                    } catch (error) {
-                      console.error('Erro:', error);
-                      alert('Erro ao enviar mensagem');
-                    }
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '12px 24px',
-                    background: '#6366F1',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Enviar Mensagem
-                </button>
-
-                <button
-                  onClick={() => {
-                    setShowDetailModal(false);
-                    setSelectedProblem(null);
-                    setNewMessage('');
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '12px 24px',
-                    background: '#E5E7EB',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Fechar
-                </button>
-
-                <button
-                  onClick={async () => {
-                    if (!confirm('Tem certeza que deseja marcar este report como resolvido?')) return;
-                    
-                    try {
-                      const token = localStorage.getItem('token');
-                      const response = await fetch(`${API_URL}/problems/${selectedProblem.id}/resolve`, {
-                        method: 'PATCH',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'Authorization': `Bearer ${token}`
-                        }
-                      });
-
-                      if (response.ok) {
-                        alert('Report marcado como resolvido!');
-                        fetchProblems();
-                        setShowDetailModal(false);
-                        setSelectedProblem(null);
-                      } else {
-                        alert('Erro ao resolver report');
-                      }
-                    } catch (error) {
-                      console.error('Erro:', error);
-                      alert('Erro ao resolver report');
-                    }
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '12px 24px',
-                    background: '#10B981',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Resolvido
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
 };
-
-// ============ APP PRINCIPAL ============
 
 function App() {
   const [userType, setUserType] = useState(null);
