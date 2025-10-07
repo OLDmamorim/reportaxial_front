@@ -1149,6 +1149,9 @@ const StoreDashboard = ({ onLogout }) => {
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
+                  minHeight: '130px',
+                  display: 'flex',
+                  flexDirection: 'column',
                   // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
                   animation: (() => {
                     const daysSinceUpdate = Math.floor((new Date() - new Date(problem.updated_at)) / (1000 * 60 * 60 * 24));
@@ -1298,6 +1301,9 @@ const StoreDashboard = ({ onLogout }) => {
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
+                  minHeight: '130px',
+                  display: 'flex',
+                  flexDirection: 'column',
                   // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
                   animation: (() => {
                     const daysSinceUpdate = Math.floor((new Date() - new Date(problem.updated_at)) / (1000 * 60 * 60 * 24));
@@ -1443,6 +1449,9 @@ const StoreDashboard = ({ onLogout }) => {
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
+                  minHeight: '130px',
+                  display: 'flex',
+                  flexDirection: 'column',
                   // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
                   animation: (() => {
                     const daysSinceUpdate = Math.floor((new Date() - new Date(problem.updated_at)) / (1000 * 60 * 60 * 24));
