@@ -1144,7 +1144,7 @@ const StoreDashboard = ({ onLogout }) => {
                 }}
                 style={{
                   background: '#FFFFFF',
-                  padding: '20px',
+                  padding: '12px',
                   borderRadius: '12px',
                   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
@@ -1169,20 +1169,20 @@ const StoreDashboard = ({ onLogout }) => {
                   e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
                   <div>
-                    <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1F2937', margin: '0 0 8px 0' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#1F2937', margin: '0 0 6px 0' }}>
                       {problem.problem_description}
                     </h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
-                      <p style={{ fontSize: '14px', color: '#6B7280', margin: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                      <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
                         {new Date(problem.created_at).toLocaleDateString('pt-PT')}
                       </p>
                       {problem.eurocode && (
                         <span style={{
-                          padding: '4px 10px',
+                          padding: '3px 8px',
                           borderRadius: '8px',
-                          fontSize: '13px',
+                          fontSize: '11px',
                           fontWeight: '700',
                           background: '#EEF2FF',
                           color: '#4F46E5',
@@ -1198,16 +1198,16 @@ const StoreDashboard = ({ onLogout }) => {
 
                 {problem.response_text && (
                   <div style={{
-                    marginTop: '12px',
-                    padding: '12px',
+                    marginTop: '8px',
+                    padding: '8px',
                     background: '#F9FAFB',
                     borderLeft: '3px solid #6366F1',
                     borderRadius: '4px'
                   }}>
-                    <p style={{ fontSize: '13px', fontWeight: '600', color: '#1F2937', margin: '0 0 1px 0' }}>
+                    <p style={{ fontSize: '11px', fontWeight: '600', color: '#1F2937', margin: '0 0 1px 0' }}>
                       Resposta do Fornecedor:
                     </p>
-                    <p style={{ fontSize: '14px', color: '#FFFFFF', margin: 0 }}>
+                    <p style={{ fontSize: '12px', color: '#1F2937', margin: 0 }}>
                       {problem.response_text}
                     </p>
                   </div>
@@ -2202,13 +2202,13 @@ const SupplierDashboard = ({ onLogout }) => {
                 }}
                 style={{
                   background: '#FFFFFF',
-                  padding: '20px',
+                  padding: '12px',
                   borderRadius: '12px',
                   boxShadow: selectedProblem === problem.id ? '0 4px 12px rgba(99, 102, 241, 0.3)' : '0 2px 4px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   border: selectedProblem === problem.id ? '2px solid #6366F1' : '2px solid transparent',
-                  minHeight: '180px',
+                  minHeight: '140px',
                   display: 'flex',
                   flexDirection: 'column',
                   // Piscar vermelho se inativo por 5+ dias, caso contrário piscar amarelo se não visto
@@ -2236,10 +2236,10 @@ const SupplierDashboard = ({ onLogout }) => {
                 }}
               >
                 <h3 style={{
-                  fontSize: '22px',
+                  fontSize: '16px',
                   fontWeight: 'bold',
                   color: '#000000',
-                  margin: '0 0 8px 0',
+                  margin: '0 0 6px 0',
                   lineHeight: '1.3',
                   textTransform: 'uppercase'
                 }}>
@@ -2247,22 +2247,22 @@ const SupplierDashboard = ({ onLogout }) => {
                 </h3>
                 
                 <p style={{
-                  fontSize: '14px',
+                  fontSize: '13px',
                   color: '#6B7280',
-                  margin: '0 0 16px 0',
+                  margin: '0 0 10px 0',
                   flex: 1,
-                  lineHeight: '1.5'
+                  lineHeight: '1.4'
                 }}>
                   {problem.problem_description}
                 </p>
                 
-                <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', flexWrap: 'wrap' }}>
                   {getStatusBadge(problem.status)}
                   {problem.eurocode && (
                     <span style={{
-                      padding: '4px 10px',
+                      padding: '3px 8px',
                       borderRadius: '8px',
-                      fontSize: '11px',
+                      fontSize: '10px',
                       fontWeight: '700',
                       background: '#EEF2FF',
                       color: '#4F46E5',
@@ -2273,7 +2273,7 @@ const SupplierDashboard = ({ onLogout }) => {
                   )}
                 </div>
                 
-                <p style={{ fontSize: '12px', color: '#9CA3AF', margin: 0 }}>
+                <p style={{ fontSize: '11px', color: '#9CA3AF', margin: 0 }}>
                   {new Date(problem.created_at).toLocaleDateString('pt-PT')}
                 </p>
               </div>
